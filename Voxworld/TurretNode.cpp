@@ -11,10 +11,19 @@ void TurretNode::render(Renderer *p_Renderer)
 }
 void TurretNode::update(float p_DeltaTimeS)
 {
+	if(m_OrientationDeg > 360.0f)
+	{
+		m_OrientationDeg-=360.0f;
+	}
+	else if (m_OrientationDeg < 0.0f)
+	{
+		m_OrientationDeg+=360.0f;
+	}
 	if(!m_MainGunUpgrades.empty())
 	{
 		if (m_MainGunUpgrades.top()->getNumShots() == 0)
 		{
+			m_MainGunUpgrades.top()=nullptr;
 			m_MainGunUpgrades.pop();
 		}
 	}

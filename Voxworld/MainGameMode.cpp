@@ -10,9 +10,9 @@ MainGameMode::MainGameMode(void)
 {
 	printf("create main mode \n");	
 	renderingMode = FILLED;
-	m_CamFollowDistance = -50.0f;
-	m_CamFollowAngle = -65.0f;
-	m_MaxTurnSpeed = 300.0f;
+	m_CamFollowDistance = -15.0f;
+	m_CamFollowAngle = -15.0f;
+	m_MaxTurnSpeed = 500.0f;
 	m_MouseTurnSpeed = 0.0f;
 	m_MouseAcceleration = 25.0f;
 }
@@ -155,7 +155,7 @@ void MainGameMode::update(float deltaTime)
 	}
 	else
 	{
-		m_MouseTurnSpeed = 0.0f;
+		m_MouseTurnSpeed *=0.5;
 	}
 	m_Camera->rotateYaw(m_MouseTurnSpeed*deltaTimeMS);
 	m_Tank->rotateTurret(m_MouseTurnSpeed*deltaTimeMS);
