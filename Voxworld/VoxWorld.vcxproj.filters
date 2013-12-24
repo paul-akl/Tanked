@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core Engine">
+      <UniqueIdentifier>{3febd82d-cf85-42a0-8003-32df10e67254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\main">
+      <UniqueIdentifier>{6547072f-f845-45b2-ad37-2255f21980fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game">
+      <UniqueIdentifier>{8dbccc44-fe6b-4aed-bac3-6ca77f79854a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes">
+      <UniqueIdentifier>{6a7a63e5-6e8e-4cac-bdaf-ae94f82bf35d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Credits Game Mode">
+      <UniqueIdentifier>{2c4c7b74-c8e5-4ad8-bfeb-6314a8017e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Intro Game Mode">
+      <UniqueIdentifier>{0bf2c799-35ee-428d-8cef-010163970bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Main Game Mode">
+      <UniqueIdentifier>{f0d819e5-84b9-48a1-9409-c264eb63f598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Menu Game Mode">
+      <UniqueIdentifier>{4cbb9e0e-9b6b-4c69-a2da-f9989176fea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Base">
+      <UniqueIdentifier>{2d73498b-5c2f-434c-bcd1-b6efdb476d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Shop Game Mode">
+      <UniqueIdentifier>{1712834c-c8b9-42b5-9d81-7c5c4de7eebf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base">
+      <UniqueIdentifier>{2f8fcc2d-e1b2-48cb-aa87-2a3f3a35fb98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph">
+      <UniqueIdentifier>{59ee0055-3970-4435-b2d6-968c916d7a47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer">
+      <UniqueIdentifier>{9c7e3787-05ed-4e10-a42e-7375ebc2db81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Camera">
+      <UniqueIdentifier>{7f56987d-51a7-47d9-b652-70aaba301949}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Tank">
+      <UniqueIdentifier>{87e9b856-ac84-4f3f-8ddf-0e5dad7f0962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\GFXNodes">
+      <UniqueIdentifier>{b12e1aaa-8d9b-4a41-886c-bf27a82cb2ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories">
+      <UniqueIdentifier>{ed404fd8-1f95-447d-a46d-3fc97f55e7ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Base">
+      <UniqueIdentifier>{cfc46c6d-d120-4458-8656-060176f86f26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Forward renderer">
+      <UniqueIdentifier>{bcdfa54f-6ed6-4d9d-8f44-ee5820ac1fd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Shader">
+      <UniqueIdentifier>{97d83fea-d502-4933-8b8c-eb75f00001c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Shader\Base">
+      <UniqueIdentifier>{a23d5223-b680-43cc-816b-ddbd8fbd7594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Utilities">
+      <UniqueIdentifier>{db14daa9-f5a3-4abc-a17e-850f112d9cc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Shader\Shader Source">
+      <UniqueIdentifier>{eee5f1e6-9856-4070-b83c-438857c5251e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\Shader\Shader Source\Simple">
+      <UniqueIdentifier>{83d98d99-393e-42eb-a5ae-139ed16eb808}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Controller">
+      <UniqueIdentifier>{83c13a3e-e1d5-456e-ba3c-90123ae5be88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Base">
+      <UniqueIdentifier>{3f6e8252-f0e6-4125-b26b-e8fc05d2450a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Renderer\DeferredRenderer">
+      <UniqueIdentifier>{f75a69d2-b587-4e98-a6f8-2e461e809650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Upgrades">
+      <UniqueIdentifier>{7024291f-2bed-47d6-8cca-d6eae117932a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Upgrades\Base">
+      <UniqueIdentifier>{4b20e280-9141-4ccd-ab71-5cf2653fe836}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Upgrades\Offensive">
+      <UniqueIdentifier>{182f75a4-31e7-46aa-824c-18ffdc1200ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Upgrades\Defensive">
+      <UniqueIdentifier>{65e8c4ed-1c4d-466b-94ea-29b7339f8f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Upgrades\Mobility">
+      <UniqueIdentifier>{c215f164-4c50-46a0-8730-bbc41d59c1c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Floor">
+      <UniqueIdentifier>{1e203e04-07d3-4c77-b282-5ecaa3ae4caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Wall">
+      <UniqueIdentifier>{8c72038f-e4aa-4319-a7f4-9c6417892b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Tank">
+      <UniqueIdentifier>{f77ad459-a6fd-47cd-bc66-ec8961f81bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Collision System">
+      <UniqueIdentifier>{4c8bdee2-3634-44a5-b1f1-1cea557d12f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Projectile">
+      <UniqueIdentifier>{9983140a-a849-4b83-b082-0e43ab3d96bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Scenery">
+      <UniqueIdentifier>{b8dc5ca7-0d37-480a-8172-e1f9f75b5808}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade">
+      <UniqueIdentifier>{66508466-9273-481a-95f4-2b4d8bb84e0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade\Base">
+      <UniqueIdentifier>{bfd84201-9340-49c8-a41c-47abb6af3270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade\Offensive">
+      <UniqueIdentifier>{9122887b-aa67-4351-b1c7-294cf0b956f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade\Defensive">
+      <UniqueIdentifier>{48ddb223-3151-447c-a3e2-e21eff96bb9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade\Mobility">
+      <UniqueIdentifier>{94d94bd3-59f9-42ff-81cf-57639103f856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Collidable">
+      <UniqueIdentifier>{cfe6e87f-f05e-459f-bbd7-77c34e6b2efd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroGameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Intro Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Main Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Core Engine\main</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Menu Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralUtils.cpp">
+      <Filter>Core Engine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Credits Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="ShopMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Shop Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Core Engine\main</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="TestTankNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Core Engine\Renderer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GLTestRender.cpp">
+      <Filter>Core Engine\Renderer\Forward renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Core Engine\Renderer\Shader\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="LightNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClCompile>
+    <ClCompile Include="TurretNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Core Engine\Game\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Core Engine\Renderer\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRenderer.cpp">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="WallFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\Floor</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicTankFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\Tank</Filter>
+    </ClCompile>
+    <ClCompile Include="UpgradeFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\Upgrades\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionPair.cpp">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionQuadTree.cpp">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionResponse.cpp">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSolver.cpp">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="UpgradeNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="OffensiveUpgrade.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
+    </ClCompile>
+    <ClCompile Include="CollidableNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Collidable</Filter>
+    </ClCompile>
+    <ClCompile Include="WallNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroGameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Intro Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Main Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuMode.h">
+      <Filter>Core Engine\Game\Game Modes\Menu Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralUtils.h">
+      <Filter>Core Engine\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsMode.h">
+      <Filter>Core Engine\Game\Game Modes\Credits Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="ShopMode.h">
+      <Filter>Core Engine\Game\Game Modes\Shop Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Core Engine\main</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshNode.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureNode.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformNode.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="TestTankNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Core Engine\Renderer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GLTestRender.h">
+      <Filter>Core Engine\Renderer\Forward renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Core Engine\Renderer\Shader\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="LightNode.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialNode.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FloorNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="TurretNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Core Engine\Game\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Core Engine\Renderer\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRenderer.h">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="WallFactory.h">
+      <Filter>Core Engine\Game\Class Factories\Wall</Filter>
+    </ClInclude>
+    <ClInclude Include="FloorFactory.h">
+      <Filter>Core Engine\Game\Class Factories\Floor</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicTankFactory.h">
+      <Filter>Core Engine\Game\Class Factories\Tank</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeFactory.h">
+      <Filter>Core Engine\Game\Class Factories\Upgrades\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSolver.h">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionPair.h">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionQuadTree.h">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionResponse.h">
+      <Filter>Core Engine\Collision System</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="OffensiveUpgrade.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
+    </ClInclude>
+    <ClInclude Include="CollidableNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Collidable</Filter>
+    </ClInclude>
+    <ClInclude Include="WallNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="phong-tex.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source\Simple</Filter>
+    </None>
+    <None Include="phong-tex.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source\Simple</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,203 @@
+#include "TestTankNode.h"
+#include "Renderer.h"
+#include "TransformNode.h"
+#include "TurretNode.h"
+TestTankNode::TestTankNode(void)
+{
+	m_Parent=nullptr;
+	m_Position = glm::vec3(0.0,0.0,0.0);
+	m_MaxVelocity = 150.0f; //max velocity in m/s
+	m_TankAeroConstant = 1.0f;
+	m_Mass = 750.0f; //mass is one metric ton
+	m_Thrust = 10000.0f; //thrust is in Newtons
+	m_IsMoving = false;
+	m_Velocity = glm::vec3(0.0f); //velocity is only non zero if moving
+	m_TurnAnimSpeed = 150.0f; //used for smooth rotation of tank body
+	m_TargetOrientation = 0.0f; //no target oriention on start
+	m_OrientationDeg = 0.0f; //orientation initialized to zero
+	m_MaxWeaponChargeLevel = 1.0f;
+	m_WeaponChargeRate=0.1f;
+	m_WeaponChargeLevel = 0.0f;
+}
+void TestTankNode::chargeMainGun(float p_DeltaTimeS)
+{
+	m_WeaponChargeLevel += m_WeaponChargeRate*p_DeltaTimeS;
+	if(m_WeaponChargeLevel > m_MaxWeaponChargeLevel)
+		m_WeaponChargeLevel = m_MaxWeaponChargeLevel;
+}
+ProjectileNode* TestTankNode::getMainGunProjectile()
+{
+	return m_Turret->getMainGunProjectile();
+}
+void TestTankNode::AddOffensiveUpgrade(OffensiveUpgrade* p_Upgrade)
+{
+	m_Turret->setMainGun(p_Upgrade);
+	p_Upgrade->setCollected();
+}
+void TestTankNode::addTurretNode(TurretNode* p_Turret)
+{
+	//keep a reference and add to children, in the default way.
+	m_Turret = p_Turret;
+	SceneNode::addNode(p_Turret);
+	m_OrientationDeg=m_Turret->getOrientation()-180.0f;
+}
+void TestTankNode::rotateTurret(const float p_Rotation)
+{
+	m_Turret->rotateTurret(p_Rotation);
+}
+void TestTankNode::moveForward(float p_DeltaTimeS)
+{
+	m_TargetOrientation = m_Turret->getOrientation()+180.0f;
+	//perform a quick conversion to radians and calculate direction of acceleration
+	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
+	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
+	//then calculate acceleration scalar, multiply that by acceleration direction, 
+	//times delta time, to calculate impulse magnitude, and add to velocity
+	//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+	m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+
+
+	m_IsMoving = true;
+
+}
+void TestTankNode::moveBack(float p_DeltaTimeS)
+{
+	m_TargetOrientation = m_Turret->getOrientation();
+	//perform a quick conversion to radians and calculate direction of acceleration
+	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
+	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
+	//then calculate acceleration scalar, multiply that by acceleration direction, 
+	//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+	m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+
+	m_IsMoving = true;
+}
+void TestTankNode::moveLeft(float p_DeltaTimeS)
+{
+	m_TargetOrientation = m_Turret->getOrientation()+270.0f;
+	//perform a quick conversion to radians and calculate direction of acceleration
+	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
+	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
+	//then calculate acceleration scalar, multiply that by acceleration direction, 
+	//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+	m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+
+	m_IsMoving = true;
+}
+void TestTankNode::moveRight(float p_DeltaTimeS)
+{
+	m_TargetOrientation = m_Turret->getOrientation()+90.0f;
+	//perform a quick conversion to radians and calculate direction of acceleration
+	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
+	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
+	//then calculate acceleration scalar, multiply that by acceleration direction, 
+	//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+	m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+
+	m_IsMoving = true;
+}
+void TestTankNode::update(float p_DeltaTimeS)
+{
+	//normalize target orientation, if needed
+	if(m_TargetOrientation >= 360.0f)
+	{
+		m_TargetOrientation-=360.0f;
+	}
+	else if(m_TargetOrientation < 0.0f)
+	{
+		m_TargetOrientation=360.0f+m_TargetOrientation;
+	}
+	//normalize current orientation if needed
+	if(m_OrientationDeg >= 360.0f)
+	{
+		m_OrientationDeg-=360.0f;
+	}
+	else if(m_OrientationDeg < 0.0f)
+	{
+		m_OrientationDeg=360.0f+m_OrientationDeg;
+	}
+	////////////////////////////////////////////
+	//ANGLE ANIMATION
+	////////////////////////////////////////////
+	if(m_TargetOrientation!=m_OrientationDeg)
+	{
+		if(abs(m_TargetOrientation-m_OrientationDeg)<5.5f)
+		{
+			m_OrientationDeg = m_TargetOrientation;
+			m_Turning = false;
+		}
+		else
+		{
+			m_Turning = true;
+			float deltaAngle = m_TargetOrientation-m_OrientationDeg;
+			//if theta is greater than 180 degrees, then make a small adjustment, to make deltaAngle relative to zero
+			//(make deltaAngle either positive or negative
+			if (abs(deltaAngle) > 180.0f)
+				deltaAngle += deltaAngle > 0? -360.0f:360.0f;
+			if(deltaAngle < 0)
+			{
+				m_OrientationDeg-=m_TurnAnimSpeed*p_DeltaTimeS;
+			}
+			else if(deltaAngle > 0)
+			{
+				m_OrientationDeg+=m_TurnAnimSpeed*p_DeltaTimeS;
+			}
+		}
+	}
+	//////////////////////////////////////////////////////
+	//END ANGLE ANIMATION
+	//////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////
+	// VELOCITY INTERPOLATION
+	//////////////////////////////////////////////////////
+	//place a hard upper limit on max velocity, may not be needed as we have introduced air resistance
+	if(glm::length(m_Velocity)> m_MaxVelocity)
+	{
+		m_Velocity = glm::normalize(m_Velocity)*m_MaxVelocity;
+	}
+	//update position
+	///////////////////////////////////////////////////////////////////////////////////////
+	//a quick and dirty model of air resistance impulse, in opposite direction of movement
+	///////////////////////////////////////////////////////////////////////////////////////
+	if(m_IsMoving)
+	{
+
+		//Fd = 0.5*air density* v^2 * TankAeroConstant * area
+		//1.5f is air density, tank aero constant is the coefficient of it's cross sectional area
+		float AirDensity = 1.5f;
+		// an impulse is just a force, applied over a time period
+		float crossSectionalArea = 20.0f;
+		glm::vec3 AirResImpulse = (-m_Velocity*glm::length(m_Velocity)*AirDensity*m_TankAeroConstant*crossSectionalArea)*(p_DeltaTimeS);
+		//when applying an impulse to an object, the effect is reduced by the object's mass (more mass = less effect)
+		//Simulating air resistance accurately, as it turns out, makes virtually no difference to the overall velociy of a 1 ton tank.
+		//another approach is needed for null input braking
+		//m_Velocity+=AirResImpulse/m_Mass;
+		//so instead, cut off 0.5% each update, for a more immediate effect, and also it adds
+		m_Velocity*=0.995f;
+
+	}
+	//to prevent calculations moving out of floating point precision range
+	//as we are only modelling
+	if(glm::length(m_Velocity)<0.1f)
+	{
+		m_IsMoving = false;
+		m_Velocity = glm::vec3(0.0f);
+	}
+	m_Position+=m_Velocity*(p_DeltaTimeS);
+	//and perform default scene node behaviour
+	//update local transformation
+	m_LocalTransform->reset();
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0,1.0,0.0));
+	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0,0.0));
+	m_LocalTransform->scale(glm::vec3(1.0f));
+	//then do default behaviour
+	SceneNode::update(p_DeltaTimeS);
+}
+void TestTankNode::render(Renderer* p_Renderer)
+{
+	SceneNode::render(p_Renderer);
+}
+TestTankNode::~TestTankNode(void)
+{
+}

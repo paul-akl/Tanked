@@ -1,0 +1,32 @@
+#pragma once
+#include <glm/glm.hpp>
+///////////////////////////////////////////////////////////////
+// A general utilities class with several static functions	///
+// for common simple tasks									///
+///////////////////////////////////////////////////////////////
+
+//simple name changes to make coding simpler
+typedef glm::vec3 DirectionV;
+typedef glm::vec3 PointP;
+typedef glm::vec4 DirectionV4;
+typedef glm::vec4 PositionP4;
+
+class GeneralUtils
+{
+public:
+	GeneralUtils(void);
+	static void exitFatalError(const char *message);
+	template <class T> static const T& max (const T& a, const T& b) {
+	 return (a<b)?b:a;    
+	}
+
+	static bool timerElapsed(int currentTimer, int duration)
+	{
+		if (currentTimer >= duration)
+			return true;
+		return false;
+	}
+
+	~GeneralUtils(void);
+};
+

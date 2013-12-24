@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core Engine">
+      <UniqueIdentifier>{3febd82d-cf85-42a0-8003-32df10e67254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\main">
+      <UniqueIdentifier>{6547072f-f845-45b2-ad37-2255f21980fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management">
+      <UniqueIdentifier>{c7dee20b-bb09-4f1e-9328-40ebfcd018d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management\Voxel">
+      <UniqueIdentifier>{007f8fb1-9a9c-4461-aeb4-54bea2f04083}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Utilities">
+      <UniqueIdentifier>{db14daa9-f5a3-4abc-a17e-850f112d9cc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management\Chunk">
+      <UniqueIdentifier>{9d7999e0-b809-4a55-9aed-a065ef85174e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management\Superchunk">
+      <UniqueIdentifier>{93869a10-df52-4e5d-b102-5e744c68ad29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management\Factory">
+      <UniqueIdentifier>{c9dd9bdf-2020-44d6-9398-37d76a3f088f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Voxel Management\Utilities">
+      <UniqueIdentifier>{7fa6e75a-00a7-4fe4-b024-6c7d9287b0ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{e56039b9-780d-42e6-87b9-914c8b289d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\MainModeRenderer">
+      <UniqueIdentifier>{f00c135b-4898-4c28-b202-2210dd1f7248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Camera">
+      <UniqueIdentifier>{0bf994dd-af5c-4f3f-a5d7-fc0dfef62e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{6c0df42b-26bd-4275-8be5-3a938c16da61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\IntroRenderer">
+      <UniqueIdentifier>{c70a28db-9b96-4429-99c7-9e3c2c6141f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\MenuRenderer">
+      <UniqueIdentifier>{bc7581ea-62cb-4ef1-af22-f660427eef2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\CreditsRenderer">
+      <UniqueIdentifier>{f2b5caec-08e9-4723-87be-1b40f90703b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Rendering Utilities">
+      <UniqueIdentifier>{afbe9168-f478-4f70-9dc8-254f7d6dd9db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game">
+      <UniqueIdentifier>{8dbccc44-fe6b-4aed-bac3-6ca77f79854a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes">
+      <UniqueIdentifier>{6a7a63e5-6e8e-4cac-bdaf-ae94f82bf35d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Credits Game Mode">
+      <UniqueIdentifier>{2c4c7b74-c8e5-4ad8-bfeb-6314a8017e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Intro Game Mode">
+      <UniqueIdentifier>{0bf2c799-35ee-428d-8cef-010163970bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Main Game Mode">
+      <UniqueIdentifier>{f0d819e5-84b9-48a1-9409-c264eb63f598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Menu Game Mode">
+      <UniqueIdentifier>{4cbb9e0e-9b6b-4c69-a2da-f9989176fea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Game Modes\Base">
+      <UniqueIdentifier>{2d73498b-5c2f-434c-bcd1-b6efdb476d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Class Diagram">
+      <UniqueIdentifier>{a1c63108-ac35-49bf-b1ff-1ec0f6b52cd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Rendering Utilities\shaders">
+      <UniqueIdentifier>{92f8c8ec-2a4d-4056-8e51-3bdf35f7133c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Rendering Utilities\shaders\Phong Texture">
+      <UniqueIdentifier>{c1c14709-b564-4ea1-bc99-0c1f8271e328}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game.cpp">
+      <Filter>Core Engine\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroGameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Intro Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGameMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Main Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Core Engine\main</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Menu Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxCube.cpp">
+      <Filter>Core Engine\Voxel Management\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeChunk.cpp">
+      <Filter>Core Engine\Voxel Management\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeSuperChunk.cpp">
+      <Filter>Core Engine\Voxel Management\Superchunk</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeFactory.cpp">
+      <Filter>Core Engine\Voxel Management\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralUtils.cpp">
+      <Filter>Core Engine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Renderer\MainModeRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxUtility.cpp">
+      <Filter>Core Engine\Voxel Management\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Renderer\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsMode.cpp">
+      <Filter>Core Engine\Game\Game Modes\Credits Game Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderUtils.cpp">
+      <Filter>Renderer\Rendering Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Renderer\MainModeRenderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Core Engine\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroGameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Intro Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGameMode.h">
+      <Filter>Core Engine\Game\Game Modes\Main Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuMode.h">
+      <Filter>Core Engine\Game\Game Modes\Menu Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxCube.h">
+      <Filter>Core Engine\Voxel Management\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeChunk.h">
+      <Filter>Core Engine\Voxel Management\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeSuperChunk.h">
+      <Filter>Core Engine\Voxel Management\Superchunk</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeFactory.h">
+      <Filter>Core Engine\Voxel Management\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralUtils.h">
+      <Filter>Core Engine\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer\MainModeRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxUtility.h">
+      <Filter>Core Engine\Voxel Management\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Renderer\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsMode.h">
+      <Filter>Core Engine\Game\Game Modes\Credits Game Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUtils.h">
+      <Filter>Renderer\Rendering Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Renderer\MainModeRenderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="shaders\phong-tex.frag">
+      <Filter>Renderer\Rendering Utilities\shaders\Phong Texture</Filter>
+    </None>
+    <None Include="shaders\phong-tex.vert">
+      <Filter>Renderer\Rendering Utilities\shaders\Phong Texture</Filter>
+    </None>
+  </ItemGroup>
+</Project>
