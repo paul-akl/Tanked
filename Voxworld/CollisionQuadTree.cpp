@@ -2,18 +2,58 @@
 #include <iostream>
 CollisionQuadTree::CollisionQuadTree(void)
 {
+	m_NW = nullptr;
+	m_NE = nullptr;
+	m_SW = nullptr;
+	m_SE = nullptr;
+	m_Depth = 0;
+	m_Width = 0;
+	m_Height = 0;
+}
+void CollisionQuadTree::update()
+{
+	//this function is used to check if objects are moving, and if so, containment needs to be re-checked 
+	for (size_t i = 0; i < m_Nodes.size(); i++)
+	{
+		if(m_Nodes[i]!=nullptr)
+		{
+			if(m_Nodes[i]->isMoving())
+			{
+				if(!contains(m_Nodes[i]))
+				{
+					m_Parent->insert(m_Nodes[i]);
+					m_Nodes[i] = nullptr;
+				}
+			}
+			if(!m_Nodes[i]->isActive())
+			{
+				m_Nodes[i] = nullptr;
+			}
+		}
+	}
 
 }
-CollisionQuadTree::CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth)
+CollisionQuadTree::CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth,CollisionQuadTree* p_Parent)
 {
 	m_Depth = p_Depth;
 	m_Width = p_Width;
 	m_Height = p_Height;
 	m_CentrePosition = p_Centre;
-	m_NW = nullptr;
-	m_NE = nullptr;
-	m_SE = nullptr;
-	m_SW = nullptr;
+	if(m_Depth < MAX_DEPTH)
+	{
+		m_NW = new CollisionQuadTree(m_CentrePosition+glm::vec3(-m_Width/2.0f,0.0f,-m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1, this);
+		m_NE = new CollisionQuadTree(m_CentrePosition+glm::vec3( m_Width/2.0f,0.0f,-m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1, this);
+		m_SE = new CollisionQuadTree(m_CentrePosition+glm::vec3( m_Width/2.0f,0.0f, m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1, this);
+		m_SW = new CollisionQuadTree(m_CentrePosition+glm::vec3(-m_Width/2.0f,0.0f, m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1, this);
+	}
+	else
+	{
+		m_NW = nullptr;
+		m_NE = nullptr;
+		m_SW = nullptr;
+		m_SE = nullptr;
+	}
+	m_Parent = p_Parent;
 }
 void CollisionQuadTree::toConsole()
 {
@@ -43,12 +83,45 @@ bool CollisionQuadTree::contains(CollidableNode* p_Node)
 {
 	glm::vec3 pos(p_Node->getLocation().x,0.0f,p_Node->getLocation().z);
 	glm::vec3 seperation = pos-m_CentrePosition;
-
-		if ((abs(seperation.x)<m_Width)&&(abs(seperation.z)<m_Height))
-		{
-			return true;
-		}
+	if(p_Node->getBoundaryType() == CIRCLE)
+	{
+		if(seperation.x < m_Width/2.0f && seperation.z < m_Height/2.0f
+			&&	pos.x-p_Node->getRadius() > m_CentrePosition.x-m_Width/2.0f
+			&&	pos.x+p_Node->getRadius() < m_CentrePosition.x+m_Width/2.0f
+			&&	pos.z-p_Node->getRadius() > m_CentrePosition.x-m_Height/2.0f
+			&&	pos.z+p_Node->getRadius() < m_CentrePosition.x+m_Height/2.0f)
+		return true;
 		return false;
+	}
+	if(p_Node->getBoundaryType() == AAB)
+	{
+		if(seperation.x < m_Width/2.0f && seperation.z < m_Height/2.0f
+			&& pos.x-p_Node->getWidth()/2.0f > m_CentrePosition.x-m_Width/2.0f
+			&& pos.x+p_Node->getWidth()/2.0f < m_CentrePosition.x+m_Width/2.0f
+			&& pos.z-p_Node->getWidth()/2.0f > m_CentrePosition.x-m_Height/2.0f
+			&& pos.z+p_Node->getWidth()/2.0f > m_CentrePosition.x+m_Height/2.0f)
+		return true;
+		return false;
+	}
+	if(p_Node->getBoundaryType() == OBB)
+	{
+		//TODO
+		return false;
+	}
+	if(p_Node->getBoundaryType()==RAY)
+	{
+		//TODO
+		return false;
+	}
+	if(p_Node->getBoundaryType()==POINT)
+	{
+		//TODO
+		return false;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool CollisionQuadTree::overLaps(CollidableNode* p_Node)
@@ -73,7 +146,36 @@ bool CollisionQuadTree::overLaps(CollidableNode* p_Node)
 	}
 	return false;
 }
-
+void CollisionQuadTree::collideObject(CollidableNode* p_Node, std::vector<CollisionPair*>& p_Results)
+{
+	if(!m_Nodes.empty())
+	{
+		for (size_t i = 0; i < m_Nodes.size(); i++)
+		{
+			p_Results.push_back(new CollisionPair(p_Node,m_Nodes[i]));
+		}
+	}
+	if(m_NW!=nullptr)
+	if(m_NW->contains(p_Node) || m_NW->overLaps(p_Node))
+	{
+		m_NW->collideObject(p_Node,p_Results);
+	}
+	if(m_SW!=nullptr)
+	if(m_SW->contains(p_Node) || m_SW->overLaps(p_Node))
+	{
+		m_SW->collideObject(p_Node,p_Results);
+	}
+	if(m_NE!=nullptr)
+	if(m_NE->contains(p_Node) || m_NE->overLaps(p_Node))
+	{
+		m_NE->collideObject(p_Node,p_Results);
+	}
+	if(m_SE!=nullptr)
+	if(m_SE->contains(p_Node) || m_SE->overLaps(p_Node))
+	{
+		m_SE->collideObject(p_Node,p_Results);
+	}
+}
 void CollisionQuadTree::insert(CollidableNode* p_Node)
 {
 	// MUST BE REVIEWED AND RECODED FOR NEW INSERTION ALGORITHM:
@@ -87,75 +189,43 @@ void CollisionQuadTree::insert(CollidableNode* p_Node)
 	// IF TRUE, INSERT INTO CONTAINING SUBTREE.
 	if(m_Depth >= MAX_DEPTH)
 	{
-		m_Nodes.push_back(p_Node);
+		bool found = false;
+		for(std::vector<CollidableNode*>::iterator it = m_Nodes.begin(); it!=m_Nodes.end();it++)
+		{
+			if((*it)==nullptr)
+			{
+				(*it) = p_Node;
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+		{
+			m_Nodes.push_back(p_Node);
+		}
 	}
 	else
-	{//NORTHWEST QUADRANT CHECK
-		if(m_NW!=nullptr)
+		//subtree insertion
+	{
+		if(m_NW->contains(p_Node))
 		{
-			if(m_NW->contains(p_Node)|| m_NW->overLaps(p_Node))
-			{
-				m_NW->insert(p_Node);
-			}
+			m_NW->insert(p_Node);
+		}
+		else if(m_NE->contains(p_Node))
+		{
+			m_NE->insert(p_Node);
+		}
+		else if(m_SE->contains(p_Node))
+		{
+			m_SE->insert(p_Node);
+		}
+		else if(m_SW->contains(p_Node))
+		{
+			m_SW->insert(p_Node);
 		}
 		else
 		{
-			m_NW = new CollisionQuadTree(m_CentrePosition+glm::vec3(-m_Width/2.0f,0.0f,-m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1);
-			if(m_NW->contains(p_Node)|| m_NW->overLaps(p_Node))
-			{
-				m_NW->insert(p_Node);
-			}
-		}
-		//NORTHEAST
-		if(m_NE!=nullptr)
-		{
-			if(m_NE->contains(p_Node)|| m_NE->overLaps(p_Node))
-			{
-				m_NE->insert(p_Node);
-			}
-		}
-		else
-		{
-
-			m_NE = new CollisionQuadTree(m_CentrePosition+glm::vec3(m_Width/2.0f,0.0f,-m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1);
-			if(m_NE->contains(p_Node)|| m_NE->overLaps(p_Node))
-			{
-				m_NE->insert(p_Node);
-			}
-		}
-		//SOUTHWEAST
-		if(m_SE!=nullptr)
-		{
-			if(m_SE->contains(p_Node)|| m_SE->overLaps(p_Node))
-			{
-				m_SE->insert(p_Node);
-			}
-		}
-		else
-		{
-
-			m_SE = new CollisionQuadTree(m_CentrePosition+glm::vec3(m_Width/2.0f,0.0f,m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1);
-			if(m_SE->contains(p_Node)|| m_SE->overLaps(p_Node))
-			{
-				m_SE->insert(p_Node);
-			}
-		}
-		//SOUTHWEST
-		if(m_SW!=nullptr)
-		{
-			if(m_SW->contains(p_Node)|| m_SW->overLaps(p_Node))
-			{
-				m_SW->insert(p_Node);
-			}
-		}
-		else
-		{
-
-			m_SW = new CollisionQuadTree(m_CentrePosition+glm::vec3(m_Width/2.0f,0.0f,m_Height/2.0f),m_Width/2.0f,m_Height/2.0f,m_Depth+1);
-			if(m_SW->contains(p_Node)|| m_SW->overLaps(p_Node))
-			{
-				m_SW->insert(p_Node);
-			}
+			m_Nodes.push_back(p_Node);
 		}
 	}
 }

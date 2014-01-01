@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoGun.cpp" />
     <ClCompile Include="BasicTankFactory.cpp" />
     <ClCompile Include="CameraNode.cpp" />
     <ClCompile Include="CollidableNode.cpp" />
@@ -39,7 +40,6 @@
     <ClCompile Include="OffensiveUpgrade.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
     <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShopMode.cpp" />
@@ -53,6 +53,7 @@
     <ClCompile Include="WallNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AutoGun.h" />
     <ClInclude Include="BasicTankFactory.h" />
     <ClInclude Include="CameraNode.h" />
     <ClInclude Include="CollidableNode.h" />
@@ -80,7 +81,6 @@
     <ClInclude Include="OffensiveUpgrade.h" />
     <ClInclude Include="ProjectileNode.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShopMode.h" />
@@ -94,6 +94,7 @@
     <ClInclude Include="WallNode.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
   </ItemGroup>

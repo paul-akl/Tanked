@@ -1,0 +1,445 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Game" Collapsed="true">
+    <Position X="36.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAIwAAAgAAAiAAAIAAAAYAQAAAAI=</HashCode>
+      <FileName>Game.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CreditsMode" Collapsed="true">
+    <Position X="0.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAABAAAAIAAAAABAAAAAIAAAAAAAgEAAA=</HashCode>
+      <FileName>CreditsMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntroGameMode" Collapsed="true">
+    <Position X="3" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAABAAAAIAAAAAAAAAAAIRAAAAAAAEAAA=</HashCode>
+      <FileName>IntroGameMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MainGameMode" Collapsed="true">
+    <Position X="5.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAUAAADAYAAJIAAEIAAgAAACgABQICgBIAIEAEAAA=</HashCode>
+      <FileName>MainGameMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuMode" Collapsed="true">
+    <Position X="7.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAhAAAAIAAAAgCAAAAAIAAAAAAAAEAAA=</HashCode>
+      <FileName>MenuMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameMode" Collapsed="true">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABIAAAIAAAAAAAAAABICAgAAAAAFAAA=</HashCode>
+      <FileName>GameMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShopMode" Collapsed="true">
+    <Position X="9.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAIAAAAAAAAAAAIAAAAAACAEAAA=</HashCode>
+      <FileName>ShopMode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UpgradeFactory" Collapsed="true">
+    <Position X="34.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAACAgAAAMABAAgCAAAQAAIQEEAAAAAAAAA=</HashCode>
+      <FileName>UpgradeFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FloorFactory" Collapsed="true">
+    <Position X="34.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAgAAAEBAEAAAgAAIAAAAAAAIIAgAAAAAAAAA=</HashCode>
+      <FileName>FloorFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WallFactory" Collapsed="true">
+    <Position X="36.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAFAgAAAQCAAAAAQAAAACAAAQAAYAAAAEAAAAAAA=</HashCode>
+      <FileName>WallFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BasicTankFactory" Collapsed="true">
+    <Position X="31.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAEAAAgACAAEAAAAAAAAIIAgAAAAAAAEg=</HashCode>
+      <FileName>BasicTankFactory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Controller" Collapsed="true">
+    <Position X="33" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAQQAgAAAAAAAAAEAADAAIAAAAAAJCAEAEAAA=</HashCode>
+      <FileName>Controller.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraNode" Collapsed="true">
+    <Position X="26.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABACgABAAAARAAAQAAAAYKEAIgIAAAAEgUAAI=</HashCode>
+      <FileName>CameraNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TestTankNode" Collapsed="true">
+    <Position X="8.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAhEKAAAAAAAAAIkAAACYKEAEAQQEgAAkQAiEEcISA=</HashCode>
+      <FileName>TestTankNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurretNode" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAIAAAAgCAECAAABBgAAUAQA=</HashCode>
+      <FileName>TurretNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightNode" Collapsed="true">
+    <Position X="17.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAABAAQAAEAAAAAAABACACQAAIAAAAAAAABUAIA=</HashCode>
+      <FileName>LightNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MaterialNode" Collapsed="true">
+    <Position X="22" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAIAAAAgAAAABAAAAAIAQQEAAAAgAAUAAA=</HashCode>
+      <FileName>MaterialNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MeshNode" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIABCQKABAAgAAgAAAEQABAAgAAAAAQAAgAEiEgUAQA=</HashCode>
+      <FileName>MeshNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TextureNode" Collapsed="true">
+    <Position X="6.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIQAABAAAAgAAAAAAAAAAAAAAAQAQAAAABAAUAAA=</HashCode>
+      <FileName>TextureNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TransformNode" Collapsed="true">
+    <Position X="19.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAABEABAAAQAAAAAQAAACAAAAAAAAAAAAAAAUBAA=</HashCode>
+      <FileName>TransformNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SceneNode" Collapsed="true">
+    <Position X="15.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAICBEEAACAABCAAEAAAYFACAAUgIAbAFChFAABUAAA=</HashCode>
+      <FileName>SceneNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProjectileNode" Collapsed="true">
+    <Position X="15.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EEBACEAAAAAAAAAAQAAAAQAAAAAGIAAABEBJAAAWAAQ=</HashCode>
+      <FileName>ProjectileNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FloorNode" Collapsed="true">
+    <Position X="28.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAwAAAAAQAAAAAAAAAAAAAAAAAIUAAA=</HashCode>
+      <FileName>FloorNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WallNode" Collapsed="true">
+    <Position X="10.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAUAAA=</HashCode>
+      <FileName>WallNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UpgradeNode" Collapsed="true">
+    <Position X="13" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BABAAQAAEAAAAAAAQAAAAQAAAQAAAAIAAAAAEAAUAAQ=</HashCode>
+      <FileName>UpgradeNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AutoGun" Collapsed="true">
+    <Position X="13" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAMAQAAAAAAAIAIAAAAAAAAUAAA=</HashCode>
+      <FileName>AutoGun.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OffensiveUpgrade" Collapsed="true">
+    <Position X="13" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAIAAAAAgIgAAgBAAAIBQhACIAAAAAIAIEBAABAUQAA=</HashCode>
+      <FileName>OffensiveUpgrade.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollidableNode" Collapsed="true">
+    <Position X="12" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAJBBAAEAMAAAIAAAAIAAAARgAAASAKIACAAAUEBA=</HashCode>
+      <FileName>CollidableNode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FrameBuffer" Collapsed="true">
+    <Position X="5.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAQAAAAAgAAAgAAgAAACBAAAAAAASIAAEAgIAAEAAA=</HashCode>
+      <FileName>FrameBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Renderer" Collapsed="true">
+    <Position X="1.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAgAAACAAAAEAAEAAAAAgAQQAIAAAIBAACAAAAQAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GLTestRender" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KIABACACAAAEEAAkAAAYghwQQAIAQAIJAAAQCABUAIg=</HashCode>
+      <FileName>GLTestRender.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shader" Collapsed="true">
+    <Position X="33" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QgCEAAIAAAAAAAAIAAAAAQAIAAABAAAABAAAgAAAIhA=</HashCode>
+      <FileName>Shader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeferredRenderer" Collapsed="true">
+    <Position X="2.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KIABACACAAAEEgBkoICUggwQAAAAQAILEAAQSABUEIg=</HashCode>
+      <FileName>DeferredRenderer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GBuffer" Collapsed="true">
+    <Position X="5.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AADAAAAAAAIAAAAKAAAABAQAAAAEAAIAoAAAACABIAA=</HashCode>
+      <FileName>GBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionPair" Collapsed="true">
+    <Position X="33" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAABIABABCgAAAAAAEEAQAAAAEAABEAEAAAkIQAAAA=</HashCode>
+      <FileName>CollisionPair.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionQuadTree" Collapsed="true">
+    <Position X="34.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EBSAAYAAAIBIAAABEAAAAAAIAAAgIgCgAAACAAAEAAA=</HashCode>
+      <FileName>CollisionQuadTree.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionResponse" Collapsed="true">
+    <Position X="36.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAIAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>CollisionResponse.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionSolver" Collapsed="true">
+    <Position X="31.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MACgAAAAAAAABUACAACAAgABBAAICAAAAJAgAAoABAA=</HashCode>
+      <FileName>CollisionSolver.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scene" Collapsed="true">
+    <Position X="24.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAIAQAEAAAAAIAhABAAAAAQIAIAQAAAAAAAACUAAg=</HashCode>
+      <FileName>Scene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Utils::GeneralUtils" Collapsed="true">
+    <Position X="31.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAIAAAAAAAAIAAACAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GeneralUtils.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="EulerAngle" Collapsed="true">
+    <Position X="34.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAACAAAAAIAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CameraNode.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="LightStruct" Collapsed="true">
+    <Position X="31.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAACAAAAAAAEAAACAAAAIAAACAAAAAAAAAAEA=</HashCode>
+      <FileName>LightNode.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Material" Collapsed="true">
+    <Position X="33" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAABCAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>MaterialNode.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="face" Collapsed="true">
+    <Position X="36.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQQAAAAAAAIAAAAAAAE=</HashCode>
+      <FileName>MeshNode.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="StandardDataSet" Collapsed="true">
+    <Position X="36.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAQACAAAAAAAAAAAwAAABAQAACAAAAAAAABgAw=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="EnvironmentMapDataSet" Collapsed="true">
+    <Position X="33" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="CubeShadowmapDataSet" Collapsed="true">
+    <Position X="31.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SpotLightShadowDataSet" Collapsed="true">
+    <Position X="34.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="GameState" Collapsed="true">
+    <Position X="34.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIABAAAAAAAAAQAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>GameMode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ButtonType" Collapsed="true">
+    <Position X="36.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAoABIAAAAAgAAAAAQQCAAABISAAhAAEAAAAADAAgY=</HashCode>
+      <FileName>Controller.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BufferType" Collapsed="true">
+    <Position X="34.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAQAAAAIAAAABBAAAAAAgAAAAAAAAEAA=</HashCode>
+      <FileName>MeshNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TextureType" Collapsed="true">
+    <Position X="33" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAACAAAAAAABAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>TextureNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ProjectileType" Collapsed="true">
+    <Position X="34.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAQAAAAAAAAAIAAAAAAAAAAAAAAIAAAAAAAAAAAAAoE=</HashCode>
+      <FileName>ProjectileNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="UpgradeType" Collapsed="true">
+    <Position X="34.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAEAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UpgradeNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="OffensiveUpgradeType" Collapsed="true">
+    <Position X="33" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAEAAAAAABAgAAAAAAAAAAAAAQAAAAAE=</HashCode>
+      <FileName>UpgradeNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DefensiveUpgradeType" Collapsed="true">
+    <Position X="33" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAABAA=</HashCode>
+      <FileName>UpgradeNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MobilityUpgradeType" Collapsed="true">
+    <Position X="31.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>UpgradeNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CollidableType" Collapsed="true">
+    <Position X="31.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAMAAAAAAAAAAAAAAAAAAIAAAAABAAAIAAA=</HashCode>
+      <FileName>CollidableNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BoundaryType" Collapsed="true">
+    <Position X="33" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAABAAAAAAAAAAAACAAAAgAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>CollidableNode.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="RenderMode" Collapsed="true">
+    <Position X="36.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgBAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MatrixType" Collapsed="true">
+    <Position X="36.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAEIAAA=</HashCode>
+      <FileName>Renderer.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AttributeType" Collapsed="true">
+    <Position X="31.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAgAAAAAAAAAAAAgAAAAAAAAgCCAAAAAAAAAA=</HashCode>
+      <FileName>Shader.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ResultType" Collapsed="true">
+    <Position X="31.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACBAAAAAAACAAgAAAAAAAAAAggAQAAAAAAAAAAA=</HashCode>
+      <FileName>CollisionPair.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

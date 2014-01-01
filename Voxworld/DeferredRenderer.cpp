@@ -25,7 +25,7 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 	// bind the GBuffer to write to
 	m_GBuffer->enable();
 	//clear the buffer with specified colour
-	glClearColor(1.0f,1.0f,0.0f,1.0f);
+	glClearColor(0.0f,0.0f,0.0f,1.0f);
 	//clear colour buffer and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_TRIANGLES);

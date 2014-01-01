@@ -16,7 +16,7 @@ TestTankNode::TestTankNode(void)
 	m_TargetOrientation = 0.0f; //no target oriention on start
 	m_OrientationDeg = 0.0f; //orientation initialized to zero
 	m_MaxWeaponChargeLevel = 1.0f;
-	m_WeaponChargeRate=0.1f;
+	m_WeaponChargeRate=0.15f;
 	m_WeaponChargeLevel = 0.0f;
 }
 void TestTankNode::chargeMainGun(float p_DeltaTimeS)
@@ -27,19 +27,47 @@ void TestTankNode::chargeMainGun(float p_DeltaTimeS)
 }
 ProjectileNode* TestTankNode::getMainGunProjectile()
 {
-	return m_Turret->getMainGunProjectile();
+	if(m_WeaponChargeLevel > 0.2f)
+	{
+		ProjectileNode* tmp = m_Turret->getMainGunProjectile();
+		if(tmp!=nullptr)
+		{
+			tmp->setDamageMultiplier(1.0f+m_WeaponChargeLevel);
+		}
+
+		m_WeaponChargeLevel = 0.0f;
+		return tmp;
+	}
+	else
+	{
+		m_WeaponChargeLevel = 0.0f;
+		return nullptr;
+	}
+}
+ProjectileNode* TestTankNode::getAutoGunProjectile()
+{
+	ProjectileNode* tmp = m_Turret->getAutoGunProjectile();
+	return tmp;
 }
 void TestTankNode::AddOffensiveUpgrade(OffensiveUpgrade* p_Upgrade)
 {
-	m_Turret->setMainGun(p_Upgrade);
-	p_Upgrade->setCollected();
+	if(p_Upgrade->getProjectileType()!=DEFAULT_SECONDARY)
+	{
+		m_Turret->setMainGun(p_Upgrade);
+		p_Upgrade->setCollected();
+	}
+	else
+	{
+		m_Turret->setAutoGun(p_Upgrade);
+		p_Upgrade->setCollected();
+	}
 }
 void TestTankNode::addTurretNode(TurretNode* p_Turret)
 {
 	//keep a reference and add to children, in the default way.
 	m_Turret = p_Turret;
 	SceneNode::addNode(p_Turret);
-	m_OrientationDeg=m_Turret->getOrientation()-180.0f;
+	m_OrientationDeg=m_Turret->getOrientation();
 }
 void TestTankNode::rotateTurret(const float p_Rotation)
 {
@@ -144,10 +172,14 @@ void TestTankNode::update(float p_DeltaTimeS)
 			}
 		}
 	}
+	
 	//////////////////////////////////////////////////////
-	//END ANGLE ANIMATION
+	//SHIELD RECHARGE INTERPOLATION
 	//////////////////////////////////////////////////////
-
+	if(m_ShieldHitPoints<m_ShieldMaxHitPoints)
+		m_ShieldHitPoints+=m_ShieldChargeRate*p_DeltaTimeS;
+	else
+		m_ShieldHitPoints=m_ShieldMaxHitPoints;
 	//////////////////////////////////////////////////////
 	// VELOCITY INTERPOLATION
 	//////////////////////////////////////////////////////
@@ -185,7 +217,7 @@ void TestTankNode::update(float p_DeltaTimeS)
 		m_Velocity = glm::vec3(0.0f);
 	}
 	m_Position+=m_Velocity*(p_DeltaTimeS);
-	//and perform default scene node behaviour
+
 	//update local transformation
 	m_LocalTransform->reset();
 	m_LocalTransform->translate(m_Position+glm::vec3(0.0,1.0,0.0));

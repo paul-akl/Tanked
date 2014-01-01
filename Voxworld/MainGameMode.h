@@ -9,7 +9,7 @@
 #include "CollidableNode.h"
 #include "CollisionResponse.h"
 #include "UpgradeFactory.h"
-
+#include <list>
 //each game mode will have it's own render class.
 class Renderer;
 /////////////////////////////////////////
@@ -48,5 +48,7 @@ private:
 	CollisionResponse* m_ResultDecider;
 	UpgradeFactory* m_UpgradeMaker;
 	std::vector<OffensiveUpgrade*> m_AmmoBoxes;
+	std::list<ProjectileNode*> m_Projectiles;
+	bool m_MainFireButtonPressed;
 };
 

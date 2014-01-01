@@ -9,6 +9,12 @@ SceneNode::SceneNode(void)
 	m_Parent = nullptr;
 	m_IsActive = true;
 	m_OrientationDeg = 0.0f;
+	m_Position = glm::vec3(0.0f);
+	m_IsMoving = false;
+}
+bool SceneNode::isMoving()
+{
+	return m_IsMoving;
 }
 void SceneNode::stop()
 {

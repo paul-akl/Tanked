@@ -5,61 +5,83 @@
 CollisionSolver::CollisionSolver(void)
 {
 	m_TreeTool = nullptr;
+	m_WallTree = nullptr;
+	m_ProjectileTree = nullptr;
+	m_EnemyTree = nullptr;
 }
-void CollisionSolver::CollisionPass(Scene* p_Scene)
+void CollisionSolver::init(const float& p_WorldWidth,const float& p_WorldLength, const glm::vec3& p_WorldCentrePosition)
 {
-	p_Scene->detectCollisions(this);
+	m_TreeTool = new CollisionQuadTree(p_WorldCentrePosition,p_WorldWidth,p_WorldLength,1,nullptr);
+	m_WallTree = new CollisionQuadTree(p_WorldCentrePosition,p_WorldWidth,p_WorldLength,1,nullptr);
+	m_ProjectileTree = new CollisionQuadTree(p_WorldCentrePosition,p_WorldWidth,p_WorldLength,1,nullptr);
+	m_EnemyTree = new CollisionQuadTree(p_WorldCentrePosition,p_WorldWidth,p_WorldLength,1,nullptr);
+	m_CollectableTree = new CollisionQuadTree(p_WorldCentrePosition,p_WorldWidth,p_WorldLength,1,nullptr);
 }
+//set of function to add game objects to appropriate trees
+void CollisionSolver::addTank(CollidableNode* p_Collidable)
+{
+	m_TreeTool->insert(p_Collidable);
+}
+void CollisionSolver::addScenery(CollidableNode* p_Collidable)
+{
+	m_WallTree->insert(p_Collidable);
+}
+void CollisionSolver::addProjectile(CollidableNode* p_Collidable)
+{
+	m_ProjectileTree->insert(p_Collidable);
+}
+void CollisionSolver::addEnemy(CollidableNode* p_Collidable)
+{
+	m_EnemyTree->insert(p_Collidable);
+}
+void CollisionSolver::addCollectable(CollidableNode* p_Collidable)
+{
+	m_CollectableTree->insert(p_Collidable);
+}
+//this one will soon be ready for removal.
 void CollisionSolver::addCollidable(CollidableNode* p_Collidable)
 {
 	m_Collidables.push_back(p_Collidable);
 }
-void CollisionSolver::generatePairs(float p_Width, float p_Height, glm::vec3 p_Centre)
+void CollisionSolver::update()
 {
-	//create a new quad tree, and insert collidables
-	if(m_TreeTool==nullptr)
-		m_TreeTool = new CollisionQuadTree(p_Centre,p_Width,p_Height,1);
-	for(size_t i = 0; i < m_Collidables.size();i++)
+	//these could be done on seperate threads maybe
+	m_TreeTool->update();
+	m_ProjectileTree->update();
+	m_EnemyTree->update();
+	//scenery tree doesn't need updated as walls don't move
+}
+void CollisionSolver::collideObject(CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Results)
+{
+	switch(p_Collidable->getType())
 	{
-		m_TreeTool->insert(m_Collidables[i]);
-		m_Collidables[i] = nullptr;
+	case PLAYER:
+		{
+			m_CollectableTree->collideObject(p_Collidable, p_Results);
+			m_EnemyTree->collideObject(p_Collidable, p_Results);
+			m_WallTree->collideObject(p_Collidable, p_Results);
+		}break;
+	case ENEMY:
+		{
+			m_TreeTool->collideObject(p_Collidable, p_Results);
+			m_WallTree->collideObject(p_Collidable, p_Results);
+		}break;
+	case PROJECTILE:
+		{
+			m_WallTree->collideObject(p_Collidable, p_Results);
+			m_EnemyTree->collideObject(p_Collidable, p_Results);
+		}break;
 	}
-	//now collidables are sorted spacially, generate pairs
-	//m_TreeTool->toConsole();
-	m_TreeTool->generatePairs(m_Pairs);
-	//std::cout<<m_Pairs.size()<<" pairs "<<std::endl;
 
-	//m_TreeTool->cullPairs(m_Pairs);
-	//std::cout<<m_Pairs.size()<<" pairs "<<std::endl;
-	//for (size_t i = 0; i < m_Pairs.size();i++)
-	//{
-	//	if(m_Pairs[i]!=nullptr)
-	//	{
-	//		m_Pairs[i]->toConsole();
-	//	}
-	//}
-	m_Collidables.clear();
 }
 void CollisionSolver::getResults(std::vector<CollisionPair*>& p_Results)
 {
-	for (size_t i = 0; i < m_Pairs.size(); i++)
+	for (size_t i = 0; i < p_Results.size();i++)
 	{
-		if(m_Pairs[i]!=nullptr)
-		if(m_Pairs[i]->hasCollided())
-		{
-			p_Results.push_back(m_Pairs[i]);
-			m_Pairs[i] = nullptr;
-		}
-	}
-	m_Pairs.clear();
-}
-void CollisionSolver::processCollisions()
-{
-	for(size_t i = 0;i < m_Pairs.size();i++)
-	{
-		processCollision(m_Pairs[i]);
+		processCollision(p_Results[i]);
 	}
 }
+
 void CollisionSolver::processCollision(CollisionPair* p_Pair)
 {
 
@@ -197,35 +219,15 @@ void CollisionSolver::circleVSAAB(CollisionPair* p_Pair)
 		v_CircleCollider = p_Pair->m_Collidable_A;
 		v_BoxCollider = p_Pair->m_Collidable_B;
 	}
-	//a collision in this case is that either one of the corners of the box intersects the circle:
-	//points in anti clockwise order
-	//top left
+	glm::vec3 circlePos = glm::vec3(v_CircleCollider->getLocation().x,0.0f,v_CircleCollider->getLocation().z);
 	glm::vec3 boxPos(v_BoxCollider->getLocation().x,0.0f,v_BoxCollider->getLocation().z);
 
 	v_Points.push_back(boxPos+glm::vec3(-v_BoxCollider->getWidth()/2.0f,0.0f,-v_BoxCollider->getLength()/2.0f));
 	v_Points.push_back(boxPos+glm::vec3(-v_BoxCollider->getWidth()/2.0f,0.0f,v_BoxCollider->getLength()/2.0f));
 	v_Points.push_back(boxPos+glm::vec3(v_BoxCollider->getWidth()/2.0f,0.0f,v_BoxCollider->getLength()/2.0f));
 	v_Points.push_back(boxPos+glm::vec3(v_BoxCollider->getWidth()/2.0f,0.0f,-v_BoxCollider->getLength()/2.0f));
-
-	glm::vec3 circlePos = glm::vec3(v_CircleCollider->getLocation().x,0.0f,v_CircleCollider->getLocation().z);
-	//now run checks
-	for(size_t i = 0; i < 4; i ++)
-	{
-		if(pointVScircle(v_Points[i],circlePos,v_CircleCollider->getRadius()))
-		{
-			p_Pair->m_CollisionNormal = glm::normalize(v_Points[i]-circlePos);
-			p_Pair->m_Collided = true;
-			p_Pair->m_Penetration = v_CircleCollider->getRadius() - glm::length((circlePos-v_Points[i]));
-			return;
-		}
-	}
-	//or the circle is intersecting the edge of the box, depending on the size of each collider
-	/////////////////////////////////////////
-	//this code could be heavily optimised///
-	/////////////////////////////////////////
-	if(!p_Pair->hasCollided())
-	{
-		for(size_t i = 0; i < 4; i++)
+	//check for the circle collider intersecting line segments of the box
+	for(size_t i = 0; i < 4; i++)
 		{
 			size_t secondIndex = 0;
 			if(i+1 >=4)
@@ -241,6 +243,24 @@ void CollisionSolver::circleVSAAB(CollisionPair* p_Pair)
 				float lineDotN = glm::dot(p_Pair->m_CollisionNormal,v_Points[i]);
 				float cDotN = glm::dot(p_Pair->m_CollisionNormal,v_CircleCollider->getLocation());
 				p_Pair->m_Penetration = v_CircleCollider->getRadius()-(cDotN-lineDotN);
+				return;
+			}
+		}
+
+	//check for box corners intersecting the circle
+	/////////////////////////////////////////
+	//this code could be heavily optimised///
+	/////////////////////////////////////////
+	if(!p_Pair->hasCollided())
+	{
+		//now run checks
+		for(size_t i = 0; i < 4; i ++)
+		{
+			if(pointVScircle(v_Points[i],circlePos,v_CircleCollider->getRadius()))
+			{
+				p_Pair->m_CollisionNormal = glm::normalize(v_Points[i]-circlePos);
+				p_Pair->m_Collided = true;
+				p_Pair->m_Penetration = v_CircleCollider->getRadius() - glm::length((circlePos-v_Points[i]));
 				return;
 			}
 		}

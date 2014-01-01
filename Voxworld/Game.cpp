@@ -14,7 +14,7 @@ Game::Game(void)
 }
 void Game::init()
 {
-	m_Renderer = new DeferredRenderer(1024,700);
+	m_Renderer = new DeferredRenderer(800,600);
 	m_Renderer->init();
 	m_Window = m_Renderer->getWindow();
 	//initialise the stored pointers
@@ -61,12 +61,12 @@ void Game::Run()
 
 	bool running = true;
 	float deltaTimeS = 0.0f;
-	float timeS = clock();
-	float lastTimeS = 0.0f;
+	float timeMS = clock();
+	float lastTimeMS = 0.0f;
 	while (running)	
 	{	// the event loop
-		timeS = clock();
-		deltaTimeS = timeS-lastTimeS;
+		timeMS = clock();
+		deltaTimeS = timeMS-lastTimeMS;
 		while (SDL_PollEvent(&sdlEvent)) {
 			if (sdlEvent.type == SDL_QUIT)
 				running = false;
@@ -82,7 +82,7 @@ void Game::Run()
 			m_CurrentMode->update(deltaTimeS);
 			//	and draw the resultant changes.
 			m_CurrentMode->draw(m_Renderer);
-			lastTimeS = timeS;
+			lastTimeMS = timeMS;
 		}
 	}
 }

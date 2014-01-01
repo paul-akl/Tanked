@@ -8,7 +8,9 @@ class MeshNode;
 class TextureNode;
 class TransformNode;
 class Renderer;
-
+static const float PI = 3.14159265f;
+static const float PI_OVER180 = PI/180.0f;
+static const float RAD_TO_DEG = 180.0f/PI; 
 class SceneNode
 {
 public:
@@ -23,6 +25,7 @@ public:
 	void addMesh(MeshNode* p_Mesh);
 	void addTexture(TextureNode* p_Texture);
 	void setPosition(const glm::vec3 p_Position);
+	bool isMoving();
 	glm::vec3 getLocation(){return m_Position;}
 	void setOrientation(const float p_OrientationDeg);
 	float getOrientation(){return m_OrientationDeg;}
@@ -41,6 +44,7 @@ protected:
 	std::string m_Name;
 	bool m_IsActive;
 	SceneNode* m_Parent;
+	bool m_IsMoving; //used to indicate if the tank is in motion
 	TransformNode* m_LocalTransform;
 	MeshNode* m_Mesh;
 	TextureNode* m_Diffuse;

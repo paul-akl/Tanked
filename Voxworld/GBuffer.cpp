@@ -43,7 +43,7 @@ void GBuffer::init()
 	
 	// Create depth buffer
 	glBindTexture(GL_TEXTURE_2D, m_DepthBufferHandle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, m_WindowWidth, m_WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_WindowWidth, m_WindowHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthBufferHandle, 0);
 
 	// Create the final buffer, that gets renderred to the screen

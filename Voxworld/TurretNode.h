@@ -2,6 +2,7 @@
 #include "SceneNode.h"
 #include "OffensiveUpgrade.h"
 #include <stack>
+
 class TurretNode :
 	public SceneNode
 {

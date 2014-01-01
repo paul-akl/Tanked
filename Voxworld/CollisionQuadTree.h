@@ -3,6 +3,8 @@
 #include <vector>
 #include "CollidableNode.h"
 #include "CollisionPair.h"
+#include <stack>
+#include <list>
 // data structure for sorting a scene into small sections which are then used to generate collision pairs
 // maximum width would ideally be the size of a game level, with X and Z, axes used for height/width.
 // each Quadtree can store a number of collidable nodes that fall into it's area, but only if that quad tree is of
@@ -23,10 +25,12 @@ class CollisionQuadTree
 {
 public:
 	CollisionQuadTree(void);
-	CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth);
+	CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth, CollisionQuadTree* p_Parent);
+	void update();
 	void insert(CollidableNode* p_Node);
 	void generatePairs(std::vector<CollisionPair*>& p_Pairs);
 	void cullPairs(std::vector<CollisionPair*>& p_Pairs);
+	void collideObject(CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Results);
 	void toConsole();
 	virtual ~CollisionQuadTree(void);
 private:
@@ -35,13 +39,15 @@ private:
 	glm::vec3 m_CentrePosition;
 	float m_Width;
 	float m_Height;
-	static const int MAX_DEPTH = 2;
+	static const int MAX_DEPTH = 5;
 	int m_Depth;
 	CollisionQuadTree* m_NW;
 	CollisionQuadTree* m_NE;
 	CollisionQuadTree* m_SE;
 	CollisionQuadTree* m_SW;
 	std::vector<CollidableNode*> m_Nodes;
+	std::list<CollidableNode*> m_Objects;
 	std::string m_Name;
+	CollisionQuadTree* m_Parent;
 };
 

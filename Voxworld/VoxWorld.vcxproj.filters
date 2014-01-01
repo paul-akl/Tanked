@@ -137,6 +137,27 @@
     <Filter Include="Core Engine\Base\SceneGraph\Collidable">
       <UniqueIdentifier>{cfe6e87f-f05e-459f-bbd7-77c34e6b2efd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Projectile\Base">
+      <UniqueIdentifier>{02342c9b-0efa-4204-8bb2-aaeccd550a6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Upgrade\Offensive\Base">
+      <UniqueIdentifier>{7d066191-cb54-4249-9eda-11afffee9b72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Enemy">
+      <UniqueIdentifier>{fcd3fc45-d859-4143-ae37-8ee4a5dee61c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Robot">
+      <UniqueIdentifier>{768f3d6e-a324-4045-a0a8-9f470dcf32b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Robot\Base">
+      <UniqueIdentifier>{84984571-f9c0-4b86-92f1-48733139b97d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Robot\RobotHead">
+      <UniqueIdentifier>{01679d71-6995-4066-9525-29028e906ca4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Robot\RobotArm">
+      <UniqueIdentifier>{e0ca4ee2-6609-42eb-847f-f98f8c43fe27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -217,7 +238,6 @@
     <ClCompile Include="GBuffer.cpp">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="WallFactory.cpp">
       <Filter>Core Engine\Game\Class Factories\Wall</Filter>
     </ClCompile>
@@ -242,20 +262,23 @@
     <ClCompile Include="CollisionSolver.cpp">
       <Filter>Core Engine\Collision System</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectileNode.cpp">
-      <Filter>Core Engine\Base\SceneGraph\Projectile</Filter>
-    </ClCompile>
     <ClCompile Include="UpgradeNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Upgrade\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="OffensiveUpgrade.cpp">
-      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
     </ClCompile>
     <ClCompile Include="CollidableNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Collidable</Filter>
     </ClCompile>
     <ClCompile Include="WallNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Projectile\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoGun.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
+    </ClCompile>
+    <ClCompile Include="OffensiveUpgrade.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,7 +357,6 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h" />
     <ClInclude Include="WallFactory.h">
       <Filter>Core Engine\Game\Class Factories\Wall</Filter>
     </ClInclude>
@@ -359,20 +381,23 @@
     <ClInclude Include="CollisionResponse.h">
       <Filter>Core Engine\Collision System</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectileNode.h">
-      <Filter>Core Engine\Base\SceneGraph\Projectile</Filter>
-    </ClInclude>
     <ClInclude Include="UpgradeNode.h">
       <Filter>Core Engine\Base\SceneGraph\Upgrade\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="OffensiveUpgrade.h">
-      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
     </ClInclude>
     <ClInclude Include="CollidableNode.h">
       <Filter>Core Engine\Base\SceneGraph\Collidable</Filter>
     </ClInclude>
     <ClInclude Include="WallNode.h">
       <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Projectile\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoGun.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive</Filter>
+    </ClInclude>
+    <ClInclude Include="OffensiveUpgrade.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -382,5 +407,6 @@
     <None Include="phong-tex.frag">
       <Filter>Core Engine\Renderer\Shader\Shader Source\Simple</Filter>
     </None>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

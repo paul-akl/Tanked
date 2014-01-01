@@ -1,13 +1,14 @@
 #pragma once
 #include "upgradenode.h"
 #include "ProjectileNode.h"
+
 class OffensiveUpgrade :
 	public UpgradeNode
 {
 public:
 	OffensiveUpgrade(void);
-	ProjectileNode* getProjectile();
-	bool isReadyToFire();
+	virtual ProjectileNode* getProjectile();
+	virtual ProjectileNode* createProjectileFromPool();
 	virtual void init();
 	virtual void render(Renderer* p_Renderer);
 	virtual void update(float p_DeltaTimeS);
@@ -18,8 +19,8 @@ public:
 	void activate();
 	virtual ~OffensiveUpgrade(void);
 protected:
+	bool isReadyToFire();
 	//derived offensive upgrades can override this method to create the projectile of their choosing
-	virtual ProjectileNode* createProjectileFromPool();
 	std::vector<ProjectileNode*> m_Projectiles;
 	float m_SecondsPerShot;
 	float m_TimeSinceLastShot;
