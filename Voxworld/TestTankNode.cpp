@@ -232,4 +232,5 @@ void TestTankNode::render(Renderer* p_Renderer)
 }
 TestTankNode::~TestTankNode(void)
 {
+	delete m_Turret;
 }

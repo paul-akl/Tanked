@@ -40,6 +40,11 @@
     <ClCompile Include="OffensiveUpgrade.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RoboGenFactory.cpp" />
+    <ClCompile Include="Robot.cpp" />
+    <ClCompile Include="RobotArm.cpp" />
+    <ClCompile Include="RobotGenerator.cpp" />
+    <ClCompile Include="RobotHead.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShopMode.cpp" />
@@ -81,6 +86,11 @@
     <ClInclude Include="OffensiveUpgrade.h" />
     <ClInclude Include="ProjectileNode.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RoboGenFactory.h" />
+    <ClInclude Include="Robot.h" />
+    <ClInclude Include="RobotArm.h" />
+    <ClInclude Include="RobotGenerator.h" />
+    <ClInclude Include="RobotHead.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShopMode.h" />

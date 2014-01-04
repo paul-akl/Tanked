@@ -158,6 +158,12 @@
     <Filter Include="Core Engine\Base\SceneGraph\Robot\RobotArm">
       <UniqueIdentifier>{e0ca4ee2-6609-42eb-847f-f98f8c43fe27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\RobotGenerator">
+      <UniqueIdentifier>{654972c2-0566-4915-8c12-ba419659e23c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\RoboGen">
+      <UniqueIdentifier>{91e262af-bd01-4409-b64e-634a8537b039}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -174,9 +180,6 @@
     </ClCompile>
     <ClCompile Include="MenuMode.cpp">
       <Filter>Core Engine\Game\Game Modes\Menu Game Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneralUtils.cpp">
-      <Filter>Core Engine\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="CreditsMode.cpp">
       <Filter>Core Engine\Game\Game Modes\Credits Game Mode</Filter>
@@ -279,6 +282,24 @@
     </ClCompile>
     <ClCompile Include="OffensiveUpgrade.cpp">
       <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotArm.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Robot\RobotArm</Filter>
+    </ClCompile>
+    <ClCompile Include="Robot.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Robot</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotHead.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Robot\RobotHead</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotGenerator.cpp">
+      <Filter>Core Engine\Base\SceneGraph\RobotGenerator</Filter>
+    </ClCompile>
+    <ClCompile Include="RoboGenFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\RoboGen</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralUtils.cpp">
+      <Filter>Core Engine\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -398,6 +419,21 @@
     </ClInclude>
     <ClInclude Include="OffensiveUpgrade.h">
       <Filter>Core Engine\Base\SceneGraph\Upgrade\Offensive\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotArm.h">
+      <Filter>Core Engine\Base\SceneGraph\Robot\RobotArm</Filter>
+    </ClInclude>
+    <ClInclude Include="Robot.h">
+      <Filter>Core Engine\Base\SceneGraph\Robot</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotHead.h">
+      <Filter>Core Engine\Base\SceneGraph\Robot\RobotHead</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotGenerator.h">
+      <Filter>Core Engine\Base\SceneGraph\RobotGenerator</Filter>
+    </ClInclude>
+    <ClInclude Include="RoboGenFactory.h">
+      <Filter>Core Engine\Game\Class Factories\RoboGen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 #include "WallFactory.h"
 #include "UpgradeFactory.h"
 #include "Controller.h"
+#include "RoboGenFactory.h"
 class Scene :
 	public SceneNode
 {
@@ -19,7 +20,7 @@ public:
 	void addCollisionSolver(CollisionSolver* p_Solver);
 	void addController(Controller* p_Controller);
 	//void addMazeFactory(MazeFactory* p_Factory);
-	//void addEnemyFactory(EnemyFactory* p_Factory);
+	//void addRobotGenerator(RobotGenerator* p_Factory);
 	//void addSubBossFactory(EnemyFactory* p_Factory);
 	//void addBossFactory(EnemyFactory* p_Factory);
 	//void addAISolver(AISolver* p_Solver);
@@ -29,13 +30,18 @@ public:
 	~Scene(void);
 protected:
 	//not used for now
-	//std::vector<EnemyNode*> m_Enemies;
 	//SubBossEnemy* m_SubBoss;
 	//BossEnemy* m_Boss;
-	std::vector<TestTankNode*> m_Tanks;
+	TestTankNode* m_Tank;
 	std::vector<FloorNode*> m_Floors;
 	std::vector<WallNode*> m_Walls;
+	std::list<ProjectileNode*> m_Projectiles;
+	std::list<Robot*> m_Robots;
+	std::list<RobotGenerator*> m_RoboGens;
+	std::list<UpgradeNode*> m_Upgrades;
+	std::list<OffensiveUpgrade*> m_AmmoBoxes;
+	//std::List<DefensiveUpgrade*> m_ShieldBoosts;
+	//std::list<MobilityUpgrade*> m_SpeedBoosts;
 	Controller* m_Controller;
-
 };
 

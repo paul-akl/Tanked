@@ -93,5 +93,5 @@ WallFactory::~WallFactory(void)
 	//cleanup
 	delete m_WallMesh1;
 	delete m_WallDiffuse1;
-	m_WallSegments.clear();
+	while(!m_WallSegments.empty()) delete m_WallSegments.back(), m_WallSegments.pop_back();
 }

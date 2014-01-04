@@ -187,7 +187,7 @@ OffensiveUpgrade* UpgradeFactory::getOffensiveUpgrade(OffensiveUpgradeType p_Typ
 }
 UpgradeFactory::~UpgradeFactory(void)
 {
-	m_OffensiveUpgrades.clear();
+	while(!m_OffensiveUpgrades.empty()) delete m_OffensiveUpgrades.back(),m_OffensiveUpgrades.pop_back();
 	delete m_DefaultUpgradeMesh;
 	delete m_DefaultUpgradeTexture;
 	delete m_DefaultProjectileTexture;

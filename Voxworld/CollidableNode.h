@@ -4,6 +4,7 @@ enum CollidableType
 {
 	PLAYER,
 	ENEMY,
+	ENEMY_ROBOT,
 	PROJECTILE,
 	SCENERY,
 	COLLECTABLE,

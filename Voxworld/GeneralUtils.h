@@ -1,4 +1,6 @@
 #pragma once
+#include <GL\glew.h>
+#include <SDL_ttf.h>
 namespace Utils
 {
 	class GeneralUtils
@@ -18,6 +20,12 @@ namespace Utils
 			return false;
 		}
 
+		void initialiseFont();
+
+		GLuint textToTexture(const char * str/*, TTF_Font *font, SDL_Color colour, GLuint &w,GLuint &h */);
+
 		~GeneralUtils(void);
+	//private:
+		TTF_Font * textFont;
 	};
 };

@@ -112,7 +112,7 @@ void MainGameMode::update(float deltaTime)
 	//game logic function.
 	//ideally, code below will be abstracted away, within manager classes
 	float deltaTimeS = deltaTime/1000.0f;
-	m_Solver->update();
+	m_Solver->update(deltaTimeS);
 
 	////////////////////////////////////////////////////////////////////////
 	//////////				 USER INPUT           //////////////////////////
@@ -208,8 +208,7 @@ void MainGameMode::update(float deltaTime)
 		renderingMode = FILLED;
 	}
 
-	m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
-	m_Camera->moveUp(5.0f);
+
 	//temprary code: will be reviewed
 	if(m_Controller->getButtonState(EXIT))running = false;
 	else running = true;
@@ -269,6 +268,8 @@ void MainGameMode::update(float deltaTime)
 			++it;
 		}
 	}
+	m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
+	m_Camera->moveUp(5.0f);
 }
 bool MainGameMode::handleEvent(Game& iGame)
 {

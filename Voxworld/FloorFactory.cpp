@@ -87,7 +87,7 @@ FloorNode* FloorFactory::getFloor()
 }
 FloorFactory::~FloorFactory(void)
 {
-	m_FloorPool.clear();
+	while(!m_FloorPool.empty()) delete m_FloorPool.back(), m_FloorPool.pop_back();
 	delete m_FloorTexture1;
 	delete m_FloorMesh1;
 }

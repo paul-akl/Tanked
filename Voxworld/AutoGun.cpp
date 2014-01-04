@@ -103,4 +103,5 @@ void AutoGun::update(float p_DeltaTimeS)
 }
 AutoGun::~AutoGun(void)
 {
+	
 }

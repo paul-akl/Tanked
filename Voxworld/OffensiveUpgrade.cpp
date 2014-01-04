@@ -132,5 +132,5 @@ void OffensiveUpgrade::activate()
 }
 OffensiveUpgrade::~OffensiveUpgrade(void)
 {
-	m_Projectiles.clear();
+	while(!m_Projectiles.empty()) delete m_Projectiles.back(),m_Projectiles.pop_back();
 }

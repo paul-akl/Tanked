@@ -3,7 +3,6 @@
 #include "TransformNode.h"
 #include "TextureNode.h"
 #include "MeshNode.h"
-#include "GLTestRender.h"
 SceneNode::SceneNode(void)
 {
 	m_Parent = nullptr;

@@ -16,7 +16,7 @@ public:
 	void addCollectable(CollidableNode* p_Collidable);
 	//these are called during update phase.
 	void collideObject(CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Results);
-	void update();
+	void update(float p_DeltaTimeS);
 	//finally, this is called to process the final pairs of objects.
 	void getResults(std::vector<CollisionPair*>& p_Results);
 	virtual ~CollisionSolver(void);
@@ -26,6 +26,7 @@ protected:
 	void circleVSAAB(CollisionPair* p_Pair);
 	bool pointVScircle(glm::vec3 p_Point,glm::vec3 p_CircleCentre, float p_Radius);
 	bool circleVSLine(glm::vec3 p_Point1, glm::vec3 p_Point2, glm::vec3 p_CircleCentre, float p_Radius);
+	float m_DeltaTime;
 	std::vector<CollidableNode*> m_Collidables;
 	std::vector<CollisionPair*> m_Pairs;
 	// multiple trees for maximized efficiency

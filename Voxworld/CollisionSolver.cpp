@@ -43,8 +43,9 @@ void CollisionSolver::addCollidable(CollidableNode* p_Collidable)
 {
 	m_Collidables.push_back(p_Collidable);
 }
-void CollisionSolver::update()
+void CollisionSolver::update(float p_DeltaTimeS)
 {
+	m_DeltaTime = p_DeltaTimeS;
 	//these could be done on seperate threads maybe
 	m_TreeTool->update();
 	m_ProjectileTree->update();
@@ -234,15 +235,32 @@ void CollisionSolver::circleVSAAB(CollisionPair* p_Pair)
 				secondIndex = 0;
 			else
 				secondIndex = i+1;
+			glm::vec3 v_Edge = (v_Points[secondIndex]-v_Points[i]);
 			if(circleVSLine(v_Points[i],v_Points[secondIndex],circlePos,v_CircleCollider->getRadius()))
 			{
-				glm::vec3 v_Edge = (v_Points[secondIndex]-v_Points[i]);
+				//TODO:: Timestep calculations to calculate point of impact.
+				float dt = m_DeltaTime/2.0f;
+				glm::vec3 offset(v_CircleCollider->getVelocity()*dt);
+				for (int j = 0; j < 5; j++)
+				{
+					//check for collision again after moving circle back half of it's movement this frame
+					if(circleVSLine(v_Points[i],v_Points[secondIndex],circlePos-offset,v_CircleCollider->getRadius()))
+					{
+						offset -=offset/2.0f;
+					}
+					else
+					{
+						offset +=offset/2.0f;
+					}
+				}
 				//calculate collision normal, and penetration depth along that normal
 				p_Pair->m_CollisionNormal = glm::normalize(glm::vec3(-v_Edge.z,0,v_Edge.x));
 				p_Pair->m_Collided = true;
 				float lineDotN = glm::dot(p_Pair->m_CollisionNormal,v_Points[i]);
-				float cDotN = glm::dot(p_Pair->m_CollisionNormal,v_CircleCollider->getLocation());
-				p_Pair->m_Penetration = v_CircleCollider->getRadius()-(cDotN-lineDotN);
+				//float cDotN = glm::dot(p_Pair->m_CollisionNormal,circlePos);
+				float cDotN = glm::dot(p_Pair->m_CollisionNormal,circlePos-offset);
+				p_Pair->m_Penetration = glm::length(offset);
+				p_Pair->m_Penetration = abs(lineDotN-cDotN);
 				return;
 			}
 		}
@@ -258,9 +276,25 @@ void CollisionSolver::circleVSAAB(CollisionPair* p_Pair)
 		{
 			if(pointVScircle(v_Points[i],circlePos,v_CircleCollider->getRadius()))
 			{
-				p_Pair->m_CollisionNormal = glm::normalize(v_Points[i]-circlePos);
+				////TODO:: Timestep calculations to calculate point of impact.
+				float dt = m_DeltaTime/2.0f;
+				glm::vec3 offset(v_CircleCollider->getVelocity()*dt);
+				for (int j = 0; j < 5; j++)
+				{
+					//check for collision again after moving circle back half of it's movement this frame
+					if(pointVScircle(v_Points[i],circlePos-offset,v_CircleCollider->getRadius()))
+					{
+						offset -=offset/2.0f;
+					}
+					else
+					{
+						offset +=offset/2.0f;
+					}
+				}
+				p_Pair->m_CollisionNormal = glm::normalize(v_Points[i]-circlePos-offset);
 				p_Pair->m_Collided = true;
-				p_Pair->m_Penetration = v_CircleCollider->getRadius() - glm::length((circlePos-v_Points[i]));
+				//p_Pair->m_Penetration =  glm::length(((circlePos)-v_Points[i]))-v_CircleCollider->getRadius();
+				p_Pair->m_Penetration = abs(v_CircleCollider->getRadius() - glm::length(((circlePos-offset)-v_Points[i])));
 				return;
 			}
 		}

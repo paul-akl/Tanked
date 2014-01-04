@@ -13,16 +13,30 @@ public:
 	void addLeftArm(RobotArm* p_LeftArm);
 	void addRightArm(RobotArm* p_RightArm);
 	void addHead(RobotHead* p_Head);
+	void addDamagedTexture(TextureNode* p_Texture);
 	const unsigned int getHitPoints();
+	void setHitPoints(const unsigned int p_HP);
 	void dealDamage(unsigned int p_DamageAmount);
 	void setMaxHitPoints(const unsigned int p_MaxHP);
+	float getMass(){return m_Mass;}
 	virtual ~Robot(void);
 protected:
+	void turnLeft(float p_DeptaTimeS);
+	void turnRight(float p_DeltaTimeS);
 	RobotArm* m_LeftArm;
 	RobotArm* m_RightArm;
+	glm::vec3 m_HeadPosition;
+	glm::vec3 m_LeftArmPosition;
+	glm::vec3 m_RightArmPosition;
 	RobotHead* m_Head;
+	float m_TurnSpeed;
+	bool m_Turning;
+	TextureNode* m_DamagedTextureDiffuse;
 	unsigned int m_HitPoints;
 	unsigned int m_MaxHitPoints;
-	float m_TargetOrientationDeg;
+	float m_TargetOrientation;
+	float m_MaxVelocityScalar; //max V, in m/s
+	float m_Thrust; //forward thrust scalar measured in Newtons/second.
+	float m_Mass; //mass of the robot, measured in Kilograms
 };
 
