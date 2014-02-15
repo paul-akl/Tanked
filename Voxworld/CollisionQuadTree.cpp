@@ -1,5 +1,6 @@
 #include "CollisionQuadTree.h"
 #include <iostream>
+#include <list>
 CollisionQuadTree::CollisionQuadTree(void)
 {
 	m_NW = nullptr;
@@ -12,26 +13,50 @@ CollisionQuadTree::CollisionQuadTree(void)
 }
 void CollisionQuadTree::update()
 {
-	//this function is used to check if objects are moving, and if so, containment needs to be re-checked 
-	for (size_t i = 0; i < m_Nodes.size(); i++)
+	if(!m_Objects.empty())
 	{
-		if(m_Nodes[i]!=nullptr)
+		//this function is used to check if objects are moving, and if so, containment needs to be re-checked 
+		for(std::list<CollidableNode*>::iterator it = m_Objects.begin();it!=m_Objects.end();)
 		{
-			if(m_Nodes[i]->isMoving())
+			if((*it)->isActive())
 			{
-				if(!contains(m_Nodes[i]))
+				if((*it)->isMoving())
 				{
-					m_Parent->insert(m_Nodes[i]);
-					m_Nodes[i] = nullptr;
+					if(!contains((*it)))
+					{
+						if(m_Parent!=nullptr)
+						{
+							m_Parent->insert((*it));
+							it = m_Objects.erase(it);
+						}
+						else it++;
+					}
+					else it++;
 				}
+				else it++;
 			}
-			if(!m_Nodes[i]->isActive())
+			else
 			{
-				m_Nodes[i] = nullptr;
+				it = m_Objects.erase(it);
 			}
 		}
 	}
-
+	if(m_NW!=nullptr)
+	{
+		m_NW->update();
+	}
+	if(m_NE!=nullptr)
+	{
+		m_NE->update();
+	}
+	if(m_SW!=nullptr)
+	{
+		m_SW->update();
+	}
+	if(m_SE!=nullptr)
+	{
+		m_SE->update();
+	}
 }
 CollisionQuadTree::CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth,CollisionQuadTree* p_Parent)
 {
@@ -57,28 +82,36 @@ CollisionQuadTree::CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, co
 }
 void CollisionQuadTree::toConsole()
 {
-	if(m_Depth>=MAX_DEPTH)
+	if(!m_Objects.empty())
 	{
-		if(!m_Nodes.empty())
-		for (size_t i = 0; i < m_Nodes.size(); i++)
+		for(std::list<CollidableNode*>::iterator it = m_Objects.begin();it != m_Objects.end(); it++)
 		{
-			std::cout<<m_Nodes[i]->getName()<<std::endl;
+			std::cout<<(*it)->getName()<<std::endl;
 		}
-		std::cout<<std::endl;
 	}
-	else
+
+	if(m_NW!=nullptr)
 	{
 		std::cout<<"NW"<<std::endl;
 		m_NW->toConsole();
+	}
+	if(m_NE!=nullptr)
+	{
 		std::cout<<"NE"<<std::endl;
 		m_NE->toConsole();
-		std::cout<<"SE"<<std::endl;
-		m_SE->toConsole();
+	}
+	if(m_SW!=nullptr)
+	{
 		std::cout<<"SW"<<std::endl;
 		m_SW->toConsole();
 	}
-
+	if(m_SE!=nullptr)
+	{
+		std::cout<<"SE"<<std::endl;
+		m_SE->toConsole();
+	}
 }
+
 bool CollisionQuadTree::contains(CollidableNode* p_Node)
 {
 	glm::vec3 pos(p_Node->getLocation().x,0.0f,p_Node->getLocation().z);
@@ -90,17 +123,18 @@ bool CollisionQuadTree::contains(CollidableNode* p_Node)
 			&&	pos.x+p_Node->getRadius() < m_CentrePosition.x+m_Width/2.0f
 			&&	pos.z-p_Node->getRadius() > m_CentrePosition.x-m_Height/2.0f
 			&&	pos.z+p_Node->getRadius() < m_CentrePosition.x+m_Height/2.0f)
-		return true;
-		return false;
+			return true;
+		else
+			return false;
 	}
 	if(p_Node->getBoundaryType() == AAB)
 	{
-		if(seperation.x < m_Width/2.0f && seperation.z < m_Height/2.0f
-			&& pos.x-p_Node->getWidth()/2.0f > m_CentrePosition.x-m_Width/2.0f
-			&& pos.x+p_Node->getWidth()/2.0f < m_CentrePosition.x+m_Width/2.0f
-			&& pos.z-p_Node->getWidth()/2.0f > m_CentrePosition.x-m_Height/2.0f
-			&& pos.z+p_Node->getWidth()/2.0f > m_CentrePosition.x+m_Height/2.0f)
-		return true;
+		if(seperation.x < m_Width/2.0f && seperation.z < m_Height/2.0f)
+			if(pos.x-p_Node->getWidth()/2.0f > m_CentrePosition.x-m_Width/2.0f)
+				if(pos.x+p_Node->getWidth()/2.0f < m_CentrePosition.x+m_Width/2.0f)
+					if(pos.z-p_Node->getLength()/2.0f > m_CentrePosition.z-m_Height/2.0f)
+						if(pos.z+p_Node->getLength()/2.0f < m_CentrePosition.z+m_Height/2.0f)
+							return true;
 		return false;
 	}
 	if(p_Node->getBoundaryType() == OBB)
@@ -123,7 +157,304 @@ bool CollisionQuadTree::contains(CollidableNode* p_Node)
 		return false;
 	}
 }
-
+bool CollisionQuadTree::validPair(CollidableNode* p_NodeA, CollidableNode* p_NodeB)
+{
+	switch(p_NodeA->getType())
+	{
+		case PLAYER:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return false;
+						}
+						break;
+					case ENEMY:
+						{
+							return true;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return true;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return false;
+						}
+						break;
+					case SCENERY:
+						{
+							return true;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return true;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case ENEMY:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return true;
+						}
+						break;
+					case ENEMY:
+						{
+							return true;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return true;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return true;
+						}
+						break;
+					case SCENERY:
+						{
+							return false;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return false;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case ENEMY_ROBOT:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return true;
+						}
+						break;
+					case ENEMY:
+						{
+							return true;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return false;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return true;
+						}
+						break;
+					case SCENERY:
+						{
+							return false;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return false;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case PROJECTILE:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return false;
+						}
+						break;
+					case ENEMY:
+						{
+							return true;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return true;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return false;
+						}
+						break;
+					case SCENERY:
+						{
+							return true;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return true;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case SCENERY:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return true;
+						}
+						break;
+					case ENEMY:
+						{
+							return true;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return false;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return true;
+						}
+						break;
+					case SCENERY:
+						{
+							return true;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return true;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case COLLECTABLE:
+			{
+				switch(p_NodeB->getType())
+				{
+					case PLAYER:
+						{
+							return true;
+						}
+						break;
+					case ENEMY:
+						{
+							return false;
+						}
+						break;
+					case ENEMY_ROBOT:
+						{
+							return false;
+						}
+						break;
+					case PROJECTILE:
+						{
+							return false;
+						}
+						break;
+					case SCENERY:
+						{
+							return false;
+						}
+						break;
+					case COLLECTABLE:
+						{
+							return false;
+						}
+						break;
+					case MISC:
+						{
+							return false;
+						}
+						break;
+					case PHASING:
+						{
+							return false;
+						}
+						break;
+				};
+			}
+			break;
+		case MISC:
+			{
+				return false;
+			}
+			break;
+		case PHASING:
+			{
+				return false;
+			}
+			break;
+	};
+}
 bool CollisionQuadTree::overLaps(CollidableNode* p_Node)
 {
 	glm::vec3 pos(p_Node->getLocation().x,0.0f,p_Node->getLocation().z);
@@ -146,36 +477,52 @@ bool CollisionQuadTree::overLaps(CollidableNode* p_Node)
 	}
 	return false;
 }
-void CollisionQuadTree::collideObject(CollidableNode* p_Node, std::vector<CollisionPair*>& p_Results)
+void CollisionQuadTree::collideObject(CollidableNode* p_Node, std::list<CollisionPair*>& p_Results)
 {
-	if(!m_Nodes.empty())
+	if(!m_Objects.empty())
 	{
-		for (size_t i = 0; i < m_Nodes.size(); i++)
+		for(std::list<CollidableNode*>::iterator it = m_Objects.begin();it!=m_Objects.end();it++)
 		{
-			p_Results.push_back(new CollisionPair(p_Node,m_Nodes[i]));
+			if(validPair(p_Node,(*it)))
+			{
+				p_Results.push_front(new CollisionPair(p_Node,(*it)));
+			}
 		}
 	}
 	if(m_NW!=nullptr)
-	if(m_NW->contains(p_Node) || m_NW->overLaps(p_Node))
 	{
-		m_NW->collideObject(p_Node,p_Results);
+		if(m_NW->contains(p_Node) || m_NW->overLaps(p_Node))
+		{
+			m_NW->collideObject(p_Node,p_Results);
+		}	
 	}
+
 	if(m_SW!=nullptr)
-	if(m_SW->contains(p_Node) || m_SW->overLaps(p_Node))
 	{
-		m_SW->collideObject(p_Node,p_Results);
+		if(m_SW->contains(p_Node) || m_SW->overLaps(p_Node))
+		{
+			m_SW->collideObject(p_Node,p_Results);
+		}
 	}
+
 	if(m_NE!=nullptr)
-	if(m_NE->contains(p_Node) || m_NE->overLaps(p_Node))
 	{
-		m_NE->collideObject(p_Node,p_Results);
+		if(m_NE->contains(p_Node) || m_NE->overLaps(p_Node))
+		{
+			m_NE->collideObject(p_Node,p_Results);
+		}
 	}
+
 	if(m_SE!=nullptr)
-	if(m_SE->contains(p_Node) || m_SE->overLaps(p_Node))
 	{
-		m_SE->collideObject(p_Node,p_Results);
+		if(m_SE->contains(p_Node) || m_SE->overLaps(p_Node))
+		{
+			m_SE->collideObject(p_Node,p_Results);
+		}
 	}
+
 }
+
 void CollisionQuadTree::insert(CollidableNode* p_Node)
 {
 	// MUST BE REVIEWED AND RECODED FOR NEW INSERTION ALGORITHM:
@@ -189,20 +536,7 @@ void CollisionQuadTree::insert(CollidableNode* p_Node)
 	// IF TRUE, INSERT INTO CONTAINING SUBTREE.
 	if(m_Depth >= MAX_DEPTH)
 	{
-		bool found = false;
-		for(std::vector<CollidableNode*>::iterator it = m_Nodes.begin(); it!=m_Nodes.end();it++)
-		{
-			if((*it)==nullptr)
-			{
-				(*it) = p_Node;
-				found = true;
-				break;
-			}
-		}
-		if(!found)
-		{
-			m_Nodes.push_back(p_Node);
-		}
+		m_Objects.push_front(p_Node);
 	}
 	else
 		//subtree insertion
@@ -225,261 +559,18 @@ void CollisionQuadTree::insert(CollidableNode* p_Node)
 		}
 		else
 		{
-			m_Nodes.push_back(p_Node);
+			m_Objects.push_back(p_Node);
 		}
 	}
 }
-void CollisionQuadTree::cullPairs(std::vector<CollisionPair*>& p_Pairs)
-{
-	//this is a nasty one, but we are most likely to be dealing with small groups, so it's fine
-	//to cull duplicate pairs
-	//for each pair
-	for (size_t i = 0;i < p_Pairs.size();i++)
-	{ 
-		if(p_Pairs[i]!=nullptr)
-		{
-			//for each other pair
-			for (size_t j = 0; j < p_Pairs.size();j++)
-			{
-				if(p_Pairs[j]!=nullptr)
-				{
-					if(i != j)
-					{ 
-						//if they contain the same two collidables
-						if(p_Pairs[i]->equals(p_Pairs[j]))
-						{
-							//do nothing
-							delete p_Pairs[j];
-							p_Pairs[j] = nullptr;
-						}
-					}
-				}
-			}
-		}
-	}
-	//Layer culling phase
-	//very simple layering for the moment.
-	//will be improved on, for projectile collisions.
-	//as projectiles may be enemy owned, or player owned.
-	//so we will check the type of the parent of the projectile
-	//anything with phasing cannot collide so the pair will be deleted
-	for (size_t i = 0; i < p_Pairs.size();i++)
-	{
-		if(p_Pairs[i]!=nullptr)
-		{
-			switch(p_Pairs[i]->m_Collidable_A->getType())
-			{
-					//players can hit enemies, collectables, misc, projectiles, and scenery
-					///////////////////////////////////////////////
-					//this section needs updating for projectile //
-					//Parent checking							 //
-					///////////////////////////////////////////////
-			case PLAYER:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-					{
-					case PHASING:
-						{
-							delete p_Pairs[i];
-							p_Pairs[i] = nullptr;
-						}break;
-					default:
-						break;
-					}
-				}break;
-					//enemies can hit other enemies, players, scenery, projectiles, and misc
-					///////////////////////////////////////////////
-					//this section needs updating for projectile //
-					//Parent checking							 //
-					///////////////////////////////////////////////
-				case ENEMY:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-					{
-					case PHASING:
-						{
-							delete p_Pairs[i];
-							p_Pairs[i] = nullptr;
-						}break;
-					case COLLECTABLE:
-						{
-							delete p_Pairs[i];
-							p_Pairs[i] = nullptr;
-						}break;
-					default:
-						break;
-				}break;
-				//projectiles cannot hit phasing and other projectiles
-				case PROJECTILE:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-					{
-						case PHASING:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case PROJECTILE:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-							default:
-								break;
-					}
-				}break;
-				//everything except phasing collides with scenery
-				case SCENERY:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-						{
-						case PHASING:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case SCENERY:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case COLLECTABLE:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						default:
-							break;
-						}
-				}break;
-				case COLLECTABLE:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-						{
-						case ENEMY:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case PHASING:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;	
-							}break;
-						case PROJECTILE:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case SCENERY:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case MISC:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						default:
-							break;
-						}
-				}break;
-			case MISC:
-				{
-					switch (p_Pairs[i]->m_Collidable_B->getType())
-						{
-						case PROJECTILE:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						case MISC:
-							{
-								delete p_Pairs[i];
-								p_Pairs[i] = nullptr;
-							}break;
-						default:
-							break;
-						}
-				}break;
 
-				default:
-					break;
-				}
-			}
-		}
-	}
-}
-void CollisionQuadTree::generatePairs(std::vector<CollisionPair*>& p_Pairs)
-{
-	if(m_Depth >= MAX_DEPTH)
-	{
-		if(m_Nodes.size() >= 2)
-		{
-			std::vector<CollisionPair*> v_Pairs;
-			//for each collidable loop
-			for(size_t i = 0; i < m_Nodes.size(); i++)
-			{
-				//for each other collidable loop
-				for (size_t j = 0; j < m_Nodes.size(); j++)
-				{
-					//quick check to see if they are not the same object
-					if(j != i)
-					{
-						//create a pair with them
-						v_Pairs.push_back(new CollisionPair(m_Nodes[i],m_Nodes[j]));
-					}
-				}//end loop
-			}//end loop
-			cullPairs(v_Pairs);
-			for (size_t i = 0; i < v_Pairs.size();i++)
-			{
-				if (v_Pairs[i] !=nullptr)
-				{
-					p_Pairs.push_back(v_Pairs[i]);
-					v_Pairs[i] = nullptr;
-				}
-			}
-			v_Pairs.clear();
-		}
-	}
-	// max depth not reached
-	else
-	{
-		//recursive calls
-		if(m_NW!=nullptr)
-		{
-			m_NW->generatePairs(p_Pairs);
-		}
-		if(m_NE!=nullptr)
-		{
-			m_NE->generatePairs(p_Pairs);
-		}
-		if(m_SW!=nullptr)
-		{
-			m_SW->generatePairs(p_Pairs);
-		}
-		if(m_SE!=nullptr)
-		{
-			m_SE->generatePairs(p_Pairs);
-		}
-	}
-	for(size_t i = 0; i < m_Nodes.size(); i++)
-	{
-		m_Nodes[i] = nullptr;
-	}
-	cullPairs(p_Pairs);
-	m_Nodes.clear();
-}
+
 CollisionQuadTree::~CollisionQuadTree(void)
 {
-	if(!m_Nodes.empty())
-	for(size_t i = 0; i < m_Nodes.size();i++)
+	while(!m_Objects.empty())
 	{
-		m_Nodes[i] = nullptr;
+		m_Objects.pop_back();
 	}
-	m_Nodes.clear();
 	delete m_NW;
 	delete m_NE;
 	delete m_SE;

@@ -6,7 +6,7 @@
 AutoGun::AutoGun(void)
 {
 	m_ProjectileType = DEFAULT_SECONDARY;
-	m_SecondsPerShot=0.1f;
+	m_SecondsPerShot=0.2f;
 	m_TimeSinceLastShot = 0.0f;
 }
 ProjectileNode* AutoGun::getProjectile()
@@ -90,7 +90,23 @@ ProjectileNode* AutoGun::createProjectileFromPool()
 }
 void AutoGun::init()
 {
-
+	for (size_t i = 0; i < MAX_PROJECTILES;i++)
+	{
+		ProjectileNode* temp = new ProjectileNode();
+		temp->addMesh(m_DefaultProjectileMesh);
+		temp->addTexture(m_DefaultProjectileTexture);
+		TransformNode* tmp = new TransformNode;
+		tmp->reset();
+		tmp->setName("ProjectileTransform");
+		temp->addTransform(tmp);
+		temp->setBoundaryType(CIRCLE);
+		temp->setProjectileType(DEFAULT_SECONDARY);
+		temp->setType(PROJECTILE);
+		temp->setRadius(1.0f);
+		temp->setLifeTime(3.0f);
+		temp->setBaseDamage(10.0f);
+		temp->deactivate();
+	}
 }
 void AutoGun::render(Renderer* p_Renderer)
 {

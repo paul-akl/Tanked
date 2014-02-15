@@ -111,12 +111,12 @@ void CollisionResponse::processResult(CollisionPair* p_Pair)
 			//handles collision events between enemies and scenery
 		case ENEMYVSSCENERY:
 			{
-				if(p_Pair->m_Collidable_A->getType() == ENEMY)
+				if(p_Pair->m_Collidable_A->getType() == ENEMY_ROBOT)
 				{
 					glm::vec3 normal = glm::vec3(p_Pair->m_CollisionNormal.x,0.0f,p_Pair->m_CollisionNormal.z);
 					glm::vec3 velocity = p_Pair->m_Collidable_A->getVelocity();
 					glm::vec3 reflection = glm::reflect(velocity,normal);
-					p_Pair->m_Collidable_A->setPosition(p_Pair->m_Collidable_A->getLocation()+normal*(p_Pair->m_Penetration));
+					p_Pair->m_Collidable_A->setPosition(p_Pair->m_Collidable_A->getLocation()-glm::normalize(p_Pair->m_Collidable_A->getVelocity())*(p_Pair->m_Penetration));
 					p_Pair->m_Collidable_A->stop();
 					p_Pair->m_Collidable_A->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 				}
@@ -124,7 +124,7 @@ void CollisionResponse::processResult(CollisionPair* p_Pair)
 				{
 					glm::vec3 normal = glm::vec3(p_Pair->m_CollisionNormal.x,0.0f,p_Pair->m_CollisionNormal.z);
 					glm::vec3 reflection = glm::reflect(p_Pair->m_Collidable_B->getVelocity(),glm::normalize(-normal))*0.8f;
-					p_Pair->m_Collidable_B->setPosition(p_Pair->m_Collidable_B->getLocation()+normal*(p_Pair->m_Penetration));
+					p_Pair->m_Collidable_B->setPosition(p_Pair->m_Collidable_B->getLocation()-glm::normalize(p_Pair->m_Collidable_B->getVelocity())*(p_Pair->m_Penetration));
 					p_Pair->m_Collidable_B->stop();
 					p_Pair->m_Collidable_B->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 

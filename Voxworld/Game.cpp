@@ -23,11 +23,15 @@ void Game::init()
 	m_MenuMode = new MenuMode();
 	m_CreditsMode = new CreditsMode();
 	//m_ShopMode = new ShopMode);
-	//and initialise our game Modes
+	//and initialise our game Mode
+	m_Controller = new Controller();
+	m_MainMode->setController(m_Controller);
 	m_IntroMode->init(*this);
 	m_MainMode->init(*this);
 	m_MenuMode->init(*this);
 	m_CreditsMode->init(*this);
+	m_Controller->setWindow(m_Renderer->getWindow());
+
 	//mShopMode->init(*this);
 	//and set our default starting mode, which would normally be intro mode, but for now we will stick with main mode.
 	m_CurrentMode = m_MainMode;
@@ -53,9 +57,7 @@ void Game::changeState(GameState state)
 
 void Game::Run()
 {
-	Controller* controller = new Controller();
-	m_CurrentMode->setController(controller);
-	controller->setWindow(m_Renderer->getWindow());
+
 	//TO DO: write this method
 	SDL_Event sdlEvent; // variable to detect SDL events
 
@@ -72,7 +74,7 @@ void Game::Run()
 				running = false;
 			else
 			{
-				controller->update(sdlEvent);
+				m_Controller->update(sdlEvent);
 			}
 		}
 		running = m_CurrentMode->handleEvent(*this);

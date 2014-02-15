@@ -18,6 +18,7 @@ RobotGenerator::RobotGenerator(void)
 	m_NumRobots = 0;
 	m_SpawnDelay = 1.5f;
 	m_BaseTimer = 1.5f;
+	m_SpawnDistance = 5.0f;
 }
 bool RobotGenerator::isReady()
 {
@@ -88,6 +89,7 @@ Robot* RobotGenerator::getRobot()
 			temp->addRightArm(getArm(false));
 			temp->setMaxHitPoints(200+10*m_Level);
 			temp->setHitPoints(200+10*m_Level);
+			temp->setDamageMultiplier(0.05f*m_Level);
 			temp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
 
 			//mesh, texture & transform nodes
@@ -131,15 +133,19 @@ void RobotGenerator::update(float p_DeltaTimeS)
 {
 	if(m_HitPoints > 0)
 	{
-		if(m_SpawnTimer<m_SpawnDelay)
+		if(m_behaviourState!=PassiveStatus)
 		{
-			m_SpawnTimer+=p_DeltaTimeS;
+			if(m_SpawnTimer<m_SpawnDelay)
+			{
+				m_SpawnTimer+=p_DeltaTimeS;
+			}
+			m_LocalTransform->reset();
+			m_LocalTransform->translate(m_Position+glm::vec3(0.0f,7.0f,0.0f));
+			m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
+			m_LocalTransform->scale(glm::vec3(m_Radius));
+			SceneNode::update(p_DeltaTimeS);
+			m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
 		}
-		m_LocalTransform->reset();
-		m_LocalTransform->translate(m_Position);
-		m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
-		m_LocalTransform->scale(glm::vec3(m_Radius));
-		SceneNode::update(p_DeltaTimeS);
 	}
 	else
 	{

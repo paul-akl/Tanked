@@ -21,6 +21,7 @@ private:
 	GameMode* m_CurrentMode;
 	Renderer* m_Renderer;
 	SDL_Window* m_Window;
+	Controller* m_Controller;
 	//Controller* m_Controller
 
 };

@@ -28,26 +28,25 @@ public:
 	CollisionQuadTree(glm::vec3 p_Centre, const float p_Width, const float p_Height,const int p_Depth, CollisionQuadTree* p_Parent);
 	void update();
 	void insert(CollidableNode* p_Node);
-	void generatePairs(std::vector<CollisionPair*>& p_Pairs);
-	void cullPairs(std::vector<CollisionPair*>& p_Pairs);
-	void collideObject(CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Results);
+	void collideObject(CollidableNode* p_Collidable, std::list<CollisionPair*>& p_Results);
 	void toConsole();
 	virtual ~CollisionQuadTree(void);
 private:
 	bool contains(CollidableNode* p_Node);
 	bool overLaps(CollidableNode* p_Node);
+	bool validPair(CollidableNode* p_NodeA, CollidableNode* p_NodeB);
 	glm::vec3 m_CentrePosition;
 	float m_Width;
 	float m_Height;
-	static const int MAX_DEPTH = 5;
+	static const int MAX_DEPTH = 3;
 	int m_Depth;
 	CollisionQuadTree* m_NW;
 	CollisionQuadTree* m_NE;
 	CollisionQuadTree* m_SE;
 	CollisionQuadTree* m_SW;
-	std::vector<CollidableNode*> m_Nodes;
 	std::list<CollidableNode*> m_Objects;
 	std::string m_Name;
 	CollisionQuadTree* m_Parent;
+	friend class CollisionSolver;
 };
 

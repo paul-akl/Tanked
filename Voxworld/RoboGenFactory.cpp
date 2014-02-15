@@ -60,13 +60,13 @@ RobotGenerator* RoboGenFactory::getRoboGenFromPool()
 	}
 	else
 	{
-		std::list<RobotGenerator*>::iterator it = m_RoboGens.begin();
-		while(it != m_RoboGens.end())
+		
+		for(std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end();it++)
 		{
-			if(!(*it)->isActive())
+			if(!m_RoboGens.front()->isActive())
 			{
 				m_Reusing = true;
-				return (*it);
+				return m_RoboGens.front();
 			}
 		}
 		m_Reusing = false;

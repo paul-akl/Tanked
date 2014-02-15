@@ -39,7 +39,6 @@ void TurretNode::update(float p_DeltaTimeS)
 	m_AutoGun->update(p_DeltaTimeS);
 	if(!m_MainGunUpgrades.empty())
 	m_MainGunUpgrades.top()->update(p_DeltaTimeS);
-	//m_WorldTransform=m_LocalTransform->getLocalTransform()*m_Parent->getWorldTransform();
 }
 void TurretNode::rotateTurret(float p_Rotation)
 {

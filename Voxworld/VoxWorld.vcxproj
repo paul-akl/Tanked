@@ -11,17 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="AutoGun.cpp" />
     <ClCompile Include="BasicTankFactory.cpp" />
     <ClCompile Include="CameraNode.cpp" />
     <ClCompile Include="CollidableNode.cpp" />
     <ClCompile Include="CollisionPair.cpp" />
+    <ClCompile Include="CollisionPairManager.cpp" />
     <ClCompile Include="CollisionQuadTree.cpp" />
     <ClCompile Include="CollisionResponse.cpp" />
     <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="CreditsMode.cpp" />
     <ClCompile Include="DeferredRenderer.cpp" />
+    <ClCompile Include="EnemyNode.cpp" />
     <ClCompile Include="FloorFactory.cpp" />
     <ClCompile Include="FloorNode.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -35,16 +38,19 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGameMode.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
+    <ClCompile Include="MazeNode.cpp" />
     <ClCompile Include="MenuMode.cpp" />
     <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
+    <ClCompile Include="QTNode.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RoboGenFactory.cpp" />
     <ClCompile Include="Robot.cpp" />
     <ClCompile Include="RobotArm.cpp" />
     <ClCompile Include="RobotGenerator.cpp" />
     <ClCompile Include="RobotHead.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShopMode.cpp" />
@@ -58,17 +64,20 @@
     <ClCompile Include="WallNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIManager.h" />
     <ClInclude Include="AutoGun.h" />
     <ClInclude Include="BasicTankFactory.h" />
     <ClInclude Include="CameraNode.h" />
     <ClInclude Include="CollidableNode.h" />
     <ClInclude Include="CollisionPair.h" />
+    <ClInclude Include="CollisionPairManager.h" />
     <ClInclude Include="CollisionQuadTree.h" />
     <ClInclude Include="CollisionResponse.h" />
     <ClInclude Include="CollisionSolver.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CreditsMode.h" />
     <ClInclude Include="DeferredRenderer.h" />
+    <ClInclude Include="EnemyNode.h" />
     <ClInclude Include="FloorFactory.h" />
     <ClInclude Include="FloorNode.h" />
     <ClInclude Include="FrameBuffer.h" />
@@ -81,16 +90,19 @@
     <ClInclude Include="LightNode.h" />
     <ClInclude Include="MainGameMode.h" />
     <ClInclude Include="MaterialNode.h" />
+    <ClInclude Include="MazeNode.h" />
     <ClInclude Include="MenuMode.h" />
     <ClInclude Include="MeshNode.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
     <ClInclude Include="ProjectileNode.h" />
+    <ClInclude Include="QTNode.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RoboGenFactory.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="RobotArm.h" />
     <ClInclude Include="RobotGenerator.h" />
     <ClInclude Include="RobotHead.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShopMode.h" />
@@ -107,6 +119,9 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tanked.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{26362F5F-E30D-418B-BCC7-885ECF0865B2}</ProjectGuid>
@@ -139,8 +154,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>C:\dev\lib;C:\Dev\SDL2 plugins\lib\x86;C:\Dev\SDL2-2.0.0\lib\x86;C:\Dev\FreeImage\Dist;C:\Dev\glew-1.10.0\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\dev\include;C:\Dev\SDL2 plugins\include;C:\Dev\SDL2-2.0.0\include;C:\Dev\FreeImage\Dist;C:\Dev\glew-1.10.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\b00011413\Desktop\dev;C:\dev\lib;C:\Dev\SDL2 plugins\lib\x86;C:\Dev\SDL2-2.0.0\lib\x86;C:\Dev\FreeImage\Dist;C:\Dev\glew-1.10.0\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\b00011413\Desktop\dev;C:\Users\b00011413\Desktop\dev\assimp;C:\dev\include;C:\Dev\SDL2 plugins\include;C:\Dev\SDL2-2.0.0\include;C:\Dev\FreeImage\Dist;C:\Dev\glew-1.10.0\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -153,13 +168,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Dev\glm-0.9.4.4;C:\Dev\SDL2 plugins\include;C:\Dev\FreeImage;C:\Dev\SDL2-2.0.0\include;C:\Dev\glew-1.10.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>"C:\Dev\glew-1.10.0\lib";"C:\Dev\SFML-2.0\lib";%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>"opengl32.lib";"glew32.lib";"SDL2.lib";"SDL2main.lib";"FreeImage.lib";"assimp.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"opengl32.lib";"glew32.lib";"SDL2.lib";"SDL2_ttf.lib";"SDL2main.lib";"FreeImage.lib";"assimp.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSBR>true</PreserveSBR>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

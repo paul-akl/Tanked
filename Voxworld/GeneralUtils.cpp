@@ -15,13 +15,13 @@ namespace Utils
 
 	void GeneralUtils::initialiseFont()
 	{
-		// set up TrueType / SDL_ttf
-	if (TTF_Init()== -1)
-		std::cout << "TTF failed to initialise." << std::endl;
+			// set up TrueType / SDL_ttf
+		if (TTF_Init()== -1)
+			std::cout << "TTF failed to initialise." << std::endl;
 
-	textFont = TTF_OpenFont("MavenPro-Regular.ttf", 24);
-	if (textFont == NULL)
-		std::cout << "Failed to open font." << std::endl;
+		textFont = TTF_OpenFont("MavenPro-Regular.ttf", 24);
+		if (textFont == NULL)
+			std::cout << "Failed to open font." << std::endl;
 	}
 
 	GLuint GeneralUtils::textToTexture(const char * str/*, TTF_Font *font, SDL_Color colour, GLuint &w,GLuint &h */) {

@@ -164,6 +164,21 @@
     <Filter Include="Core Engine\Game\Class Factories\RoboGen">
       <UniqueIdentifier>{91e262af-bd01-4409-b64e-634a8537b039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\AI Manager">
+      <UniqueIdentifier>{003e2d18-18d6-45e9-8b1f-6f265b387263}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Maze">
+      <UniqueIdentifier>{0f50f100-e0a6-4f90-bd98-7a4663740dcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Maze\Data Based">
+      <UniqueIdentifier>{cde37376-2874-42de-b4b4-595ffdf95b98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Collision System\Quadtree">
+      <UniqueIdentifier>{711c0e0a-bad7-443f-9b86-77aee696b3bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Collision System\Solver">
+      <UniqueIdentifier>{a4d33da7-65e1-4d76-95fb-f37fede82bb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -253,16 +268,7 @@
     <ClCompile Include="UpgradeFactory.cpp">
       <Filter>Core Engine\Game\Class Factories\Upgrades\Base</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionPair.cpp">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionQuadTree.cpp">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionResponse.cpp">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionSolver.cpp">
       <Filter>Core Engine\Collision System</Filter>
     </ClCompile>
     <ClCompile Include="UpgradeNode.cpp">
@@ -300,6 +306,31 @@
     </ClCompile>
     <ClCompile Include="GeneralUtils.cpp">
       <Filter>Core Engine\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="AIManager.cpp">
+      <Filter>Core Engine\AI Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="MazeNode.cpp">
+      <Filter>Core Engine\Maze\Data Based</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="QTNode.cpp">
+      <Filter>Core Engine\Collision System\Quadtree</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionQuadTree.cpp">
+      <Filter>Core Engine\Collision System\Quadtree</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSolver.cpp">
+      <Filter>Core Engine\Collision System\Solver</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionPair.cpp">
+      <Filter>Core Engine\Collision System\Solver</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionPairManager.cpp">
+      <Filter>Core Engine\Collision System\Solver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -390,15 +421,6 @@
     <ClInclude Include="UpgradeFactory.h">
       <Filter>Core Engine\Game\Class Factories\Upgrades\Base</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSolver.h">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionPair.h">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionQuadTree.h">
-      <Filter>Core Engine\Collision System</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionResponse.h">
       <Filter>Core Engine\Collision System</Filter>
     </ClInclude>
@@ -435,6 +457,31 @@
     <ClInclude Include="RoboGenFactory.h">
       <Filter>Core Engine\Game\Class Factories\RoboGen</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="AIManager.h">
+      <Filter>Core Engine\AI Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeNode.h">
+      <Filter>Core Engine\Maze\Data Based</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="QTNode.h">
+      <Filter>Core Engine\Collision System\Quadtree</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionQuadTree.h">
+      <Filter>Core Engine\Collision System\Quadtree</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionPairManager.h">
+      <Filter>Core Engine\Collision System\Solver</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSolver.h">
+      <Filter>Core Engine\Collision System\Solver</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionPair.h">
+      <Filter>Core Engine\Collision System\Solver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">
@@ -444,5 +491,10 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source\Simple</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tanked.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1,10 +1,11 @@
 #pragma once
-#include "collidablenode.h"
+//#include "collidablenode.h"
+#include "EnemyNode.h"
 #include "RobotArm.h"
 #include "RobotHead.h"
 
 class Robot :
-	public CollidableNode
+	public EnemyNode
 {
 public:
 	Robot(void);
@@ -18,6 +19,8 @@ public:
 	void setHitPoints(const unsigned int p_HP);
 	void dealDamage(unsigned int p_DamageAmount);
 	void setMaxHitPoints(const unsigned int p_MaxHP);
+	void setDamageMultiplier(float p_DamageMultipler){m_DamageMultiplier = p_DamageMultipler;}
+	float getDamageMultipler(){return m_DamageMultiplier;}
 	float getMass(){return m_Mass;}
 	virtual ~Robot(void);
 protected:
@@ -38,5 +41,6 @@ protected:
 	float m_MaxVelocityScalar; //max V, in m/s
 	float m_Thrust; //forward thrust scalar measured in Newtons/second.
 	float m_Mass; //mass of the robot, measured in Kilograms
+	float m_DamageMultiplier;
 };
 

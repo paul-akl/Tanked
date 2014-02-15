@@ -23,5 +23,5 @@ bool FrameBuffer::checkStatus()
 		printf("Framebuffer Error, status: 0x%x\n", m_status);
 		return false;
 	}
-
+	return true;
 }

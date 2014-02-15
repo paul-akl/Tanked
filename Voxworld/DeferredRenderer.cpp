@@ -69,7 +69,7 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 		m_Matrices[i] = false;
 		m_Textures[i] = false;
 	}
-	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 200.0f);
+	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
 	m_Matrices[PROJECTION] = true;
 }
 void DeferredRenderer::end(void)
@@ -306,7 +306,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Pick a shader, and render each data, looping through dataList vector
-	for(int i=0; i < p_DataList.size(); i++)
+	for(size_t i=0; i < p_DataList.size(); i++)
 	{
 		int v_NumTextures = 0;
 		p_DataList[i].SelectedShader->enable();

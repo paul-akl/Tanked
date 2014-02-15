@@ -6,6 +6,9 @@
 SceneNode::SceneNode(void)
 {
 	m_Parent = nullptr;
+	m_Mesh = nullptr;
+	m_Diffuse = nullptr;
+	m_LocalTransform = nullptr;
 	m_IsActive = true;
 	m_OrientationDeg = 0.0f;
 	m_Position = glm::vec3(0.0f);

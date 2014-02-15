@@ -9,6 +9,7 @@ enum CollidableType
 	SCENERY,
 	COLLECTABLE,
 	MISC,
+	AREA_EFFECT,
 	PHASING
 };
 enum BoundaryType

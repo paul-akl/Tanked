@@ -19,6 +19,8 @@ Robot::Robot(void)
 	m_HeadPosition = glm::vec3(0.0f,4.5f,0.0f);
 	m_LeftArmPosition = glm::vec3(-3.0f,3.5f,0.0f);
 	m_RightArmPosition = glm::vec3(3.0f,3.5f,0.0f);
+	m_behaviourState=PassiveStatus;
+	m_Turning = false;
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {
@@ -37,6 +39,10 @@ void Robot::addHead(RobotHead* p_Head)
 	m_Head = p_Head;
 	SceneNode::addNode(p_Head);
 	m_Head->setPosition(m_HeadPosition);
+}
+const unsigned int Robot::getHitPoints()
+{
+	return m_HitPoints;
 }
 void Robot::addDamagedTexture(TextureNode* p_Texture)
 {
@@ -74,20 +80,50 @@ void Robot::turnRight(float p_DeltaTimeS)
 }
 void Robot::update(float p_DeltaTimeS)
 {
+
 	if(m_HitPoints == 0)
 	{
 		deactivate();
 	}
-	m_TargetOrientation =m_Head->getOrientation()+180.0f;
-	//perform a quick conversion to radians and calculate direction of acceleration
-	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
-	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
-	//then calculate acceleration scalar, multiply that by acceleration direction, 
-	//times delta time, to calculate impulse magnitude, and add to velocity
-	//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
-	m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
-	//normalize target orientation, if needed
-	m_TargetOrientation = m_Head->getOrientation();
+	if(m_behaviourState!=PassiveStatus)
+	{
+		m_StateTimer-=p_DeltaTimeS;
+		if(m_StateTimer>0.0f)
+		{
+			m_Head->LookAt(m_targetPosition);
+			if(!m_RightArm->armRaised())
+				m_RightArm->raiseArm();
+			if(m_LeftArm->armRaised())
+				m_LeftArm->raiseArm();
+			m_TargetOrientation =m_Head->getOrientation()+180.0f;
+			glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(m_TargetOrientation)*PI_OVER180,0.0f,glm::cos(m_TargetOrientation*PI_OVER180)));
+			//then calculate acceleration scalar, multiply that by acceleration direction, 
+			//times delta time, to calculate impulse magnitude, and add to velocity
+			//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+			m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+			m_IsMoving = true;
+		}
+		else
+		{
+			m_StateTimer=5.0f;
+			if(m_behaviourState==HostileStatus)
+			{
+				m_behaviourState=AlertStatus;
+			}
+			else if (m_behaviourState == AlertStatus)
+			{
+				m_behaviourState=PassiveStatus;
+			}
+		}
+	}
+	else
+	{
+		if(m_RightArm->armRaised())
+			m_LeftArm->lowerArm();
+		if(m_RightArm->armRaised())
+			m_RightArm->lowerArm();
+	}
+
 	if(m_TargetOrientation >= 360.0f)
 	{
 		m_TargetOrientation-=360.0f;

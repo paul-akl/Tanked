@@ -14,6 +14,7 @@ enum ResultType
 	PLAYERVSPROJECTILE,
 	ENEMYVSPROJECTILE,
 	ENEMYVSSCENERY,
+	ENEMYVSENEMY,
 	PROJECTILEVSSCENERY
 };
 class CollisionPair
@@ -29,17 +30,15 @@ public:
 	const ResultType getResultType(){return m_ResultType;}
 	void setResultType(const ResultType p_ResultType){m_ResultType = p_ResultType;}
 	void toConsole();
-	~CollisionPair(void);
-private:
 	CollidableNode* m_Collidable_A;
 	CollidableNode* m_Collidable_B;
 	bool m_Collided;
 	glm::vec3 m_CollisionPoint;
 	glm::vec3 m_CollisionNormal;
 	float m_Penetration;
+	bool m_InUse;
 	ResultType m_ResultType;
-	friend class CollisionSolver;
-	friend class CollisionQuadTree;
-	friend class CollisionResponse;
+	~CollisionPair(void);
+
 };
 

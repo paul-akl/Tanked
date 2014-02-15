@@ -12,6 +12,6 @@ public:
 	virtual void update(float p_DeltaTimeS);
 	virtual ~AutoGun(void);
 private:
-	static const int MAX_PROJECTILES = 20;
+	static const int MAX_PROJECTILES = 128;
 };
 

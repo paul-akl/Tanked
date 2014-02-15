@@ -2,9 +2,9 @@
 #include "collidablenode.h"
 #include <list>
 #include "Robot.h"
-
+#include "EnemyNode.h"
 class RobotGenerator :
-	public CollidableNode
+	public EnemyNode
 {
 public:
 	RobotGenerator(void);
@@ -19,7 +19,7 @@ public:
 	void setRobotArmMesh(MeshNode* p_Mesh){m_RobotArmMesh;}
 	void addDamagedDiffuseTexture(TextureNode* p_Texture){m_DamagedDiffuseTexture=p_Texture;}
 	void setHitPoints(const unsigned int p_HP){m_HitPoints = p_HP;}
-	void dealDamage(const unsigned int p_DamageAmount);
+	void dealDamage(const unsigned int p_DamageAmount){m_HitPoints-=p_DamageAmount;}
 	void setMaxHitPoints(const unsigned int p_MaxHP){m_MaxHitPoints = p_MaxHP;}
 	void setDifficulty(const unsigned int p_Difficulty);
 	virtual ~RobotGenerator(void);
@@ -43,6 +43,7 @@ protected:
 	unsigned int m_MaxHitPoints;
 	float m_SpawnDelay;
 	float m_SpawnTimer;
+	float m_SpawnDistance;
 	int m_NumRobots;
 };
 

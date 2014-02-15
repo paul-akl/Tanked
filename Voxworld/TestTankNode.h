@@ -24,6 +24,7 @@ public:
 	const float getMaxShieldHitPoints(){return m_ShieldMaxHitPoints;}
 	const float getWeaponChargeLevel(){return m_WeaponChargeLevel;}
 	const float getMaxWeaponChargeLevel(){return m_MaxWeaponChargeLevel;}
+	void dealDamage(float p_DamageAmount) {m_ShieldHitPoints-=p_DamageAmount;} 
 	virtual ~TestTankNode(void);
 protected:
 	TurretNode* m_Turret;
