@@ -13,6 +13,7 @@ SceneNode::SceneNode(void)
 	m_OrientationDeg = 0.0f;
 	m_Position = glm::vec3(0.0f);
 	m_IsMoving = false;
+	m_RenderRadius = glm::vec3(0.0f);
 }
 bool SceneNode::isMoving()
 {
@@ -83,14 +84,20 @@ void SceneNode::update(float p_DeltaTime)
 	if(m_Parent == nullptr)
 	{
 		//if node is root, then local transform is this object's world transform
+		//if (m_LocalTransform != nullptr)
 		m_WorldTransform = m_LocalTransform->getLocalTransform();
 	}
 	else
 	{
+		//if (m_LocalTransform == nullptr)
+			//m_WorldTransform = m_Parent->getWorldTransform();
+		//else
+		
 		//if not root, then all transforms are relative to parent's world transform
 		glm::mat4 p_WorldTransform = m_Parent->getWorldTransform();
 		glm::mat4 p_Local = m_LocalTransform->getLocalTransform();
 		m_WorldTransform = p_WorldTransform*p_Local;
+		
 	}
 	//default behaviour: update all children
 	if(m_IsActive)

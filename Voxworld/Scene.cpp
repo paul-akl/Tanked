@@ -6,8 +6,8 @@
 Scene::Scene(void)
 {
 	m_CurrentRenderMode = FILLED;
-	m_CamFollowDistance = -15.0f;
-	m_CamFollowAngle = -15.0f;
+	m_CamFollowDistance = -25.0f;
+	m_CamFollowAngle = -25.0f;
 	m_MaxTurnSpeed = 350.0f;
 	m_MouseTurnSpeed = 0.0f;
 	m_MouseAcceleration = 25.0f;
@@ -73,6 +73,14 @@ void Scene::init()
 			}break;
 		};
 	}
+	m_Hud = new HUD();
+	m_Hud->setName("mainhud");
+	m_Hud->setPosition(glm::vec3(0));
+	m_Hud->setOrientation(0);
+	m_Hud->setRenderRadius(glm::vec3(1.0));
+	m_Hud->init();
+	m_Hud->setMetricMax(SHIELDGAUGE, m_Tank->getMaxShieldHitPoints());
+	m_Hud->setMetricMax(WEAPONGAUGE, m_Tank->getMaxWeaponChargeLevel());
 	printf("init scene complete");
 }
 void Scene::addTank(glm::vec3 p_Location)
@@ -136,6 +144,12 @@ void Scene::addMaze(MazeNode* p_Maze)
 {
 	m_TestMaze = p_Maze;
 }
+
+void Scene::addUI(HUD* p_Hud)
+{
+	m_Hud = p_Hud;
+}
+
 void Scene::updateGameObjects()
 {
 	//multi-threading candidates
@@ -179,6 +193,11 @@ void Scene::updateGameObjects()
 	///////////////////////////////////
 	//detach threads???
 	///////////////////////////////////
+}
+
+void Scene::updateUI()
+{
+	m_Hud->update(m_DeltaTimeSeconds);
 }
 
 //NOT NEEDED
@@ -696,7 +715,8 @@ void Scene::render(Renderer* p_Renderer)
 	} 
 
 	//draw ui
-	p_Renderer->endRenderCycle();
+	m_Hud->render(p_Renderer);
+	//p_Renderer->endRenderCycle();
 }
 void Scene::update(float p_DeltaTimeS)
 {
@@ -707,13 +727,18 @@ void Scene::update(float p_DeltaTimeS)
 		detectCollisions();
 		checkGameConditions();
 		ProcessUserInput();
-		m_Tank->update(m_DeltaTimeSeconds);
+		m_Tank->update(m_DeltaTimeSeconds);	
 		updateGameObjects();
 //		m_Solver->update(1.0f);
 		cleanup();
 		m_Solver->update(m_DeltaTimeSeconds);
 		m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
 		m_Camera->moveUp(7.0f);
+		m_Hud->setMetricCurrent(SHIELDGAUGE, m_Tank->getShieldHitPoints());
+		m_Hud->setMetricCurrent(WEAPONGAUGE, m_Tank->getWeaponChargeLevel());
+		//m_Hud->setMetricCurrent(SCORE, 
+		m_Hud->setMetricCurrent(GENERATORDISPLAY, m_RoboGens.size());
+		m_Hud->update(m_DeltaTimeSeconds);
 	}
 }
 void Scene::cleanup()

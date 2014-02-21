@@ -17,8 +17,20 @@ uniform sampler2D diffuseMap;	// Model's texture
 
 void main(void)
 {
-	diffuseBuffer	= texture2D(diffuseMap, texCoord).rgb;	// Write the color from model's texture
+	//diffuseBuffer	= texture2D(diffuseMap, texCoord).rgb;	// Write the color from model's texture
 	texCoordBuffer	= vec3(texCoord, 0.0);					// Write texture coordinates (and an aditional value for specular)
 	positionBuffer	= worldPos;								// Write fragment's position in world space
 	normalBuffer	= normalize(normal);					// Write the normal vector
+
+	vec4 texColor = texture2D(diffuseMap, texCoord);
+
+	 if(texColor.a > 0.2)
+	{ 
+	diffuseBuffer = texColor.rgb;
+	}
+ else
+ {
+  discard;
+ }
+	
 }

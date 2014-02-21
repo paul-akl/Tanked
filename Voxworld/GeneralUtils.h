@@ -1,6 +1,8 @@
 #pragma once
 #include <GL\glew.h>
 #include <SDL_ttf.h>
+#include <SDL_blendmode.h>
+#include <glm\glm.hpp>
 namespace Utils
 {
 	class GeneralUtils
@@ -20,12 +22,12 @@ namespace Utils
 			return false;
 		}
 
-		void initialiseFont();
-
-		GLuint textToTexture(const char * str/*, TTF_Font *font, SDL_Color colour, GLuint &w,GLuint &h */);
-
+		void initialiseTTF();
+		static TTF_Font* generateFont(TTF_Font* font, const char* fileName);
+		static GLuint textToTexture(const char * str, TTF_Font* fontType, glm::vec4 fontColour);
+		TTF_Font* getFont(){return textFont;}
 		~GeneralUtils(void);
-	//private:
-		TTF_Font * textFont;
+	private:
+		 TTF_Font * textFont;
 	};
 };

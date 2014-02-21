@@ -23,6 +23,7 @@ public:
 	virtual void init(void);
 	virtual void beginRenderCycle(RenderMode p_Mode);
 	virtual void endRenderCycle(void);
+	virtual void beginUIPhase(void);
 	virtual void begin(void);
 	virtual void end(void);
 	virtual void render(MeshNode* p_Mesh);
@@ -36,7 +37,8 @@ public:
 	virtual void shutDown(void);
 
 	// Write all the geometry data to different buffers (similar to forward rendering), take the vector of dataSets as a parameter
-	virtual void geometryPass(std::vector<StandardDataSet> &p_DataList);	
+	virtual void geometryPass(std::vector<StandardDataSet> &p_DataList);
+	virtual void geometryPass(std::vector<UIDataSet> &p_DataList);
 	virtual void stencilPass();		// Use depth testing to generate stencil buffer
 	virtual void dirLightPass();	// Render a quad (so all the fragments on screen gets affected) for direction light calculations
 	virtual void pointLightPass();	// Render a sphere for each point light
@@ -61,6 +63,7 @@ private:
 	glm::mat4 m_CurrentModelMatrix;
 	glm::mat3 m_NormalMatrix;
 	glm::mat4 m_ProjectionMatrix;
+	glm::mat4 m_OrthoProjectionMatrix;
 	GLuint m_CurrentMesh;
 	GLuint m_CurrentMeshVerts;
 	GLuint m_CurrentDiffuse;
@@ -70,6 +73,8 @@ private:
 	RenderMode m_CurrentMode;
 	Material* m_CurrentMaterial;
 	GBuffer * m_GBuffer;
+	bool m_UI_Phase;
 	std::vector<StandardDataSet> m_DataList;
+	std::vector<UIDataSet> m_UIDataList;
 };
 

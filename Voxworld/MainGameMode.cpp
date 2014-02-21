@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "CollisionSolver.h"
 #include "CollisionResponse.h"
+
 #include <iostream>
 MainGameMode::MainGameMode(void)
 {
@@ -25,6 +26,13 @@ void MainGameMode::init(Game& iGame)
 	scene->addUpgradeFactory(new UpgradeFactory());
 	scene->addTankFactory(new BasicTankFactory());
 	scene->init();
+	/*hud = new HUD();
+	hud->setName("mainhud");
+	hud->setPosition(glm::vec3(0));
+	hud->setRenderRadius(glm::vec3(1.0));
+	hud->init();	
+	scene->addUI(hud);*/
+
 }
 void MainGameMode::update(float deltaTime)
 {
@@ -39,6 +47,7 @@ void MainGameMode::update(float deltaTime)
 	else
 	{
 		scene->update(deltaTimeS);
+		
 	}
 }
 bool MainGameMode::handleEvent(Game& iGame)
@@ -54,6 +63,7 @@ void MainGameMode::draw(Renderer* p_Renderer)
 	//ideally this will be abstracted away behind p_Renderer->renderScene(SceneNode* p_Scene);
 	//p_Scene will be a root node for the entire level
 	scene->render(p_Renderer);
+	
 }
 MainGameMode::~MainGameMode(void)
 {

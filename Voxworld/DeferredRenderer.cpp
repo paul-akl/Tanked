@@ -9,12 +9,11 @@
 
 DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Renderer(p_WindowWidth, p_WindowHeight)
 {
-
+		m_UI_Phase = false;
 }
 
 void DeferredRenderer::begin(void)
 {
-
 }
 void DeferredRenderer::render(LightNode* p_LightNode)
 {
@@ -69,7 +68,8 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 		m_Matrices[i] = false;
 		m_Textures[i] = false;
 	}
-	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
+	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 200.0f);
+	m_OrthoProjectionMatrix = glm::ortho<float>(-1.0f,1.0f,-1.0f,1.0f);
 	m_Matrices[PROJECTION] = true;
 }
 void DeferredRenderer::end(void)
@@ -120,30 +120,56 @@ void DeferredRenderer::end(void)
 		}
 	}
 
-	//Create Standard data set
-	//Populate with all m_Current* data
-	//add data set to list of data sets
-	StandardDataSet v_DataSet;
-	//mesh Data
-	v_DataSet.MeshLocation = m_CurrentMesh;
-	v_DataSet.MeshVertCount = m_CurrentMeshVerts;
-	//texture locations
-	// may need to add flags
-	v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
-	v_DataSet.NormalMapLocation = m_CurrentNormalMap;
-	v_DataSet.SpecularMapLocation = m_CurrentSpecMap;
-	v_DataSet.DepthMapLocation = m_CurrentDepthMap;
-	//material
-	v_DataSet.Material = m_CurrentMaterial;
-	//shader
-	v_DataSet.SelectedShader = m_CurrentShader;
-	//non camera related transform matrices
-	v_DataSet.ModelMatrix = m_CurrentModelMatrix;
-	v_DataSet.viewMatrix = m_CurrentViewMatrix;
-	v_DataSet.normalMatrix = m_NormalMatrix;
-	v_DataSet.projectionMatrix = m_ProjectionMatrix;
+	if(!m_UI_Phase)
+	{
+		//Create Standard data set
+		//Populate with all m_Current* data
+		//add data set to list of data sets
+		StandardDataSet v_DataSet;
+		//mesh Data
+		v_DataSet.MeshLocation = m_CurrentMesh;
+		v_DataSet.MeshVertCount = m_CurrentMeshVerts;
+		//texture locations
+		// may need to add flags
+		v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
+		v_DataSet.NormalMapLocation = m_CurrentNormalMap;
+		v_DataSet.SpecularMapLocation = m_CurrentSpecMap;
+		v_DataSet.DepthMapLocation = m_CurrentDepthMap;
+		//material
+		v_DataSet.Material = m_CurrentMaterial;
+		//shader
+		v_DataSet.SelectedShader = m_CurrentShader;
+		//non camera related transform matrices
+		v_DataSet.ModelMatrix = m_CurrentModelMatrix;
+		v_DataSet.viewMatrix = m_CurrentViewMatrix;
+		v_DataSet.normalMatrix = m_NormalMatrix;
+		v_DataSet.projectionMatrix = m_ProjectionMatrix;
 
-	m_DataList.push_back(v_DataSet);
+		m_DataList.push_back(v_DataSet);
+	}
+	else if(m_UI_Phase)
+	{
+		//Create data set for ui components
+		UIDataSet v_UIDataSet;
+
+		v_UIDataSet.MeshLocation = m_CurrentMesh;
+		v_UIDataSet.MeshVertCount = m_CurrentMeshVerts;
+		//texture locations
+		// may need to add flags
+		v_UIDataSet.DiffuseMapLocation = m_CurrentDiffuse;
+		//material
+		//v_UIDataSet.Material = m_CurrentMaterial;
+		//shader
+		v_UIDataSet.SelectedShader = m_CurrentShader;
+		//non camera related transform matrices
+		v_UIDataSet.ModelMatrix = m_CurrentModelMatrix;
+		v_UIDataSet.viewMatrix = glm::mat4(1.0f);
+		//v_UIDataSet.normalMatrix = m_NormalMatrix;
+		v_UIDataSet.projectionMatrix = m_OrthoProjectionMatrix;
+
+		m_UIDataList.push_back(v_UIDataSet);
+	}
+
 
 	
 	// may need to move this
@@ -160,14 +186,22 @@ void DeferredRenderer::endRenderCycle(void)
 {
 	m_GBuffer->initFrame();		// Required to clear final buffer
 	geometryPass(m_DataList);	// Render geometry of objects, pass vector of dataSets for current frame
+	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
 
 	finalPass();
 
 	m_DataList.clear();			// Clear current frame data sets, to get ready for the next frame
+	m_UIDataList.clear();
 
 	m_Matrices[VIEW] = false;
 	m_Matrices[PROJECTION] = false;
+	m_UI_Phase = false;
+
 	SDL_GL_SwapWindow(m_Window); // swap buffers
+}
+void DeferredRenderer::beginUIPhase(void)
+{
+	m_UI_Phase = true;
 }
 void DeferredRenderer::render(TextureNode* p_TextureNode)
 {
@@ -306,7 +340,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Pick a shader, and render each data, looping through dataList vector
-	for(size_t i=0; i < p_DataList.size(); i++)
+	for(int i=0; i < p_DataList.size(); i++)
 	{
 		int v_NumTextures = 0;
 		p_DataList[i].SelectedShader->enable();
@@ -355,8 +389,51 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		p_DataList[i].SelectedShader->disable();
 	}
 
-	glDepthMask(GL_FALSE);
+	//glDepthMask(GL_FALSE);
 }
+
+void DeferredRenderer::geometryPass(std::vector<UIDataSet> &p_DataList)
+{
+	m_GBuffer->initGeometryPass();	// Bind buffers
+
+	glDepthMask(GL_FALSE);			// turn off depth testing as the UI is drawn over everything else
+	glDisable(GL_DEPTH_TEST);		
+	//glDisable(GL_CULL_FACE);
+	//glClear(GL_DEPTH_BUFFER_BIT);
+	
+	// Pick a shader, and render each data, looping through dataList vector
+	for(int i=0; i < p_DataList.size(); i++)
+	{
+		int v_NumTextures = 0;
+		p_DataList[i].SelectedShader->enable();
+
+		//bind any textures, if they are present
+		if(v_NumTextures >= DIFFUSE)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DiffuseMapLocation);
+			GLint shaderLocation = p_DataList[i].SelectedShader->getShaderLocation();
+			GLint textureLocation = glGetUniformLocation(shaderLocation,"diffuseMap");
+			glUniform1i(textureLocation,DIFFUSE);
+		}
+		
+		glBindVertexArray(p_DataList[i].MeshLocation);
+
+		p_DataList[i].SelectedShader->setModelMatrix(p_DataList[i].ModelMatrix);
+		p_DataList[i].SelectedShader->setProjectionMatrix(p_DataList[i].projectionMatrix);
+		p_DataList[i].SelectedShader->setModelView(p_DataList[i].viewMatrix * p_DataList[i].ModelMatrix);
+
+		glDrawElements(GL_TRIANGLES, p_DataList[i].MeshVertCount, GL_UNSIGNED_INT, 0);	// draw VAO 
+
+		glBindVertexArray(0);
+		//disable shader
+		p_DataList[i].SelectedShader->disable();
+	}
+
+	glDepthMask(GL_TRUE);			// Make sure to turn on depth testing
+	glEnable(GL_DEPTH_TEST);		// as this is much like a regular forward render pass
+}
+
 void DeferredRenderer::stencilPass()
 {
 	m_GBuffer->initStencilPass();	// Unbind any buffers
@@ -375,6 +452,7 @@ void DeferredRenderer::stencilPass()
 
 	//TODO: set light's position, calculate it's radius and render a sphere using stencil shaders
 }
+
 void DeferredRenderer::dirLightPass()
 {
 	glDisable(GL_DEPTH_TEST);		

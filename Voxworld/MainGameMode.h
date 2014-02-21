@@ -4,7 +4,6 @@
 #include "BasicTankFactory.h"
 #include "CameraNode.h"
 #include "FloorFactory.h"
-//#include "Scene.h"
 #include "WallFactory.h"
 #include "CollidableNode.h"
 #include "CollisionResponse.h"
@@ -12,6 +11,7 @@
 #include <list>
 #include "CollisionSolver.h"
 #include "Scene.h"
+#include "HUD.h"
 //each game mode will have it's own render class.
 class Renderer;
 /////////////////////////////////////////
@@ -33,6 +33,6 @@ private:
 	void OpenMenu(Game& iGame);
 	bool running;
 	Scene* scene;
-
+	HUD * hud;
 };
 

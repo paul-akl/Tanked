@@ -4,6 +4,7 @@ namespace Utils
 {
 	GeneralUtils::GeneralUtils(void)
 	{
+		
 	}
 
 	void GeneralUtils::exitFatalError(const char *message) 
@@ -13,21 +14,29 @@ namespace Utils
 		exit(1);
 	}
 
-	void GeneralUtils::initialiseFont()
+	void GeneralUtils::initialiseTTF()
 	{
 			// set up TrueType / SDL_ttf
 		if (TTF_Init()== -1)
 			std::cout << "TTF failed to initialise." << std::endl;
-
-		textFont = TTF_OpenFont("MavenPro-Regular.ttf", 24);
-		if (textFont == NULL)
-			std::cout << "Failed to open font." << std::endl;
+			
+		//generateFont(textFont, "Fonts/Blox2.ttf");
 	}
 
-	GLuint GeneralUtils::textToTexture(const char * str/*, TTF_Font *font, SDL_Color colour, GLuint &w,GLuint &h */) {
+	TTF_Font* GeneralUtils::generateFont(TTF_Font* font, const char* fileName)
+{
+	font = TTF_OpenFont(fileName, 24);
+	std::cout << "opening font: " << fileName << std::endl;
+		if (font == NULL)
+			std::cout << "Failed to open font." << std::endl;
 		
-	TTF_Font *font = textFont;
-	SDL_Color colour = { 255, 255, 255 };
+		return font;
+}
+
+	GLuint GeneralUtils::textToTexture(const char* str, TTF_Font* fontType, glm::vec4 fontColour) {
+		
+	TTF_Font* font = fontType;
+	SDL_Color colour = {fontColour.r, fontColour.g, fontColour.b, fontColour.a};
 	SDL_Color bg = { 0, 0, 0 };
 
 	SDL_Surface *stringImage;
