@@ -14,6 +14,7 @@
 #include "MazeNode.h"
 #include "AIManager.h"
 #include "MazeNode.h"
+#include "HUD.h"
 #include <SDL_thread.h>
 struct ThreadDBlock
 {
@@ -43,8 +44,10 @@ public:
 	void addUpgradeFactory(UpgradeFactory* p_Factory);
 	void addCollisionSolver(CollisionSolver* p_Solver);
 	void addController(Controller* p_Controller);
+	void addUI(HUD* p_Hud);
 	bool sceneComplete();
 	void addMaze(MazeNode* p_Maze);
+	TestTankNode* getTank(){return m_Tank;}
 	//void addRobotGenerator(RobotGenerator* p_Factory);
 	//void addSubBossFactory(EnemyFactory* p_Factory);
 	//void addBossFactory(EnemyFactory* p_Factory);
@@ -69,6 +72,7 @@ protected:
 	void updateFloors();
 	void updateEnemies();
 	void updateProjectiles();
+	void updateUI();
 	static int updateScenery(void* p_Scenery);
 	static int updateCollectables(void* p_Collectables);
 	static int updateObjects(void* p_Objects);
@@ -84,6 +88,7 @@ protected:
 	BasicTankFactory* m_TankFactory;
 	UpgradeFactory* m_UpgradeFactory;
 	RoboGenFactory* m_RoboGenFactory;
+	HUD* m_Hud;
 	TestTankNode* m_Tank;
 	std::vector<CollisionPair*> m_CollisionEvents;
 	std::list<ProjectileNode*> m_Projectiles;

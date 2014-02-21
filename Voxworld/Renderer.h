@@ -44,6 +44,24 @@ struct StandardDataSet
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 };
+
+struct UIDataSet
+{
+	//mesh Data
+	GLuint MeshLocation;
+	GLuint MeshVertCount;
+	//texture locations
+	GLuint DiffuseMapLocation;
+	Material* Material;
+	Shader* SelectedShader;
+	//non camera related transform matrices
+	glm::mat4 ModelMatrix;
+	glm::mat3 normalMatrix;
+
+	glm::mat4 projectionMatrix;
+	glm::mat4 viewMatrix;
+};
+
 //simple stucture for storing cubemap data which will be written to, and read from.
 struct EnvironmentMapDataSet
 {
@@ -73,6 +91,7 @@ public:
 	virtual void endRenderCycle(void)=0;
 	virtual void begin(void) = 0;
 	virtual void end(void) = 0;
+	virtual void beginUIPhase(void) = 0;
 	virtual void render(MeshNode* p_Mesh)=0;
 	virtual void render(TransformNode* p_Transform)=0;
 	virtual void render(TextureNode* p_TextureNode)=0;

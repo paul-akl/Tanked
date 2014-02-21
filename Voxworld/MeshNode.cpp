@@ -1,4 +1,3 @@
-#include <assimp\postprocess.h>
 
 #include "GLTestRender.h"
 #include "MeshNode.h"

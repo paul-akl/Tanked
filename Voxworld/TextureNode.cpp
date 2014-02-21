@@ -56,6 +56,7 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 	}
 	return true;
 }
+
 void TextureNode::render(Renderer* p_Renderer)
 {
 	p_Renderer->render(this);

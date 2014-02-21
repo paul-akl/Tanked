@@ -179,6 +179,15 @@
     <Filter Include="Core Engine\Collision System\Solver">
       <UniqueIdentifier>{a4d33da7-65e1-4d76-95fb-f37fede82bb9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\UI System">
+      <UniqueIdentifier>{8d10ec62-da7d-4bd6-ad50-c4b4f592c391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Sound Manager">
+      <UniqueIdentifier>{e94ce210-1340-48bd-884a-c2f12e2925ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\UI System\Base">
+      <UniqueIdentifier>{41d50c6a-477e-4be4-87fe-16c6f5653a1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -249,9 +258,6 @@
     </ClCompile>
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>Core Engine\Renderer\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredRenderer.cpp">
-      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClCompile>
     <ClCompile Include="GBuffer.cpp">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
@@ -332,6 +338,37 @@
     <ClCompile Include="CollisionPairManager.cpp">
       <Filter>Core Engine\Collision System\Solver</Filter>
     </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldGauge.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponGauge.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredRenderer.cpp">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Core Engine\Sound Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="TextElement.cpp">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GFXElement.cpp">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="UIWindow.cpp">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Score.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratorDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -402,9 +439,6 @@
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
       <Filter>Core Engine\Renderer\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredRenderer.h">
-      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClInclude>
     <ClInclude Include="GBuffer.h">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
@@ -482,6 +516,37 @@
     <ClInclude Include="CollisionPair.h">
       <Filter>Core Engine\Collision System\Solver</Filter>
     </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldGauge.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponGauge.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredRenderer.h">
+      <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Core Engine\Sound Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="TextElement.h">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXElement.h">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="UIWindow.h">
+      <Filter>Core Engine\UI System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Score.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratorDisplay.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

@@ -19,11 +19,14 @@ public:
 	const std::string getName(void);
 	void setTransform(const glm::mat4& p_Matrix);
 	const glm::mat4& getLocalTransform(void) const;
+	TransformNode* getLocalTransform(){return m_LocalTransform;}
 	void setParent(SceneNode* p_Parent);
 	void addNode(SceneNode* p_Child);
 	void addTransform(TransformNode* p_LocalTransform);
 	void addMesh(MeshNode* p_Mesh);
 	void addTexture(TextureNode* p_Texture);
+	TextureNode* getTexture(){return m_Diffuse;}
+	void setTexture(TextureNode* p_Texture){m_Diffuse = p_Texture;}
 	void setPosition(const glm::vec3 p_Position);
 	bool isMoving();
 	glm::vec3 getLocation(){return m_Position;}
@@ -40,6 +43,8 @@ public:
 	void deactivate(void);
 	const bool isActive(void);
 	virtual ~SceneNode(void);
+	glm::vec3 getRenderRadius(){return m_RenderRadius;}
+	void setRenderRadius(glm::vec3 radius){m_RenderRadius = radius;}
 protected:
 	std::string m_Name;
 	bool m_IsActive;
@@ -53,5 +58,6 @@ protected:
 	glm::vec3 m_Position;
 	float m_OrientationDeg;
 	glm::vec3 m_Velocity;
+	glm::vec3 m_RenderRadius;
 };
 

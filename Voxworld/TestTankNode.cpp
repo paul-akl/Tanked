@@ -15,11 +15,12 @@ TestTankNode::TestTankNode(void)
 	m_TurnAnimSpeed = 150.0f; //used for smooth rotation of tank body
 	m_TargetOrientation = 0.0f; //no target oriention on start
 	m_OrientationDeg = 0.0f; //orientation initialized to zero
-	m_MaxWeaponChargeLevel = 1.0f;
+	m_MaxWeaponChargeLevel = 0.1f;
 	m_WeaponChargeRate=0.15f;
 	m_WeaponChargeLevel = 0.0f;
 	m_ShieldHitPoints = 100.0f;
-	m_ShieldMaxHitPoints = 100.0f;
+	m_ShieldMaxHitPoints = 200.0f;
+	m_ShieldChargeRate = 15.0f;
 }
 void TestTankNode::chargeMainGun(float p_DeltaTimeS)
 {
@@ -182,6 +183,7 @@ void TestTankNode::update(float p_DeltaTimeS)
 		m_ShieldHitPoints+=m_ShieldChargeRate*p_DeltaTimeS;
 	else
 		m_ShieldHitPoints=m_ShieldMaxHitPoints;
+	//m_ShieldHitPoints -= 0.1;
 	//////////////////////////////////////////////////////
 	// VELOCITY INTERPOLATION
 	//////////////////////////////////////////////////////
