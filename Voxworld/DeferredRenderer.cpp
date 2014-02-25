@@ -185,9 +185,10 @@ void DeferredRenderer::end(void)
 void DeferredRenderer::endRenderCycle(void)
 {
 	m_GBuffer->initFrame();		// Required to clear final buffer
+	//somewhere here will be a frustum check
 	geometryPass(m_DataList);	// Render geometry of objects, pass vector of dataSets for current frame
 	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
-
+	
 	finalPass();
 
 	m_DataList.clear();			// Clear current frame data sets, to get ready for the next frame

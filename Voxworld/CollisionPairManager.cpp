@@ -26,11 +26,13 @@ CollisionPair* CollisionPairManager::getPair()
 			pair->m_Collided = false;
 			pair->m_Collidable_A = nullptr;
 			pair->m_Collidable_B = nullptr;
-			break;
+			//printf("pair reuse\n");
+			return pair;
 		}
 	}
 	pair = new CollisionPair(nullptr,nullptr);
 	m_Pairs.push_back(pair);
+	//printf("new pair\n");
 	return pair;
 
 }

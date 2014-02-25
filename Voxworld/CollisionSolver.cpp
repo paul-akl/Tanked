@@ -12,17 +12,17 @@ void CollisionSolver::init(float p_WorldWidth,glm::vec3 p_WorldCentre)
 {
 	m_PairBoss = new CollisionPairManager();
 	m_PairBoss->init();
-	buildTree(m_StaticRoot,0,p_WorldWidth*0.5f,p_WorldCentre);
+	m_StaticRoot = buildTree(0,p_WorldWidth*0.5f,p_WorldCentre);
 }
-void CollisionSolver::buildTree(QTNode*& p_Root, int p_Depth, float p_HalfWidth, glm::vec3 centre)
+QTNode* CollisionSolver::buildTree(int p_Depth, float p_HalfWidth, glm::vec3 centre)
 {
-	if(p_Depth <= MAX_DEPTH)
-	{
-		p_Root = new QTNode();
-		p_Root->m_Centre = centre;
-		p_Root->m_halfWidth = p_HalfWidth;
-		p_Root->m_Depth = p_Depth;
+	QTNode* p_Root = new QTNode();
+	p_Root->m_Centre = centre;
+	p_Root->m_halfWidth = p_HalfWidth;
+	p_Root->m_Depth = p_Depth;
 
+	if(p_Depth < MAX_DEPTH)
+	{
 		//recursively construct 4 subchildren
 		glm::vec3 offset;
 		float step = p_HalfWidth*0.5f;
@@ -30,32 +30,49 @@ void CollisionSolver::buildTree(QTNode*& p_Root, int p_Depth, float p_HalfWidth,
 		{
 			offset.x = ((i & 1) ? step : -step);
 			offset.z = ((i & 2) ? step : -step);
-			buildTree(p_Root->m_Children[i],p_Depth+1,step,p_Root->m_Centre+offset);
+			p_Root->m_Children[i] = buildTree(p_Depth+1,step,p_Root->m_Centre+offset);
+			p_Root->m_Children[i]->m_Parent = p_Root;
 		}
 	}
+	return p_Root;
+
 }
 void CollisionSolver::insert(QTNode* p_Node, CollidableNode* p_Collidable)
 {
 	int index =  0, straddle = 0;
 	//compute quadrant number 0...3
 	//if straddling the X or Z planes, exit directly.
-	for(int i = 0; i < 3; i+=2)
+	if(p_Node->m_Depth < MAX_DEPTH)
 	{
-		float delta = p_Collidable->getLocation()[i] - p_Node->m_Centre[i];
-		if(abs(delta) < p_Node->m_halfWidth + p_Collidable->getWidth())
+		//if straddling, insert into list, else find quadrant and insert
+		float deltaX = p_Collidable->getLocation().x - p_Node->m_Centre.x;
+		float deltaZ = p_Collidable->getLocation().z - p_Node->m_Centre.z;
+		if(abs(deltaX) < p_Node->m_halfWidth+p_Collidable->getWidth()*0.5f)
 		{
 			straddle = 1;
-			break;
 		}
-		if(delta < 0.0f) index |= (1<<i);
-	}
-	if(!straddle && p_Node->m_Children[index] != nullptr)
-	{
-		insert(p_Node->m_Children[index],p_Collidable);
+		if(abs(deltaZ) < p_Node->m_halfWidth+p_Collidable->getLength()*0.5f)
+		{
+			straddle = 1;
+		}
+		if(!straddle)
+		{
+			if(p_Collidable->getLocation().x > p_Node->m_Centre.x) index+=1;
+			if(p_Collidable->getLocation().z > p_Node->m_Centre.z) index+=2;
+			if(p_Node->m_Children[index]!=nullptr)
+			{
+				insert(p_Node->m_Children[index],p_Collidable);
+			}
+			else
+				p_Node->m_Objects.push_front(p_Collidable);
+		}
+		else
+			p_Node->m_Objects.push_front(p_Collidable);
 	}
 	else
+	{
 		p_Node->m_Objects.push_front(p_Collidable);
-
+	}
 }
 bool CollisionSolver::overlaps(QTNode* p_Node,CollidableNode* p_Collidable)
 {
@@ -63,16 +80,17 @@ bool CollisionSolver::overlaps(QTNode* p_Node,CollidableNode* p_Collidable)
 	float dZ =  abs(p_Node->m_Centre.z-p_Collidable->getLocation().z);
 	if(p_Collidable->getBoundaryType()==CIRCLE)
 	{
-		if(dX <= p_Collidable->getRadius()+p_Node->m_halfWidth && dZ <= p_Collidable->getRadius()+p_Node->m_halfWidth)
+		if(dX < p_Collidable->getRadius()+p_Node->m_halfWidth && dZ < p_Collidable->getRadius()+p_Node->m_halfWidth)
 			return true;
 		return false;
 	}
 	else if(p_Collidable->getBoundaryType()==AAB)
 	{
-		if(dX <= p_Collidable->getWidth()+p_Node->m_halfWidth && dZ <= p_Collidable->getLength()+p_Node->m_halfWidth)
+		if(dX < (p_Collidable->getWidth()*0.5f)+p_Node->m_halfWidth && dZ < (p_Collidable->getLength()*0.5f)+p_Node->m_halfWidth)
 			return true;
 		return false;
 	}
+	else return false;
 }
 void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Pairs)
 {
@@ -88,11 +106,15 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 				//same for enemy_ROBOT
 				//same for PLAYER
 				CollisionPair* pair = circleVsAAB(p_Collidable->getLocation(),(*it)->getLocation(),p_Collidable->getRadius(),(*it)->getWidth(),(*it)->getLength());
-				if(pair!=nullptr)
+				if(pair!=nullptr && pair!=NULL)
 				{
-					//positiive collision.
+					//positive collision.
 					pair->m_Collidable_B = (*it);
 					pair->m_Collidable_A = p_Collidable;
+					//calculate point of contact and move circle outside collision zone.
+					
+					p_Collidable->setPosition(p_Collidable->getLocation()+glm::normalize(-p_Collidable->getVelocity())*pair->m_Penetration);
+					pair->m_CollisionPoint = p_Collidable->getLocation();
 					switch(p_Collidable->getType())
 					{
 					case PROJECTILE:
@@ -120,15 +142,15 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 		}
 		if(overlaps(p_Node->m_Children[1],p_Collidable))
 		{
-			CollideObject(p_Node->m_Children[0],p_Collidable,p_Pairs);
+			CollideObject(p_Node->m_Children[1],p_Collidable,p_Pairs);
 		}
 		if(overlaps(p_Node->m_Children[2],p_Collidable))
 		{
-			CollideObject(p_Node->m_Children[0],p_Collidable,p_Pairs);
+			CollideObject(p_Node->m_Children[2],p_Collidable,p_Pairs);
 		}
 		if(overlaps(p_Node->m_Children[3],p_Collidable))
 		{
-			CollideObject(p_Node->m_Children[0],p_Collidable,p_Pairs);
+			CollideObject(p_Node->m_Children[3],p_Collidable,p_Pairs);
 		}
 	}
 }
@@ -149,6 +171,7 @@ bool CollisionSolver::contains(QTNode* p_Node,CollidableNode* p_Collidable)
 			return true;
 		return false;
 	}
+	else return false;
 }
 void CollisionSolver::updateTree(QTNode* p_Node)
 {
@@ -194,7 +217,7 @@ void CollisionSolver::addAreaEffect(CollidableNode* p_AOE)
 }
 void CollisionSolver::addScenery(CollidableNode* p_Scenery)
 {
-	m_Scenery.push_front(p_Scenery);
+	//m_Scenery.push_front(p_Scenery);
 	insert(m_StaticRoot,p_Scenery);
 }
 int CollisionSolver::updateProjectiles(void* ptr)
@@ -336,21 +359,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 				}
 			}
 			CollideObject(m_StaticRoot,(*it),p_Pairs);
-			//if(!m_Scenery.empty())
-			//{
-			//	for (std::list<CollidableNode*>::iterator jt = m_Scenery.begin(); jt != m_Scenery.end();jt++)
-			//	{
-			//		CollisionPair* pair = circleVsAAB((*it)->getLocation(),(*jt)->getLocation(),(*it)->getRadius(), (*jt)->getWidth(),(*jt)->getLength());
-			//		if ( pair!=nullptr)
-			//		{
-			//			pair->m_ResultType = PROJECTILEVSSCENERY;
-			//			pair->m_Collidable_A = (*it);
-			//			pair->m_Collidable_B = (*jt);
-			//			p_Pairs.push_back(pair);
 
-			//		}
-			//	}
-			//}
 		}
 	}
 	//check for enemy/enemy collision
@@ -387,21 +396,6 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 				}
 			}
 			CollideObject(m_StaticRoot,(*it),p_Pairs);
-			//if(!m_Scenery.empty())
-			//{
-			//	for (std::list<CollidableNode*>::iterator jt = m_Scenery.begin(); jt != m_Scenery.end();jt++)
-			//	{
-			//		CollisionPair* pair = circleVsAAB((*it)->getLocation(),(*jt)->getLocation(),(*it)->getRadius(), (*jt)->getWidth(),(*jt)->getLength());
-			//		if ( pair!=nullptr)
-			//		{
-			//			pair->m_ResultType = ENEMYVSSCENERY;
-			//			pair->m_Collidable_A = (*it);
-			//			pair->m_Collidable_B = (*jt);
-			//			p_Pairs.push_back(pair);
-
-			//		}
-			//	}
-			//}
 		}
 	}
 	//check tank against walls, enemies, collectables
@@ -434,21 +428,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 				}
 			}
 			CollideObject(m_StaticRoot,(*it),p_Pairs);
-			//if(!m_Scenery.empty())
-			//{
-			//	for (std::list<CollidableNode*>::iterator jt = m_Scenery.begin(); jt != m_Scenery.end();jt++)
-			//	{
-			//		CollisionPair* pair = circleVsAAB((*it)->getLocation(),(*jt)->getLocation(),(*it)->getRadius(), (*jt)->getWidth(),(*jt)->getLength());
-			//		if ( pair!=nullptr)
-			//		{
-			//			pair->m_ResultType = PLAYERVSSCENERY;
-			//			pair->m_Collidable_A = (*it);
-			//			pair->m_Collidable_B = (*jt);
-			//			p_Pairs.push_back(pair);
 
-			//		}
-			//	}
-			//}
 		//additional checks needed for collectable objects.
 		}
 	}
@@ -504,47 +484,156 @@ float CollisionSolver::circleVsLine(glm::vec3 p_PointA,glm::vec3 p_PointB, glm::
 CollisionPair* CollisionSolver::circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 p_RectCentre, float p_Radius, float p_Width, float p_Height)
 {
 
-
+	//Cases: 
+	//	Case 1: no intersection, return null
+	//	Case 2: containment, calculate normal + penetration depth.
+	//	Case 3: edge intersection, calc normal + penetration depth.
+	//	Case 4: corner circle intersection, calc normal + penetration depth
+	glm::vec3 delta = p_CircleCentre-p_RectCentre;
+	glm::vec3 absDelta = glm::vec3(abs(delta.x),abs(delta.y),abs(delta.z));
 	glm::vec3 v_Points[4];
+	float halfWidth = p_Width*0.5f;
+	float halfHeight = p_Height*0.5f;
 	//std::vector<glm::vec3> v_Points;
-	v_Points[0] = p_RectCentre+glm::vec3(-p_Width*0.5f,0.0f,-p_Height*0.5f);
-	v_Points[1] = p_RectCentre+glm::vec3(-p_Width*0.5f,0.0f,p_Height*0.5f);
-	v_Points[2] = p_RectCentre+glm::vec3(p_Width*0.5f,0.0f,p_Height*0.5f);
-	v_Points[3] = p_RectCentre+glm::vec3(p_Width*0.5f,0.0f,-p_Height*0.5f);
-	glm::vec3 axisA, axisB;
-	axisA = glm::normalize(v_Points[1]-v_Points[0]);
-	axisB = glm::normalize(v_Points[2]-v_Points[1]);
-	float axisAPos = glm::dot(p_CircleCentre,axisA);
-	float axisBPos = glm::dot(p_CircleCentre,axisB);
 
-	
-	//check for intersection
-	for (size_t i = 0; i < 4; i++)
+
+
+	if(absDelta.x < halfWidth+p_Radius)
 	{
-		size_t secondIndex = 0;
-		if(i+1 < 4)
-			secondIndex = i+1;
-
-		float intersection = circleVsLine(v_Points[i],v_Points[secondIndex],p_CircleCentre,p_Radius);
-		if(intersection>0.0f)
+		if(absDelta.z < halfHeight+p_Radius)
 		{
-			//calculate displacement vector. need more data from circleVsLine
-			CollisionPair* pair = m_PairBoss->getPair();
-			if(pair!=nullptr)
+			//case 1 ruled out
+			//do further collision checking
+			//case 2: calculate containment
+			if(absDelta.x < halfWidth-p_Radius)
 			{
-				pair->m_Collided = true;
-				pair->m_Penetration = sqrt(intersection);
-				pair->m_CollisionNormal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
-				pair->m_CollisionNormal = glm::vec3(-pair->m_CollisionNormal.z,0.0f,pair->m_CollisionNormal.x);
-				pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
-				return pair;
-			}
-			else
-				std::cout<<"Too many pairs"<<std::endl;
-		}
-	}
-	return nullptr;
+				if(absDelta.z < halfHeight-p_Radius)
+				{
+					//case 2 is true
+					//calculate normal, penetration depth
+					CollisionPair* pair = m_PairBoss->getPair();
+					//check axis for least penetration
+					if(absDelta.x < absDelta.z)
+					{
+						pair->m_Collided = true;
+						pair->m_Penetration = absDelta.z+p_Radius;
+						if(delta.z!=0.0f)
+						{
+							if(delta.z < 0.0f)
+							{
+								pair->m_CollisionNormal.z = -1.0f;
+								pair->m_CollisionNormal.y = 0.0f;
+								pair->m_CollisionNormal.x = 0.0f;
+							}
+							else 
+							{
+								pair->m_CollisionNormal.z = 1.0f;
+								pair->m_CollisionNormal.y = 0.0f;
+								pair->m_CollisionNormal.x = 0.0f;
+							}
+						}
+					}
+					else
+					{
+						pair->m_Penetration = absDelta.x+p_Radius;
+						if(delta.x !=0.0f)
+						{
+							if(delta.x < 0.0f)
+							{
+								pair->m_CollisionNormal.x = -1.0f;
+								pair->m_CollisionNormal.y = 0.0f;
+								pair->m_CollisionNormal.z = 0.0f;
+							}
+							else if(delta.x > 0.0f)
+							{
+								pair->m_CollisionNormal.x = 1.0f;
+								pair->m_CollisionNormal.y = 0.0f;
+								pair->m_CollisionNormal.z = 0.0f;
+							}
+						}
+					}
+					return pair;
+				}
+				//no containment
+				else
+				{
+					v_Points[0] = p_RectCentre+glm::vec3(-halfWidth,0.0f,-halfHeight);
+					v_Points[1] = p_RectCentre+glm::vec3(-halfWidth,0.0f,halfHeight);
+					v_Points[2] = p_RectCentre+glm::vec3(halfWidth,0.0f,halfHeight);
+					v_Points[3] = p_RectCentre+glm::vec3(halfWidth,0.0f,-halfHeight);
+					//case 3 edge circle collision check
+					for (size_t i = 0; i < 4; i++)
+					{
+						size_t secondIndex = 0;
+						if(i+1 < 4)
+							secondIndex = i+1;
 
+						float intersection = circleVsLine(v_Points[i],v_Points[secondIndex],p_CircleCentre,p_Radius);
+						if(intersection>0.0f)
+						{
+							//calculate displacement vector. need more data from circleVsLine
+							CollisionPair* pair = m_PairBoss->getPair();
+							if(pair!=nullptr)
+							{
+								pair->m_Collided = true;
+								pair->m_Penetration = sqrt(intersection)+p_Radius;
+								pair->m_CollisionNormal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
+								pair->m_CollisionNormal = glm::vec3(-pair->m_CollisionNormal.z,0.0f,pair->m_CollisionNormal.x);
+								//better to calculate collision point based on velocity
+								//pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
+								return pair;
+							}
+							else
+								return nullptr;
+						}
+						else
+							continue;
+					}
+					return nullptr;
+				}
+			} //no containment. 
+			else
+			{
+				//case 3 edge circle collision check
+				v_Points[0] = p_RectCentre+glm::vec3(-halfWidth,0.0f,-halfHeight);
+				v_Points[1] = p_RectCentre+glm::vec3(-halfWidth,0.0f,halfHeight);
+				v_Points[2] = p_RectCentre+glm::vec3(halfWidth,0.0f,halfHeight);
+				v_Points[3] = p_RectCentre+glm::vec3(halfWidth,0.0f,-halfHeight);
+				//case 3 edge circle collision check
+				for (size_t i = 0; i < 4; i++)
+				{
+					size_t secondIndex = 0;
+					if(i+1 < 4)
+						secondIndex = i+1;
+
+					float intersection = circleVsLine(v_Points[i],v_Points[secondIndex],p_CircleCentre,p_Radius);
+					if(intersection>0.0f)
+					{
+						//calculate displacement vector. need more data from circleVsLine
+						CollisionPair* pair = m_PairBoss->getPair();
+						if(pair!=nullptr)
+						{
+							pair->m_Collided = true;
+							pair->m_Penetration = sqrt(intersection)+p_Radius;
+							pair->m_CollisionNormal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
+							pair->m_CollisionNormal = glm::vec3(-pair->m_CollisionNormal.z,0.0f,pair->m_CollisionNormal.x);
+							//better to calculate collision point based on velocity
+							//pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
+							return pair;
+						}
+						else
+							return nullptr;
+					}
+					else continue;
+				}
+				return nullptr;
+			}
+		}
+		else 
+			return nullptr;
+	}
+	else 
+		return nullptr;
 }
 CollisionSolver::~CollisionSolver(void)
 {

@@ -7,6 +7,7 @@ QTNode::QTNode(void)
 	m_Children[1] = nullptr;
 	m_Children[2] = nullptr;
 	m_Children[3] = nullptr;
+	m_Parent = nullptr;
 }
 
 

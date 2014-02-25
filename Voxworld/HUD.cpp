@@ -142,6 +142,6 @@ void HUD::render(Renderer * p_Renderer)
 	for(int i = 0; i < m_HudComponents.size(); i++)
 		m_HudComponents[i]->render(p_Renderer);
 	
-	p_Renderer->endRenderCycle();
+
 }
 

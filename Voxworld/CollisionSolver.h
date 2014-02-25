@@ -21,7 +21,7 @@ public:
 	virtual void processCollisions(std::vector<CollisionPair*>& p_Pairs);
 	virtual ~CollisionSolver(void);
 protected:
-	void buildTree(QTNode*& p_Root, int p_Depth, float p_HalfWidth, glm::vec3 centre);
+	QTNode* buildTree(int p_Depth, float p_HalfWidth, glm::vec3 centre);
 	void insert(QTNode* p_Node, CollidableNode* p_Collidable);
 	void updateTree(QTNode* p_Node);
 	void CollideObject(QTNode* p_Node,CollidableNode* p_Collidable, std::vector<CollisionPair*>& p_Pairs);
@@ -53,7 +53,7 @@ protected:
 	SDL_Thread* collectableThread;
 	SDL_Thread* areaEffectThread;
 	SDL_Thread* projectileThread;
-	static const int MAX_DEPTH = 4;
+	static const int MAX_DEPTH = 3;
 	QTNode* m_StaticRoot;
 };
 
