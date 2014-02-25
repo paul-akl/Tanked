@@ -335,7 +335,7 @@ void Scene::checkGameConditions()
 							glm::vec3 velocity = m_CollisionEvents[i]->m_Collidable_A->getVelocity();
 							glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
 							glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_A->getLocation());
-							m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
+							//m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
 							glm::vec3 reflection = glm::reflect(velocity,normal);
 							if(m_CollisionEvents[i]->m_Collidable_A->isMoving())
 							{
@@ -386,9 +386,9 @@ void Scene::checkGameConditions()
 							//this selectes whether the angle is shallow enough for the bullet to reflect
 							if(abs(glm::dot(normal,glm::normalize(tmp->getVelocity())))<0.707f)
 							{
-								glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
-								glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_A->getLocation());
-								m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
+								//glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
+								//glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_A->getLocation());
+								//m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
 								//leave a bullet bounce effect
 								tmp->Bounce(normal);
 							}
@@ -716,6 +716,7 @@ void Scene::render(Renderer* p_Renderer)
 
 	//draw ui
 	m_Hud->render(p_Renderer);
+	p_Renderer->endRenderCycle();
 	//p_Renderer->endRenderCycle();
 }
 void Scene::update(float p_DeltaTimeS)
@@ -729,14 +730,12 @@ void Scene::update(float p_DeltaTimeS)
 		ProcessUserInput();
 		m_Tank->update(m_DeltaTimeSeconds);	
 		updateGameObjects();
-//		m_Solver->update(1.0f);
 		cleanup();
 		m_Solver->update(m_DeltaTimeSeconds);
 		m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
 		m_Camera->moveUp(7.0f);
 		m_Hud->setMetricCurrent(SHIELDGAUGE, m_Tank->getShieldHitPoints());
 		m_Hud->setMetricCurrent(WEAPONGAUGE, m_Tank->getWeaponChargeLevel());
-		//m_Hud->setMetricCurrent(SCORE, 
 		m_Hud->setMetricCurrent(GENERATORDISPLAY, m_RoboGens.size());
 		m_Hud->update(m_DeltaTimeSeconds);
 	}

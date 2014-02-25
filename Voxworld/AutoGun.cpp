@@ -36,6 +36,7 @@ ProjectileNode* AutoGun::getProjectile()
 			m_NumObjects++;
 			std::stringstream ss;
 			ss<<"AutoGunProjectile"<<m_NumObjects;
+			v_Instance->setLifeTime(3.0f);
 			v_Instance->setName(ss.str());
 			v_Instance->activate();
 			return v_Instance;
@@ -54,7 +55,9 @@ ProjectileNode* AutoGun::createProjectileFromPool()
 	if(m_Projectiles.empty())
 	{
 		temp = new ProjectileNode();
+		//printf("creating from empty\n");
 		m_Reusing = false;
+		m_Projectiles.push_back(temp);
 		return temp;
 	}
 	else
@@ -66,9 +69,10 @@ ProjectileNode* AutoGun::createProjectileFromPool()
 			if (m_Projectiles[i] != nullptr)
 			{
 				//check if it's active
-				if(m_Projectiles[i]->isActive())
+				if(!(m_Projectiles[i]->isActive()))
 				{
 					m_Reusing = true;
+					//printf("re-using projectile\n");
 					return m_Projectiles[i];
 				}
 				else continue;
@@ -78,11 +82,13 @@ ProjectileNode* AutoGun::createProjectileFromPool()
 			{
 				m_Projectiles[i] = new ProjectileNode;
 				m_Reusing = false;
+				//printf("filling slot\n");
 				return m_Projectiles[i];
 			}
 		}
 		//if this block is reached, then we append the list with a new object
 		temp = new ProjectileNode();
+		//printf("creating from full\n");
 		m_Reusing = false;
 		m_Projectiles.push_back(temp);
 		return temp;
@@ -102,10 +108,11 @@ void AutoGun::init()
 		temp->setBoundaryType(CIRCLE);
 		temp->setProjectileType(DEFAULT_SECONDARY);
 		temp->setType(PROJECTILE);
-		temp->setRadius(1.0f);
+		temp->setRadius(1.5f);
 		temp->setLifeTime(3.0f);
 		temp->setBaseDamage(10.0f);
 		temp->deactivate();
+		m_Projectiles.push_back(temp);
 	}
 }
 void AutoGun::render(Renderer* p_Renderer)
@@ -119,5 +126,5 @@ void AutoGun::update(float p_DeltaTimeS)
 }
 AutoGun::~AutoGun(void)
 {
-	
+
 }

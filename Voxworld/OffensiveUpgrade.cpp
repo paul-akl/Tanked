@@ -11,7 +11,23 @@ OffensiveUpgrade::OffensiveUpgrade(void)
 }
 void OffensiveUpgrade::init()
 {
-
+	for (size_t i = 0; i < 10;i++)
+	{
+		ProjectileNode* v_Instance = new ProjectileNode();
+		v_Instance->addMesh(m_DefaultProjectileMesh);
+		v_Instance->addTexture(m_DefaultProjectileTexture);
+		TransformNode* tmp = new TransformNode;
+		tmp->setName("ProjectileTransform");
+		v_Instance->addTransform(tmp);
+		v_Instance->setBoundaryType(CIRCLE);
+		v_Instance->setType(PROJECTILE);
+		v_Instance->setProjectileType(DEFAULT_MAIN);
+		v_Instance->setRadius(2.0f);
+		v_Instance->setLifeTime(3.0f);
+		v_Instance->setBaseDamage(10.0f);
+		v_Instance->deactivate();
+		m_Projectiles.push_back(v_Instance);
+	}
 }
 void OffensiveUpgrade::render(Renderer* p_Renderer)
 {
@@ -90,6 +106,7 @@ ProjectileNode* OffensiveUpgrade::createProjectileFromPool()
 	if(m_Projectiles.empty())
 	{
 		temp = new ProjectileNode();
+		m_Projectiles.push_back(temp);
 		m_Reusing = false;
 		return temp;
 	}
