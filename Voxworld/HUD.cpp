@@ -5,10 +5,11 @@
 #include "WeaponGauge.h"
 #include "Score.h"
 #include "GeneratorDisplay.h"
+#include "FrameCounter.h"
 
 HUD::HUD(void): UIWindow()
 {
-	//m_HudComponents = new HUDComponent[MAX_COMPONENTS];
+	
 	
 }
 
@@ -41,9 +42,9 @@ void HUD::init()
 	
 	m_Weapon = new WeaponGauge();
 	m_Weapon->setName("weapon gauge");
-	m_Weapon->setPosition(glm::vec3(0.9,-0.6,0.0));
+	m_Weapon->setPosition(glm::vec3(0.7,-0.9, 0.0));
 	m_Weapon->setOrientation(0);
-	m_Weapon->setRenderRadius(glm::vec3(0.4,0.6,0.4));
+	m_Weapon->setRenderRadius(glm::vec3(0.3,0.1,1.0));
 	m_Weapon->init();
 	SceneNode::addNode(m_Weapon);
 	m_HudComponents.push_back(m_Weapon);
@@ -65,6 +66,15 @@ void HUD::init()
 	m_GeneratorDisplay->init();
 	SceneNode::addNode(m_GeneratorDisplay);
 	m_HudComponents.push_back(m_GeneratorDisplay);
+
+	m_FrameCounter = new FrameCounter();
+	m_FrameCounter->setName("Frame Counter");
+	m_FrameCounter->setPosition(glm::vec3(0.0,0.95,0.0));
+	m_FrameCounter->setOrientation(0);
+	m_FrameCounter->setRenderRadius(glm::vec3(0.2,0.03,1.0));
+	m_FrameCounter->init();
+	SceneNode::addNode(m_FrameCounter);
+	m_HudComponents.push_back(m_FrameCounter);
 }
 
 void HUD::setMetricCurrent(ElementType p_Type, float p_Value)
@@ -89,6 +99,11 @@ void HUD::setMetricCurrent(ElementType p_Type, float p_Value)
 		case(GENERATORDISPLAY):
 			{
 				m_GeneratorDisplay->setCurrent(p_Value);
+				break;
+			}
+		case(FRAMECOUNTER):
+			{
+				m_FrameCounter->setCurrent(p_Value);
 				break;
 			}
 		case(NOTIFICATION):
@@ -130,7 +145,8 @@ void HUD::update(float p_DeltaTimeS)
 	m_HudComponents[WEAPONGAUGE]->update(p_DeltaTimeS);
 	m_HudComponents[SCORE]->update(p_DeltaTimeS);
 	m_HudComponents[GENERATORDISPLAY]->update(p_DeltaTimeS);
-	SceneNode::update(p_DeltaTimeS);
+	m_HudComponents[FRAMECOUNTER]->update(p_DeltaTimeS);
+	
 }
 
 void HUD::render(Renderer * p_Renderer)
@@ -139,8 +155,11 @@ void HUD::render(Renderer * p_Renderer)
 	// the hud itself is not actually rendered so only its children call render
 	p_Renderer->beginUIPhase();	
 	
-	for(int i = 0; i < m_HudComponents.size(); i++)
-		m_HudComponents[i]->render(p_Renderer);
+	m_HudComponents[SHIELDGAUGE]->render(p_Renderer);
+	m_HudComponents[WEAPONGAUGE]->render(p_Renderer);
+	m_HudComponents[SCORE]->render(p_Renderer);
+	m_HudComponents[GENERATORDISPLAY]->render(p_Renderer);
+	m_HudComponents[FRAMECOUNTER]->render(p_Renderer);
 	
 	p_Renderer->endRenderCycle();
 }

@@ -24,7 +24,7 @@ namespace Utils
 
 		void initialiseTTF();
 		static TTF_Font* generateFont(TTF_Font* font, const char* fileName);
-		static GLuint textToTexture(const char * str, TTF_Font* fontType, glm::vec4 fontColour);
+		static GLuint textToTexture(GLuint texId, const char * str, TTF_Font* fontType, glm::vec4 fontColour);
 		TTF_Font* getFont(){return textFont;}
 		~GeneralUtils(void);
 	private:
