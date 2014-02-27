@@ -15,7 +15,7 @@ WeaponGauge::~WeaponGauge(void)
 
 void WeaponGauge::init()
 {
-	font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
+	//font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
 	TransformNode * Transform = new TransformNode();
 	Transform->setName("weapon gauge transform");
 	Transform->reset();	
@@ -28,16 +28,16 @@ void WeaponGauge::init()
 	m_Gauge = new TextureNode();
 	m_Gauge->setName("gauge");
 	m_Gauge->setTextureType(DIFFUSE);
-	m_Gauge->loadTexture("Images/weapongauge.png");
+	m_Gauge->loadTexture("Images/chargegauge.png");
 
 	m_GaugeBg = new TextureNode();
 	m_GaugeBg->setName("gaugebg");
 	m_GaugeBg->setTextureType(DIFFUSE);
-	m_GaugeBg->loadTexture("Images/weapongaugeback.png");
+	m_GaugeBg->loadTexture("Images/chargebar.png");
 
 	m_ChargeBg = new GFXElement();
-	m_ChargeBg->setPosition(glm::vec3(0.28,-1.37,0.0));
-	m_ChargeBg->setRenderRadius(glm::vec3(0.75,1.0,1.0));
+	m_ChargeBg->setPosition(glm::vec3(0.28,0.0,0.0));
+	m_ChargeBg->setRenderRadius(glm::vec3(0.0,0.0,1.0));
 	m_ChargeBg->setName("chargebg");
 	m_ChargeBg->addMesh(Mesh);	
 	m_ChargeBg->addTexture(m_GaugeBg);
@@ -78,21 +78,22 @@ void WeaponGauge::init()
 
 void WeaponGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 {
-	m_ScaleFactor = (m_CurrentValue/m_MaxValue)/10;
-	//m_ShieldValue->needsUpdate = true;
-	/*std::stringstream ss;
-	ss << (int)m_CurrentValue;	
-	m_ShieldValue->setText(ss.str().c_str());
-	ss.clear();*/
-	float offset = 0.6f * m_ScaleFactor;
+	m_ScaleFactor = (m_CurrentValue/m_MaxValue);
+	
+	float offset = 0.006f * m_ScaleFactor;
 	
 	if(m_CurrentValue == 0)
-		m_ChargeBg->setPosition(glm::vec3(0.28,-1.37,0.0));
+	{
+		m_ChargeBg->setPosition(glm::vec3(0.06-m_ChargeFg->getRenderRadius().x,0.0,0.0));
+		m_ChargeBg->setRenderRadius(glm::vec3(0.0,0.0,1.0));
+	}
 	
-	else if(m_CurrentValue > 0 && m_CurrentValue != m_MaxValue)
-		m_ChargeBg->setPosition(glm::vec3(m_ChargeBg->getLocation().x, m_ChargeBg->getLocation().y + offset, m_ChargeBg->getLocation().z));
-
-	else if(m_CurrentValue == m_MaxValue)
+	else if(m_CurrentValue > 0 && m_CurrentValue < m_MaxValue)
+	{
+		m_ChargeBg->setPosition(glm::vec3( m_ChargeBg->getRenderRadius().x - m_ChargeBg->getLocation().x, m_ChargeBg->getLocation().y, m_ChargeBg->getLocation().z));
+		m_ChargeBg->setRenderRadius(glm::vec3(m_CurrentValue-offset,1.0,1.0));
+	}
+	else if(m_CurrentValue >= m_MaxValue)
 		m_ChargeBg->setPosition(glm::vec3(m_ChargeBg->getLocation()));
 
 	UIElement::update(p_DeltaTimeS);	
