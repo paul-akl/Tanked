@@ -59,31 +59,37 @@ void FloorFactory::init()
 	m_FloorMesh1->setName("floor0mesh0");
 	m_FloorMesh1->loadModel("plane.obj");
 }
-FloorNode* FloorFactory::getFloor()
+FloorNode* FloorFactory::getFloor(int p_numTiles, float p_tileSize)
 {
+	if(p_numTiles > 1)
+	{
+		m_FloorMesh1->clearModelData();
+		m_FloorMesh1->deleteModel();
+		m_FloorMesh1->loadQuad(p_numTiles);
+	}
 
-
-		//instantiate a floor node from the object pool
-		FloorNode* floorInstance  = getFloorFromPool();
-		if (!m_Reusing)
-		{
-			std::stringstream ss;
-			ss<<"floor"<<m_FloorPool.size();
-			floorInstance->setName(ss.str().c_str());
-			//set to two metres off the ground
-			TransformNode* floorTransform = new TransformNode();
-			floorTransform->reset();
-			//set it's name
-			ss<<"transform0";
-			floorTransform->setName(ss.str().c_str());
-			//this might be better to add to the mesh instead of the tank itself.
+	//instantiate a floor node from the object pool
+	FloorNode* floorInstance  = getFloorFromPool();
+	if (!m_Reusing)
+	{
+		std::stringstream ss;
+		ss<<"floor"<<m_FloorPool.size();
+		floorInstance->setName(ss.str().c_str());
+		//set to two metres off the ground
+		TransformNode* floorTransform = new TransformNode();
+		floorTransform->reset();
+		//set it's name
+		ss<<"transform0";
+		floorTransform->setName(ss.str().c_str());
+		//this might be better to add to the mesh instead of the tank itself.
 			//This way, multiple meshes can be added to a tank.
-			floorInstance->addTexture(m_FloorTexture1);
-			floorInstance->addMesh(m_FloorMesh1);
-			floorInstance->addTransform(floorTransform);
-		}
+		floorInstance->addTexture(m_FloorTexture1);
+		floorInstance->addMesh(m_FloorMesh1);
+		floorInstance->addTransform(floorTransform);
+		floorInstance->setSize(p_numTiles / 2.0f);
+	}
 
-		return floorInstance;
+	return floorInstance;
 }
 FloorFactory::~FloorFactory(void)
 {

@@ -29,6 +29,7 @@ public:
 	virtual void bindReadBuffer(){glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FboHandle);}
 
 	virtual void init();				// Generates buffers, set's up FBO
+	virtual void reload(unsigned int p_windowWidth, unsigned int p_windowHeight);
 
 	virtual void initFrame();			// This should be called every frame, to clear the final buffer
 	virtual void initGeometryPass();	// Bind geometry buffers for drawing

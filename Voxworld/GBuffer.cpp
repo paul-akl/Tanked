@@ -59,6 +59,26 @@ void GBuffer::init()
 	// Restore the default FBO, so it doesn't get changed from the outside of the class
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
+void GBuffer::reload(unsigned int p_windowWidth, unsigned int p_windowHeight)
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FboHandle);
+
+	// Resize geometry textures
+	for(int i=0; i < GBufferNumTextures; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_GBTextures[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, p_windowWidth, p_windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	}
+	
+	// Resize depth buffer
+	glBindTexture(GL_TEXTURE_2D, m_DepthBufferHandle);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, p_windowWidth, p_windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, p_windowWidth, p_windowHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);	// For AMD GPUs at labs
+
+	// Resize the final buffer
+	glBindTexture(GL_TEXTURE_2D, m_FinalBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_windowWidth, p_windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+}
 
 void GBuffer::initFrame()
 {

@@ -19,6 +19,7 @@ void Shader::disable()
 void Shader::initShader(char* p_VertexShader, char* p_PixelShader)
 {
 	m_ShaderLocation = loadShaders(p_VertexShader,p_PixelShader);
+	getDataHandles(m_ShaderLocation);
 }
 void Shader::printShaderError(const int shader)
 {
@@ -44,6 +45,18 @@ void Shader::printShaderError(const int shader)
 		delete[] logMessage;
 	}
 	
+}
+void Shader::getDataHandles(GLuint p_programHandle)
+{
+	glBindAttribLocation(p_programHandle, RT3D_VERTEX,"VertexPosition");
+	glBindAttribLocation(p_programHandle, RT3D_NORMAL,"normalDirection");
+	glBindAttribLocation(p_programHandle, RT3D_TEXTURE_COORD,"textureCoordinates");
+
+	m_modelViewLocation  = glGetUniformLocation(p_programHandle, "modelview");
+	m_modelLocation		 = glGetUniformLocation(p_programHandle, "modelMatrix");
+	m_normalLocation	 = glGetUniformLocation(p_programHandle, "normalMatrix");
+	m_projectionLocation = glGetUniformLocation(p_programHandle, "projection");
+	m_diffuseLocation	 = glGetUniformLocation(p_programHandle, "diffuseMap");
 }
 char* Shader::loadFile(const char* p_FileName, int &p_FileSize)
 {
@@ -108,9 +121,6 @@ GLuint Shader::loadShaders(char* p_VertexShader,char* p_PixelShader)
 	program = glCreateProgram();
 	glAttachShader(program,vert);
 	glAttachShader(program,pixel);
-	glBindAttribLocation(program,RT3D_VERTEX,"VertexPosition");
-	glBindAttribLocation(program,RT3D_NORMAL,"normalDirection");
-	glBindAttribLocation(program,RT3D_TEXTURE_COORD,"textureCoordinates");
 	glLinkProgram(program);
 
 	//clear up data
@@ -123,23 +133,28 @@ GLuint Shader::loadShaders(char* p_VertexShader,char* p_PixelShader)
 }
 void Shader::setModelMatrix(glm::mat4& p_ModelMatrix)
 {
-	int uniformIndex = glGetUniformLocation(m_ShaderLocation, "modelMatrix");
-	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(p_ModelMatrix)); 
+	glUniformMatrix4fv(m_modelLocation, 1, GL_FALSE, glm::value_ptr(p_ModelMatrix)); 
 }
 void Shader::setModelView(glm::mat4& p_ModelViewMatrix)
 {
-	int uniformIndex = glGetUniformLocation(m_ShaderLocation, "modelview");
-	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(p_ModelViewMatrix)); 
+	glUniformMatrix4fv(m_modelViewLocation, 1, GL_FALSE, glm::value_ptr(p_ModelViewMatrix)); 
 }
 void Shader::setProjectionMatrix(glm::mat4& p_ProjectionMatrix)
 {
-	int uniformIndex = glGetUniformLocation(m_ShaderLocation, "projection");
-	glUniformMatrix4fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(p_ProjectionMatrix)); 
+	glUniformMatrix4fv(m_projectionLocation, 1, GL_FALSE, glm::value_ptr(p_ProjectionMatrix)); 
 }
 void Shader::setNormalMatrix(glm::mat3& p_InvTransposeModelViewMatrix)
 {
-	int uniformIndex = glGetUniformLocation(m_ShaderLocation, "normalMatrix");
-	glUniformMatrix3fv(uniformIndex, 1, GL_FALSE, glm::value_ptr(p_InvTransposeModelViewMatrix)); 
+	glUniformMatrix3fv(m_normalLocation, 1, GL_FALSE, glm::value_ptr(p_InvTransposeModelViewMatrix)); 
+}
+void Shader::bindTexture(TextureType p_type, GLuint p_textureHandle)
+{
+	if(p_type == DIFFUSE)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, p_textureHandle);
+		glUniform1i(m_diffuseLocation, DIFFUSE);
+	}
 }
 Shader::~Shader(void)
 {
