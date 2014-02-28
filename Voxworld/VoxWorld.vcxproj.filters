@@ -556,6 +556,30 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source\Simple</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="shaders\dirLightPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\dirLightPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\geometryPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\geometryPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\pointLightPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\pointLightPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\stencilPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\stencilPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc">

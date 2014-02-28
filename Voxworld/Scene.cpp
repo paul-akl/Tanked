@@ -54,10 +54,6 @@ void Scene::init()
 
 		switch(m_TestMaze->getGridCellType(cell.x,cell.y))
 		{
-		case Floor:
-			{
-				addFloor(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
-			}break;
 		case Wall:
 			{
 				addWall(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
@@ -65,15 +61,14 @@ void Scene::init()
 		case MonsterGenerator:
 			{
 				addRobotGenerator(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
-				addFloor(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
 			}break;
 		case StartPosition:
 			{
-				addFloor(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
 				addTank(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
 			}break;
 		};
 	}
+	addFloor(glm::vec3(m_TestMaze->getGridWidth() / 2, 0.0f, m_TestMaze->getGridHeight() / 2), m_TestMaze->getNumRows(), m_TestMaze->getGridWidth());
 	m_Hud = new HUD();
 	m_Hud->setName("mainhud");
 	m_Hud->setPosition(glm::vec3(0));
@@ -99,11 +94,10 @@ void Scene::addTank(glm::vec3 p_Location)
 	upgrade->init();
 	m_Tank->AddOffensiveUpgrade(upgrade);
 }
-void Scene::addFloor(glm::vec3 p_Location)
+void Scene::addFloor(glm::vec3 p_Location, float p_wallWidth, int p_gridWidth)
 {
-	FloorNode* floor = m_FloorFactory->getFloor();
+	FloorNode* floor = m_FloorFactory->getFloor(p_gridWidth, p_wallWidth);
 	floor->setPosition(p_Location);
-	floor->setSize(15.0f);
 	m_Floors.push_back(floor);
 }
 void Scene::addWall(glm::vec3 p_Location)
@@ -718,7 +712,6 @@ void Scene::render(Renderer* p_Renderer)
 	//draw ui
 	m_Hud->render(p_Renderer);
 	p_Renderer->endRenderCycle();
-	//p_Renderer->endRenderCycle();
 }
 void Scene::update(float p_DeltaTimeS)
 {
