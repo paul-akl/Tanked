@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 #include <iostream>
 #include "TransformNode.h"
+#include <ctime>
 Scene::Scene(void)
 {
 	m_CurrentRenderMode = FILLED;
@@ -739,6 +740,7 @@ void Scene::update(float p_DeltaTimeS)
 		m_Hud->setMetricCurrent(GENERATORDISPLAY, m_RoboGens.size());
 		m_Hud->update(m_DeltaTimeSeconds);
 	}
+	m_Hud->setMetricCurrent(FRAMECOUNTER, m_DeltaTimeSeconds*CLOCKS_PER_SEC);
 }
 void Scene::cleanup()
 {

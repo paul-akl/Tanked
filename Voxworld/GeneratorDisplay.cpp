@@ -17,7 +17,7 @@ GeneratorDisplay::~GeneratorDisplay(void)
 void GeneratorDisplay::init()// add uielement factory
 {	
 	// request fonts from asset manager
-	font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
+	//font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
 	TransformNode * Transform = new TransformNode();
 	Transform->setName("GeneratorDisplay transform");
 	Transform->reset();	
@@ -30,8 +30,8 @@ void GeneratorDisplay::init()// add uielement factory
 	m_GeneratorDisplay = new TextElement();
 	m_GeneratorDisplay->setName("GeneratorDisplay value");
 	m_GeneratorDisplay->setRenderRadius(glm::vec3(1.0));
-	m_GeneratorDisplay->setFont(font);
-	m_GeneratorDisplay->setTextColour(glm::vec4(255,255,255,0));
+	m_GeneratorDisplay->setFont(Utils::GeneralUtils::generateFont(m_GeneratorDisplay->getFont(),"Fonts/Arkitech Medium.ttf"));
+	m_GeneratorDisplay->setTextColour(glm::vec4(255,0,0,0));
 	m_GeneratorDisplay->addMesh(Mesh);
 	TextureNode* GeneratorDisplayTexture = new TextureNode();
 	GeneratorDisplayTexture->setName("GeneratorDisplaytex");
