@@ -58,7 +58,7 @@ public:
 protected:
 	void addTank(glm::vec3 p_Location);
 	void addWall(glm::vec3 p_Location);
-	void addFloor(glm::vec3 p_Location, float p_wallWidth, int p_gridWidth);
+	void addFloor(glm::vec3 p_Location);
 	void addRobot(Robot* p_Robot);
 	void addRobotGenerator(glm::vec3 p_Location);
 	void setGameDifficulty(unsigned int p_Difficulty);

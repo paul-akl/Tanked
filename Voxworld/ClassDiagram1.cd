@@ -3,7 +3,7 @@
   <Class Name="Game" Collapsed="true">
     <Position X="36.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAAAAIAAIwAAAgAAAiAAAIAAAAYAQAAAAI=</HashCode>
+      <HashCode>CAAAAAAAAAAAAAAAAIwAAAgAAAiAAAIAAAAYAQAAAAI=</HashCode>
       <FileName>Game.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -24,7 +24,7 @@
   <Class Name="MainGameMode" Collapsed="true">
     <Position X="5.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAgABAAAABIAAAIAAIAAAAgAAAIAAAAAAAAEAAA=</HashCode>
+      <HashCode>AAgAUAAADAYAAJIAAEIAAgAAACgABQICgBIAIEAEAAA=</HashCode>
       <FileName>MainGameMode.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -94,7 +94,7 @@
   <Class Name="TestTankNode" Collapsed="true">
     <Position X="8.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BAAhEKAAAAAAAAAIkAAACYKEAEAQQEgAAkQAiEEcISA=</HashCode>
+      <HashCode>AAAhEKAAAAAAAAAIkAAACYKEAEAQQEgAAkQAiEEcISA=</HashCode>
       <FileName>TestTankNode.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -129,7 +129,7 @@
   <Class Name="TextureNode" Collapsed="true">
     <Position X="6.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAIQAABAAAAgAAAAAAAAAAAAAAAQAwAAAABAAUAAA=</HashCode>
+      <HashCode>AAAAIQAABAAAAgAAAAAAAAAAAAAAAQAQAAAABAAUAAA=</HashCode>
       <FileName>TextureNode.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -143,7 +143,7 @@
   <Class Name="SceneNode" Collapsed="true">
     <Position X="15.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAICBEEAACAABiAAEAACYFACAAUgIA7gFChFAABUAAA=</HashCode>
+      <HashCode>EAICBEEAACAABCAAEAAAYFACAAUgIAbAFChFAABUAAA=</HashCode>
       <FileName>SceneNode.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -227,7 +227,7 @@
   <Class Name="DeferredRenderer" Collapsed="true">
     <Position X="2.75" Y="8.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>KYEBACACAAAEEgBkoICUggwQAAIAQAILEAAQSABVEIg=</HashCode>
+      <HashCode>KIABACACAAAEEgBkoICUggwQAAAAQAILEAAQSABUEIg=</HashCode>
       <FileName>DeferredRenderer.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -241,14 +241,14 @@
   <Class Name="CollisionPair" Collapsed="true">
     <Position X="33" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEAABIABABCgAAAAAAEEAQAAAAEAABEAEEAAkIQAAAA=</HashCode>
+      <HashCode>AEAABIABABCgAAAAAAEEAQAAAAEAABEAEAAAkIQAAAA=</HashCode>
       <FileName>CollisionPair.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CollisionQuadTree" Collapsed="true">
     <Position X="34.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EBAAAYAAAIFAAAABEAAAAAAIAAAgIgCgAAACAAAEAEA=</HashCode>
+      <HashCode>EBSAAYAAAIBIAAABEAAAAAAIAAAgIgCgAAACAAAEAEA=</HashCode>
       <FileName>CollisionQuadTree.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -262,21 +262,21 @@
   <Class Name="CollisionSolver" Collapsed="true">
     <Position X="31.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>cBgAwAQASgBABAAACKigAoAJAjAIGAYBBAQAAAAERIA=</HashCode>
+      <HashCode>cAAgEAAAAAABBUACAAAAAgABBAAICAKABJAgAAgEBEA=</HashCode>
       <FileName>CollisionSolver.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scene" Collapsed="true">
     <Position X="24.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>YAiCckBgWAJIAoICpkAQEwAxQogMBQIDkDQJIECUAEg=</HashCode>
+      <HashCode>YACAMgAAGAAAAAIApgAAEgAAQIgIBQIAEAQJIECUAAg=</HashCode>
       <FileName>Scene.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Utils::GeneralUtils" Collapsed="true">
     <Position X="31.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAEIBAAAAAIAAAAAAAAIAAACAAEAAIAAAQAAAAAAg=</HashCode>
+      <HashCode>AAAAEAAAAAAAIAAAAAAAAIAAACAQEAAAAAAQAAAAAAg=</HashCode>
       <FileName>GeneralUtils.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -402,7 +402,7 @@
   <Enum Name="CollidableType" Collapsed="true">
     <Position X="31.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAMAAAAACAAAAAAAAAAEAIAAAAABAAAIAAA=</HashCode>
+      <HashCode>AAAAAAAAIAMAAAAACAAAAAAAAAAAAIAAAAABAAAIAAA=</HashCode>
       <FileName>CollidableNode.h</FileName>
     </TypeIdentifier>
   </Enum>
@@ -437,7 +437,7 @@
   <Enum Name="ResultType" Collapsed="true">
     <Position X="31.25" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAACBAAAAAAACAAgAAAAAAAAAAggAQAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAACBAAAAAAACAAgAAAAAAAAAAggAQAAAAAAAAAAA=</HashCode>
       <FileName>CollisionPair.h</FileName>
     </TypeIdentifier>
   </Enum>

@@ -1,8 +1,6 @@
 
 #include "GLTestRender.h"
 #include "MeshNode.h"
-#include "GeneralUtils.h"
-
 MeshNode::MeshNode(void)
 {
 }
@@ -19,55 +17,6 @@ void MeshNode::loadModel(std::string p_FileName)
 
 	if(!v_assimpScene)	// Check if loading was successful
 		throw new std::exception((p_FileName + " model failed to load (" + v_assimpImporter.GetErrorString() + ").").c_str());
-
-	loadFromScene(v_assimpScene);	// Start model loading from the Assimp scene structure
-	
-	//and finally generate tangents
-	//generateTangents(v_Faces,temp_uvs,temp_normals);
-	initialise();
-}
-void MeshNode::loadQuad(int p_numTiles)
-{
-	std::string numTiles = "20";//Utils::toString(p_numTiles);
-	std::string quadString = "\n\
-v 1.000000 0.000001 -1.000000\n\
-v -1.000000 0.000001 -1.000000\n\
-v -1.000000 -0.000001 1.000000\n\
-v 1.000000 -0.000001 1.000000\n\
-vt " + numTiles + ".000000 " + numTiles + ".000000\n\
-vt 0.000000 " + numTiles + ".000000\n\
-vt 0.000000 0.000000\n\
-vt " + numTiles + ".000000 0.000000\n\
-vn -0.000000 1.000000 0.000001\n\
-s off\n\
-f 1/1/1 2/2/1 3/3/1\n\
-f 4/4/1 1/1/1 3/3/1\n\
-";
-	/*std::string quadString = "\n\
-v 1.000000 0.000001 -1.000000\n\
-v -1.000000 0.000001 -1.000000\n\
-v -1.000000 -0.000001 1.000000\n\
-v 1.000000 -0.000001 1.000000\n\
-vt 1.500000 1.500000\n\
-vt 0.500000 1.500000\n\
-vt 0.500000 0.500000\n\
-vt 1.500000 0.500000\n\
-vn -0.000000 1.000000 0.000001\n\
-s off\n\
-f 1/1/1 2/2/1 3/3/1\n\
-f 4/4/1 1/1/1 3/3/1\n\
-";*/
-
-	Assimp::Importer v_assimpImporter;	// Handle for importing the model
-
-	const aiScene* v_assimpScene = v_assimpImporter.ReadFileFromMemory(quadString.c_str(), quadString.size(),
-		aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_SortByPType);
-
-	if(!v_assimpScene)	// Check if loading was successful
-	{
-		std::string errorString = "Quad model failed to load (";
-		throw new std::exception((errorString + v_assimpImporter.GetErrorString() + ").").c_str());
-	}
 
 	loadFromScene(v_assimpScene);	// Start model loading from the Assimp scene structure
 	

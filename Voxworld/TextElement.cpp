@@ -9,7 +9,6 @@ TextElement::TextElement(void)
 	setPosition(glm::vec3(0));
 	setRenderRadius(glm::vec3(1.0f));
 	setOrientation(0);
-	//m_Diffuse->setTexture(NULL);
 }
 
 
@@ -25,7 +24,7 @@ void TextElement::init()
 void TextElement::update(float p_DeltaTimeS)
 {
 	//if(needsUpdate)
-	m_Diffuse->setTexture(Utils::GeneralUtils::textToTexture(m_Diffuse->getTexture(),m_CurrentText.c_str(), m_CurrentFont, m_Colour));
+		m_Diffuse->setTexture(Utils::GeneralUtils::textToTexture(m_CurrentText.c_str(), m_CurrentFont, m_Colour));
 	UIElement::update(p_DeltaTimeS);
 }
 

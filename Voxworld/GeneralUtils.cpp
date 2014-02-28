@@ -25,19 +25,15 @@ namespace Utils
 
 	TTF_Font* GeneralUtils::generateFont(TTF_Font* font, const char* fileName)
 {
-	if (font == nullptr)
-	{
-		font = TTF_OpenFont(fileName, 24);
-		std::cout << "opening font: " << fileName << std::endl;
-	
-		if (font == nullptr)
+	font = TTF_OpenFont(fileName, 24);
+	std::cout << "opening font: " << fileName << std::endl;
+		if (font == NULL)
 			std::cout << "Failed to open font." << std::endl;
-	}
-
+		
 		return font;
 }
 
-	GLuint GeneralUtils::textToTexture(GLuint texId, const char* str, TTF_Font* fontType, glm::vec4 fontColour) {
+	GLuint GeneralUtils::textToTexture(const char* str, TTF_Font* fontType, glm::vec4 fontColour) {
 		
 	TTF_Font* font = fontType;
 	SDL_Color colour = {fontColour.r, fontColour.g, fontColour.b, fontColour.a};
@@ -68,11 +64,10 @@ namespace Utils
 	}
 	internalFormat = (colours == 4) ? GL_RGBA : GL_RGB;
 
-	//GLuint texture;
-	if(texId == NULL)
-	glGenTextures(1, &texId);
+	GLuint texture;
 
-	glBindTexture(GL_TEXTURE_2D, texId);
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -83,7 +78,7 @@ namespace Utils
 	// SDL surface was used to generate the texture but is no longer
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
-	return texId;
+	return texture;
 }
 
 	GeneralUtils::~GeneralUtils(void)

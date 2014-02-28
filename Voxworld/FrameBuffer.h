@@ -5,13 +5,12 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(void);
-	FrameBuffer(unsigned int p_windowWidth, unsigned int p_windowHeight);
+	FrameBuffer(unsigned int WindowWidth, unsigned int WindowHeight);
 	virtual ~FrameBuffer(void);
 
 	virtual void Enable(){;}
 	virtual void Disable(){;}
 	virtual void init(){;}
-	virtual void reload(unsigned int p_windowWidth, unsigned int p_windowHeight);
 	GLuint getTexture(GLenum* p_bufferId){;}
 	void setRenderTexture(GLenum*  p_bufferId, GLuint textureHandle){;}
 	bool checkStatus();

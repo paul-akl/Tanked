@@ -139,14 +139,6 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
-    <None Include="shaders\dirLightPass.frag" />
-    <None Include="shaders\dirLightPass.vert" />
-    <None Include="shaders\geometryPass.frag" />
-    <None Include="shaders\geometryPass.vert" />
-    <None Include="shaders\pointLightPass.frag" />
-    <None Include="shaders\pointLightPass.vert" />
-    <None Include="shaders\stencilPass.frag" />
-    <None Include="shaders\stencilPass.vert" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc" />

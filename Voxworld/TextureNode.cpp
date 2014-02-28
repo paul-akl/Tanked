@@ -41,8 +41,8 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 					 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)v_Texture2D );		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// Texture2D filtering mode, when image is minimized, Linear with mipmaps for best quality
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// Texture2D filtering mode, when image is magnified
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			// Set image clamping parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);			// Set image clamping parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		
 		GLfloat v_TextureAnisFilter;

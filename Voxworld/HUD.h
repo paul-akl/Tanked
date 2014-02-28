@@ -6,7 +6,6 @@ class ShieldGauge;
 class WeaponGauge;
 class Score;
 class GeneratorDisplay;
-class FrameCounter;
 
 enum ElementType
 {
@@ -14,7 +13,6 @@ enum ElementType
 	WEAPONGAUGE,
 	SCORE,
 	GENERATORDISPLAY,
-	FRAMECOUNTER,
 	NOTIFICATION
 };
 
@@ -25,7 +23,7 @@ public:
 	HUD(std::string p_BgImage);
 	~HUD(void);
 	//UIElement * getElement(ElementType p_Type){return m_HudComponents[p_Type];}
-	void setMetricCurrent(ElementType p_Type,float p_value);
+	void setMetricCurrent(ElementType p_Type, float p_Value);
 	void setMetricMax(ElementType p_Type, float p_Value);
 	virtual void init();
 	virtual void update(float p_DeltaTimeS);
@@ -37,6 +35,5 @@ private:
 	WeaponGauge * m_Weapon;
 	Score* m_Score;
 	GeneratorDisplay* m_GeneratorDisplay;
-	FrameCounter* m_FrameCounter;
 };
 

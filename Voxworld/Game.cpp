@@ -8,14 +8,12 @@
 #include <ctime>
 #include <GL\GLU.h>
 #include "Controller.h"
-#include "Locator.h"
+
 Game::Game(void)
 {
 }
 void Game::init()
 {
-	//create asset manager here
-	
 	Utils::GeneralUtils * util = new Utils::GeneralUtils();
 	util->initialiseTTF();
 	m_Renderer = new DeferredRenderer(800,600);
@@ -39,7 +37,6 @@ void Game::init()
 	//mShopMode->init(*this);
 	//and set our default starting mode, which would normally be intro mode, but for now we will stick with main mode.
 	m_CurrentMode = m_MainMode;
-	SDL_ShowCursor(SDL_FALSE);
 	
 }
 void Game::changeState(GameState state)

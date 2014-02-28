@@ -68,7 +68,7 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 		m_Matrices[i] = false;
 		m_Textures[i] = false;
 	}
-	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 1000.0f);
+	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 200.0f);
 	m_OrthoProjectionMatrix = glm::ortho<float>(-1.0f,1.0f,-1.0f,1.0f);
 	m_Matrices[PROJECTION] = true;
 }
@@ -349,9 +349,13 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		//bind any textures, if they are present
 		if(v_NumTextures >= DIFFUSE)
 		{
-			p_DataList[i].SelectedShader->bindTexture(DIFFUSE, p_DataList[i].DiffuseMapLocation);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DiffuseMapLocation);
+			GLint shaderLocation = p_DataList[i].SelectedShader->getShaderLocation();
+			GLint textureLocation = glGetUniformLocation(shaderLocation,"diffuseMap");
+			glUniform1i(textureLocation,DIFFUSE);
 		}
-		/*if(v_NumTextures > SPECULAR)
+		if(v_NumTextures > SPECULAR)
 		{
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D,p_DataList[i].SpecularMapLocation);
@@ -371,7 +375,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DepthMapLocation);
 			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"depthMap");
 			glUniform1i(textureLocation,DEPTH);
-		}*/
+		}
 
 		glBindVertexArray(p_DataList[i].MeshLocation);
 

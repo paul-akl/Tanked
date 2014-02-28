@@ -1,7 +1,6 @@
 #pragma once
 #include <GL\glew.h>
 #include <glm\glm.hpp>
-#include "TextureNode.h"
 enum AttributeType
 {
 	RT3D_VERTEX,
@@ -15,7 +14,7 @@ class Shader
 {
 public:
 	Shader(void);
-	virtual void initShader(char* p_VertexShader, char* p_PixelShader);
+	void initShader(char* p_VertexShader, char* p_PixelShader);
 	void printShaderError(const int shader);
 	virtual void setModelMatrix(glm::mat4& p_ModelMatrix);
 	virtual void setModelView(glm::mat4& p_ModelViewMatrix);
@@ -24,19 +23,10 @@ public:
 	void enable();
 	void disable();
 	GLuint getShaderLocation(){return m_ShaderLocation;}
-	virtual void bindTexture(TextureType p_type, GLuint p_textureHandle);
 	virtual ~Shader(void);
-
 private:
-	virtual void getDataHandles(GLuint p_programHandle);
 	GLuint loadShaders(char* p_VertexShader, char* p_PixelShader);
 	char* loadFile(const char* p_FileName, int &p_FileSize);
-	GLuint m_ShaderLocation;
-
-	GLuint m_modelViewLocation;
-	GLuint m_modelLocation;
-	GLuint m_normalLocation;
-	GLuint m_projectionLocation;
-	GLuint m_diffuseLocation;
+	unsigned int m_ShaderLocation;
 };
 

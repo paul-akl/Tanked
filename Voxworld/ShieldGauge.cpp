@@ -17,7 +17,7 @@ ShieldGauge::~ShieldGauge(void)
 void ShieldGauge::init()// add uielement factory
 {	
 	// request fonts from asset manager
-	//font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
+	font = Utils::GeneralUtils::generateFont(font,"Fonts/ka1.ttf"); 
 	TransformNode * Transform = new TransformNode();
 	Transform->setName("shield gauge transform");
 	Transform->reset();	
@@ -66,8 +66,7 @@ void ShieldGauge::init()// add uielement factory
 	m_ShieldValue = new TextElement();
 	m_ShieldValue->setName("shield value");
 	m_ShieldValue->setRenderRadius(glm::vec3(0.2));
-	//Utils::GeneralUtils::generateFont(m_ShieldValue->getFont(),"Fonts/ka1.ttf"); 
-	m_ShieldValue->setFont(Utils::GeneralUtils::generateFont(m_ShieldValue->getFont(),"Fonts/ka1.ttf"));
+	m_ShieldValue->setFont(font);
 	m_ShieldValue->setTextColour(glm::vec4(0,255,0,0));
 	m_ShieldValue->addMesh(Mesh);
 	shieldTexgreen = new TextureNode();
@@ -101,7 +100,7 @@ void ShieldGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 	}
 
 	m_ShieldImage->setRenderRadius(glm::vec3(m_ScaleFactor));
-	m_ShieldValue->update(p_DeltaTimeS);
+
 	UIElement::update(p_DeltaTimeS);	
 	SceneNode::update(p_DeltaTimeS);
 }

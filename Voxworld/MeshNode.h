@@ -42,7 +42,6 @@ public:
 	MeshNode(void);
 	//throws exception
 	void loadModel(std::string p_FileName);
-	void loadQuad(int p_numTiles);
 	GLuint getNumVerts(void){return m_NumVerts;}
 	GLuint getMeshLocation(void){return m_MeshLocation;}
 	void clearModelData(void);

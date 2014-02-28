@@ -10,7 +10,7 @@ class FloorFactory
 public:
 	FloorFactory(void);
 	void init();
-	FloorNode* getFloor(int p_numTiles, float p_tileSize);
+	FloorNode* getFloor();
 	~FloorFactory(void);
 protected:
 	static const int m_MaxFloorSegments = 512;
