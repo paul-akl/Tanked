@@ -188,6 +188,9 @@
     <Filter Include="Core Engine\UI System\Base">
       <UniqueIdentifier>{41d50c6a-477e-4be4-87fe-16c6f5653a1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\Maze\Procedural">
+      <UniqueIdentifier>{dc54c56f-d18a-4bee-981d-d7c6ae313cb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -350,9 +353,6 @@
     <ClCompile Include="DeferredRenderer.cpp">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>Core Engine\Sound Manager</Filter>
-    </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>Core Engine\UI System\Base</Filter>
     </ClCompile>
@@ -369,6 +369,8 @@
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
     <ClCompile Include="GeneratorDisplay.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
+    <ClCompile Include="FrameCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -528,9 +530,6 @@
     <ClInclude Include="DeferredRenderer.h">
       <Filter>Core Engine\Renderer\DeferredRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>Core Engine\Sound Manager</Filter>
-    </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Core Engine\UI System\Base</Filter>
     </ClInclude>
@@ -547,6 +546,8 @@
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
     <ClInclude Include="GeneratorDisplay.h" />
+    <ClInclude Include="AudioSystem.h" />
+    <ClInclude Include="FrameCounter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

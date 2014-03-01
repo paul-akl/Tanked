@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIManager.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="AutoGun.cpp" />
     <ClCompile Include="BasicTankFactory.cpp" />
     <ClCompile Include="CameraNode.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="FloorFactory.cpp" />
     <ClCompile Include="FloorNode.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="FrameCounter.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -59,7 +61,6 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShieldGauge.cpp" />
     <ClCompile Include="ShopMode.cpp" />
-    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TestTankNode.cpp" />
     <ClCompile Include="TextElement.cpp" />
     <ClCompile Include="TextureNode.cpp" />
@@ -75,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIManager.h" />
+    <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="AutoGun.h" />
     <ClInclude Include="BasicTankFactory.h" />
     <ClInclude Include="CameraNode.h" />
@@ -91,6 +93,7 @@
     <ClInclude Include="FloorFactory.h" />
     <ClInclude Include="FloorNode.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="FrameCounter.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GBuffer.h" />
@@ -121,7 +124,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShieldGauge.h" />
     <ClInclude Include="ShopMode.h" />
-    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TestTankNode.h" />
     <ClInclude Include="TextElement.h" />
     <ClInclude Include="TextureNode.h" />

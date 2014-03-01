@@ -11,7 +11,7 @@ public:
 	virtual void Enable(){;}
 	virtual void Disable(){;}
 	virtual void init(){;}
-	virtual void reload(unsigned int p_windowWidth, unsigned int p_windowHeight);
+	virtual void reload(unsigned int p_windowWidth, unsigned int p_windowHeight)=0;
 	GLuint getTexture(GLenum* p_bufferId){;}
 	void setRenderTexture(GLenum*  p_bufferId, GLuint textureHandle){;}
 	bool checkStatus();
