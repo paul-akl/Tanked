@@ -22,11 +22,11 @@ struct Sound
 	bool looping;
 	bool isLooping;
 };
-class SoundManager
+class AudioSystem
 {
 public:
-	SoundManager(void);
-	~SoundManager(void);
+	AudioSystem(void);
+	~AudioSystem(void);
 	int Init();
 	void PlaySound(Sound sound);
 	Sound GetSound(GameSounds i) { return m_SoundList[i];}
@@ -34,6 +34,7 @@ public:
 	void Update();
 
 private:
+	static bool m_Instantiated;
 	void SetupChannels();
 	void ErrorCheck(FMOD_RESULT result);
 	void InitializeSounds();
@@ -51,3 +52,4 @@ private:
 	std::vector<Sound> m_SoundList;
 };
 
+bool AudioSystem::m_Instantiated = false;

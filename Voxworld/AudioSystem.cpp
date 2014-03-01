@@ -1,16 +1,18 @@
-#include "SoundManager.h"
+#include "AudioSystem.h"
+#include <assert.h>
 
-
-SoundManager::SoundManager(void)
+AudioSystem::AudioSystem(void)
 {
+	assert(!m_Instantiated);
+	m_Instantiated = true;
 }
 
 
-SoundManager::~SoundManager(void)
+AudioSystem::~AudioSystem(void)
 {
 }
 
-int SoundManager::Init()
+int AudioSystem::Init()
 {
 	unsigned int v_Version;
 	int v_NumDrivers;
@@ -88,7 +90,7 @@ int SoundManager::Init()
 		InitializeSounds();
 }
 
-void SoundManager::InitializeSounds()
+void AudioSystem::InitializeSounds()
 {
 	m_System->createChannelGroup(NULL, &m_EffectsChannel);
 	m_System->createChannelGroup(NULL, &m_MusicChannel);
@@ -123,7 +125,7 @@ void SoundManager::InitializeSounds()
 //FMOD::Channel
 //bool isEffect
 //FMOD::Sound
-void SoundManager::PlaySound(Sound sound)
+void AudioSystem::PlaySound(Sound sound)
 {
 	
 	
@@ -159,7 +161,7 @@ void SoundManager::PlaySound(Sound sound)
 	
 }
 
-void SoundManager::ErrorCheck(FMOD_RESULT result)
+void AudioSystem::ErrorCheck(FMOD_RESULT result)
 {
 	if(result != FMOD_OK)
 	{
@@ -169,12 +171,12 @@ void SoundManager::ErrorCheck(FMOD_RESULT result)
 	}
 }
 
-void SoundManager::LoadSound(const char fileName, FMOD::Sound * nsound)
+void AudioSystem::LoadSound(const char fileName, FMOD::Sound * nsound)
 {
 	m_System->createSound(&fileName, FMOD_DEFAULT, 0, &nsound);
 }
 
-void SoundManager::Update()
+void AudioSystem::Update()
 {
 	m_System->update();
 }

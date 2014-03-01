@@ -8,12 +8,14 @@
 #include <ctime>
 #include <GL\GLU.h>
 #include "Controller.h"
-
+#include "Locator.h"
 Game::Game(void)
 {
 }
 void Game::init()
 {
+	//create asset manager here
+	
 	Utils::GeneralUtils * util = new Utils::GeneralUtils();
 	util->initialiseTTF();
 	m_Renderer = new DeferredRenderer(800,600);
