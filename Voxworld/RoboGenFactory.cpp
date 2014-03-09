@@ -15,6 +15,7 @@ RoboGenFactory::RoboGenFactory(void)
 	m_RoboArmMesh= nullptr;
 	m_RoboBodyMesh= nullptr;
 	m_Reusing = false;
+	m_NumObjects = 0;
 }
 void RoboGenFactory::init()
 {

@@ -368,9 +368,13 @@
     <ClCompile Include="Score.cpp">
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratorDisplay.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
-    <ClCompile Include="FrameCounter.cpp" />
+    <ClCompile Include="FrameCounter.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratorDisplay.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -545,9 +549,13 @@
     <ClInclude Include="Score.h">
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratorDisplay.h" />
     <ClInclude Include="AudioSystem.h" />
-    <ClInclude Include="FrameCounter.h" />
+    <ClInclude Include="GeneratorDisplay.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameCounter.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

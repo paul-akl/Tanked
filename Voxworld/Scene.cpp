@@ -4,14 +4,15 @@
 #include <iostream>
 #include "TransformNode.h"
 #include <ctime>
+#include <typeinfo>
 Scene::Scene(void)
 {
 	m_CurrentRenderMode = FILLED;
 	m_CamFollowDistance = -25.0f;
-	m_CamFollowAngle = -25.0f;
+	m_CamFollowAngle = -15.0f;
 	m_MaxTurnSpeed = 350.0f;
 	m_MouseTurnSpeed = 0.0f;
-	m_MouseAcceleration = 25.0f;
+	m_MouseAcceleration = 50.0f;
 	m_MainFireButtonPressed=false;
 	m_Victory = false;
 	m_Defeat = false;
@@ -46,6 +47,7 @@ void Scene::init()
 	m_Camera->rotatePitch(m_CamFollowAngle);
 	m_Camera->moveForward(m_CamFollowDistance);
 	m_Camera->moveUp(3.0f);
+	m_GameDifficulty = 1;
 	while(m_TestMaze->hasNextPosition())
 	{
 		glm::vec2 cell = m_TestMaze->nextPosition();
@@ -116,7 +118,7 @@ void Scene::addRobotGenerator(glm::vec3 p_Location)
 	RobotGenerator* robogen = m_RoboGenFactory->getRobotGenerator(m_GameDifficulty,ROBOT_DEFAULT);
 	robogen->setPosition(p_Location);
 	m_RoboGens.push_front(robogen);
-	m_Solver->addEnemy(robogen);
+	m_Solver->addEnemyGen(robogen);
 }
 void Scene::addRobot(Robot* p_Robot)
 {
@@ -328,9 +330,6 @@ void Scene::checkGameConditions()
 						{
 							glm::vec3 normal = glm::vec3(m_CollisionEvents[i]->m_CollisionNormal.x,0.0f,m_CollisionEvents[i]->m_CollisionNormal.z);
 							glm::vec3 velocity = m_CollisionEvents[i]->m_Collidable_A->getVelocity();
-							glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
-							glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_A->getLocation());
-							//m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
 							glm::vec3 reflection = glm::reflect(velocity,normal);
 							if(m_CollisionEvents[i]->m_Collidable_A->isMoving())
 							{
@@ -356,7 +355,7 @@ void Scene::checkGameConditions()
 						{
 							if(m_CollisionEvents[i]->m_Collidable_A->isActive())
 							{
-								TestTankNode* tank = (TestTankNode*)m_CollisionEvents[i]->m_Collidable_B;
+								TestTankNode* tank = dynamic_cast<TestTankNode*>(m_CollisionEvents[i]->m_Collidable_B);
 								tank->AddOffensiveUpgrade((OffensiveUpgrade*)m_CollisionEvents[i]->m_Collidable_A);
 								//std::cout<<"PLAYERvsCOLLECTABLE"<<std::endl;
 							}
@@ -365,7 +364,7 @@ void Scene::checkGameConditions()
 						{
 							if(m_CollisionEvents[i]->m_Collidable_B->isActive())
 							{
-								TestTankNode* tank = (TestTankNode*)m_CollisionEvents[i]->m_Collidable_A;
+								TestTankNode* tank = dynamic_cast<TestTankNode*>(m_CollisionEvents[i]->m_Collidable_A);
 								tank->AddOffensiveUpgrade((OffensiveUpgrade*)m_CollisionEvents[i]->m_Collidable_B);
 								//std::cout<<"COLLECTABLEvsPLAYER"<<std::endl;
 							}
@@ -377,7 +376,7 @@ void Scene::checkGameConditions()
 						glm::vec3 normal = glm::vec3(m_CollisionEvents[i]->m_CollisionNormal.x,0.0f,m_CollisionEvents[i]->m_CollisionNormal.z);
 						if(m_CollisionEvents[i]->m_Collidable_A->getType()==PROJECTILE)
 						{
-							ProjectileNode* tmp = (ProjectileNode*)m_CollisionEvents[i]->m_Collidable_A;
+							ProjectileNode* tmp = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_A);
 							//this selectes whether the angle is shallow enough for the bullet to reflect
 							if(abs(glm::dot(normal,glm::normalize(tmp->getVelocity())))<0.707f)
 							{
@@ -395,7 +394,7 @@ void Scene::checkGameConditions()
 						}
 						else
 						{
-							ProjectileNode* tmp = (ProjectileNode*)m_CollisionEvents[i]->m_Collidable_B;
+							ProjectileNode* tmp = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_B);
 							//this selectes whether the angle is shallow enough for the bullet to reflect
 							if(abs(glm::dot(normal,glm::normalize(tmp->getVelocity())))<0.707f)
 							{
@@ -414,32 +413,65 @@ void Scene::checkGameConditions()
 					}break;
 					//handles collision events between enemies and projectiles
 				case ENEMYVSPROJECTILE:
+				{
+					if(m_CollisionEvents[i]->m_Collidable_A->getType() == PROJECTILE)
 					{
+						ProjectileNode* proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_A);
+						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
+						robot->dealDamage(proj->getDamage());
+						proj->deactivate();
+						//leave bullet death effect in its place
+						if(robot->getHitPoints() == 0)
+						{
+							//update player score
+							robot->deactivate();
+							//leave non hazard death effect
+						}
+					}
+					else
+					{
+						ProjectileNode* proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_B);
+						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
+						robot->dealDamage(proj->getDamage());
+						proj->deactivate();
+						//leave bullet death effect in it's place
+						if(robot->getHitPoints() == 0)
+						{
+							//update player score
+							robot->deactivate();
+							//leave non hazard death effect
+						}
+					}
+				}break;
+				case ENEMYGENVSPROJECTILE:
+				{
+						RobotGenerator* gen = nullptr;
+						ProjectileNode* proj = nullptr;
 						if(m_CollisionEvents[i]->m_Collidable_A->getType() == PROJECTILE)
 						{
-							ProjectileNode* proj = (ProjectileNode*)m_CollisionEvents[i]->m_Collidable_A;
-							Robot* robot = (Robot*)m_CollisionEvents[i]->m_Collidable_B;
-							robot->dealDamage(proj->getDamage());
+							proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_A);
+							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_B);
+							gen->dealDamage(proj->getDamage());
 							proj->deactivate();
 							//leave bullet death effect in its place
-							if(robot->getHitPoints() == 0)
+							if(gen->getHitPoints() == 0)
 							{
 								//update player score
-								robot->deactivate();
+								gen->deactivate();
 								//leave non hazard death effect
 							}
 						}
 						else
 						{
-							ProjectileNode* proj = (ProjectileNode*)m_CollisionEvents[i]->m_Collidable_B;
-							Robot* robot = (Robot*)m_CollisionEvents[i]->m_Collidable_A;
-							robot->dealDamage(proj->getDamage());
+							proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_B);
+							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_A);
+							gen->dealDamage(proj->getDamage());
 							proj->deactivate();
 							//leave bullet death effect in it's place
-							if(robot->getHitPoints() == 0)
+							if(gen->getHitPoints() == 0)
 							{
 								//update player score
-								robot->deactivate();
+								gen->deactivate();
 								//leave non hazard death effect
 							}
 						}
@@ -471,7 +503,7 @@ void Scene::checkGameConditions()
 					{
 						if(m_CollisionEvents[i]->m_Collidable_B->getType() == ENEMY_ROBOT)
 						{
-							Robot* robot = (Robot*)m_CollisionEvents[i]->m_Collidable_B;
+							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
 							//m_Tank->dealDamage(robot->getDeathDamage());
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							robot->deactivate();
@@ -482,7 +514,7 @@ void Scene::checkGameConditions()
 						}
 						if(m_CollisionEvents[i]->m_Collidable_A->getType() == ENEMY_ROBOT)
 						{
-							Robot* robot = (Robot*)m_CollisionEvents[i]->m_Collidable_A;
+							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							//m_Tank->dealDamage(robot->getDeathDamage());
 							robot->deactivate();
@@ -501,6 +533,8 @@ void Scene::checkGameConditions()
 			}
 			m_CollisionEvents[i]->m_InUse = false;
 			m_CollisionEvents[i]->m_Collided = false;
+			m_CollisionEvents[i]->m_Collidable_A = nullptr;
+			m_CollisionEvents[i]->m_Collidable_B = nullptr;
 			m_CollisionEvents[i] = nullptr;
 		}
 	}

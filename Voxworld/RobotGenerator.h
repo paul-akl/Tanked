@@ -19,6 +19,7 @@ public:
 	void setRobotArmMesh(MeshNode* p_Mesh){m_RobotArmMesh;}
 	void addDamagedDiffuseTexture(TextureNode* p_Texture){m_DamagedDiffuseTexture=p_Texture;}
 	void setHitPoints(const unsigned int p_HP){m_HitPoints = p_HP;}
+	int getHitPoints(){return m_HitPoints;}
 	void dealDamage(const unsigned int p_DamageAmount){m_HitPoints-=p_DamageAmount;}
 	void setMaxHitPoints(const unsigned int p_MaxHP){m_MaxHitPoints = p_MaxHP;}
 	void setDifficulty(const unsigned int p_Difficulty);
@@ -39,7 +40,7 @@ protected:
 	std::list<Robot*> m_Robots;
 	unsigned int m_Level; //number of the current level of difficulty
 	glm::vec3 m_RobotSpawnPoint;
-	unsigned int m_HitPoints;
+	int m_HitPoints;
 	unsigned int m_MaxHitPoints;
 	float m_SpawnDelay;
 	float m_SpawnTimer;

@@ -17,6 +17,7 @@ public:
 	void addAreaEffect(CollidableNode* p_AOE);
 	void addProjectile(CollidableNode* p_Projectile);
 	void addScenery(CollidableNode* p_Scenery);
+	void addEnemyGen(CollidableNode* p_Gen);
 	virtual void update(float p_DeltaTimeS);
 	virtual void processCollisions(std::vector<CollisionPair*>& p_Pairs);
 	virtual ~CollisionSolver(void);
@@ -44,6 +45,7 @@ protected:
 	std::list<CollidableNode*> m_Enemies;
 	std::list<CollidableNode*> m_Tanks;
 	std::list<CollidableNode*> m_Collectables;
+	std::list<CollidableNode*> m_EnemyGens;
 	//not used yet, but will be
 	std::list<CollidableNode*> m_AreaEffects;
 	CollisionPairManager* m_PairBoss;
@@ -51,6 +53,7 @@ protected:
 	SDL_Thread* enemyThread;
 	SDL_Thread* tankThread;
 	SDL_Thread* collectableThread;
+	SDL_Thread* genThread;
 	SDL_Thread* areaEffectThread;
 	SDL_Thread* projectileThread;
 	static const int MAX_DEPTH = 3;

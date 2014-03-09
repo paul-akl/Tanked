@@ -28,7 +28,7 @@ void ProjectileNode::update(float p_DeltaTimeS)
 		}
 	}
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,4.0f,0.0f));
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,6.0f,0.0f));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);

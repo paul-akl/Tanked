@@ -48,7 +48,7 @@ void WeaponGauge::init()
 	SceneNode::addNode(m_ChargeBg);
 
 	m_ChargeFg = new GFXElement();
-	m_ChargeFg->setPosition(glm::vec3(0));
+	m_ChargeFg->setPosition(glm::vec3(0.03f,0.0f,0.0f));
 	m_ChargeFg->setName("chargefg");
 	m_ChargeFg->addMesh(Mesh);	
 	m_ChargeFg->addTexture(m_Gauge);
@@ -80,7 +80,7 @@ void WeaponGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 {
 	m_ScaleFactor = (m_CurrentValue/m_MaxValue);
 	
-	float offset = 0.006f * m_ScaleFactor;
+	float offset = 0.004f * m_ScaleFactor;
 	
 	if(m_CurrentValue == 0)
 	{

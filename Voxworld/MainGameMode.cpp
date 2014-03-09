@@ -11,6 +11,7 @@ MainGameMode::MainGameMode(void)
 {
 	printf("create main mode \n");	
 	scene=nullptr;
+	running = true;
 }
 void MainGameMode::init(Game& iGame)
 {

@@ -113,7 +113,7 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 					pair->m_Collidable_A = p_Collidable;
 					//calculate point of contact and move circle outside collision zone.
 					
-					p_Collidable->setPosition(p_Collidable->getLocation()+glm::normalize(-p_Collidable->getVelocity())*pair->m_Penetration);
+					p_Collidable->setPosition(p_Collidable->getLocation()+pair->m_CollisionNormal*2.0f);
 					pair->m_CollisionPoint = p_Collidable->getLocation();
 					switch(p_Collidable->getType())
 					{
@@ -214,6 +214,10 @@ void CollisionSolver::addCollectable(CollidableNode* p_Collectable)
 void CollisionSolver::addAreaEffect(CollidableNode* p_AOE)
 {
 	m_AreaEffects.push_front(p_AOE);
+}
+void CollisionSolver::addEnemyGen(CollidableNode* p_Gen)
+{
+	m_EnemyGens.push_front(p_Gen);
 }
 void CollisionSolver::addScenery(CollidableNode* p_Scenery)
 {
@@ -319,11 +323,13 @@ void CollisionSolver::update(float p_DeltaTime)
 	tankThread = SDL_CreateThread(updateList,"tankthread",&m_Tanks);
 	enemyThread = SDL_CreateThread(updateList,"enemythread",&m_Enemies);
 	collectableThread = SDL_CreateThread(updateList,"collectableThread",&m_Collectables);
+	genThread = SDL_CreateThread(updateList,"collectableThread",&m_EnemyGens);
 	//wait until threads are complete then clean up.
 	SDL_WaitThread(projectileThread, &num);
 	SDL_WaitThread(enemyThread, &num);
 	SDL_WaitThread(tankThread, &num);
 	SDL_WaitThread(collectableThread, &num);
+	SDL_WaitThread(genThread,&num);
 	//projectileThread = SDL_CreateThread(updateList,"projthread",&m_AreaEffects);
 
 }
@@ -359,8 +365,31 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 				}
 			}
 			CollideObject(m_StaticRoot,(*it),p_Pairs);
-
+			if(!m_EnemyGens.empty())
+			{
+				for (std::list<CollidableNode*>::iterator jt = m_EnemyGens.begin(); jt!=m_EnemyGens.end();jt++)
+				{
+						//do circle/circle check
+						float overlap = circleVsCircle((*it)->getRadius(),(*jt)->getRadius(),(*it)->getLocation(),(*jt)->getLocation());
+						if(overlap > 0)
+						{
+							CollisionPair* pair = m_PairBoss->getPair();
+							pair->m_Collidable_A = (*it);
+							pair->m_Collidable_B = (*jt);
+							pair->m_Collided = true;
+							pair->m_Penetration = sqrt(overlap);
+							pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
+							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
+							pair->m_ResultType = ENEMYGENVSPROJECTILE;
+							p_Pairs.push_back(pair);
+						}
+						//get overlap of two circles. if overlap is <=0 collision is true
+						//create a new collision pair, input absolute overlap as penetration depth
+						//collision normal is glm::normalize(aPos-bPos)
+				}
+			}
 		}
+
 	}
 	//check for enemy/enemy collision
 	//for all enemies loop

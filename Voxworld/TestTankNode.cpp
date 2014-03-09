@@ -9,14 +9,14 @@ TestTankNode::TestTankNode(void)
 	m_MaxVelocity = 150.0f; //max velocity in m/s
 	m_TankAeroConstant = 1.0f;
 	m_Mass = 750.0f; //mass is one metric ton
-	m_Thrust = 10000.0f; //thrust is in Newtons
+	m_Thrust = 15000.0f; //thrust is in Newtons
 	m_IsMoving = false;
 	m_Velocity = glm::vec3(0.0f); //velocity is only non zero if moving
 	m_TurnAnimSpeed = 150.0f; //used for smooth rotation of tank body
 	m_TargetOrientation = 0.0f; //no target oriention on start
 	m_OrientationDeg = 0.0f; //orientation initialized to zero
 	m_MaxWeaponChargeLevel = 1.0f;
-	m_WeaponChargeRate=0.35f;
+	m_WeaponChargeRate=0.6f;
 	m_WeaponChargeLevel = 0.0f;
 	m_ShieldHitPoints = 100.0f;
 	m_ShieldMaxHitPoints = 200.0f;
@@ -204,13 +204,13 @@ void TestTankNode::update(float p_DeltaTimeS)
 		float AirDensity = 1.5f;
 		// an impulse is just a force, applied over a time period
 		float crossSectionalArea = 20.0f;
-		glm::vec3 AirResImpulse = (-m_Velocity*glm::length(m_Velocity)*AirDensity*m_TankAeroConstant*crossSectionalArea)*(p_DeltaTimeS);
+		glm::vec3 AirResImpulse = ((-m_Velocity*glm::length(m_Velocity)*AirDensity*m_TankAeroConstant*crossSectionalArea)*(p_DeltaTimeS))/m_Mass;
 		//when applying an impulse to an object, the effect is reduced by the object's mass (more mass = less effect)
 		//Simulating air resistance accurately, as it turns out, makes virtually no difference to the overall velociy of a 1 ton tank.
 		//another approach is needed for null input braking
-		//m_Velocity+=AirResImpulse/m_Mass;
+		m_Velocity+=AirResImpulse;
 		//so instead, cut off 0.5% each update, for a more immediate effect, and also it adds
-		m_Velocity*=0.995f;
+		//m_Velocity*=0.985f;
 
 	}
 	//to prevent calculations moving out of floating point precision range
@@ -224,7 +224,7 @@ void TestTankNode::update(float p_DeltaTimeS)
 
 	//update local transformation
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position+glm::vec3(0.0,1.0,0.0));
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0,5.0,0.0));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0,0.0));
 	m_LocalTransform->scale(glm::vec3(1.0f));
 	//then do default behaviour
