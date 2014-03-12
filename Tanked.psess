@@ -67,14 +67,6 @@
       <ProjName>Tanked</ProjName>
     </ProjBinary>
   </Binaries>
-  <Reports>
-    <Report>
-      <Path>Tanked140306.vsp</Path>
-    </Report>
-    <Report>
-      <Path>Tanked140308.vsp</Path>
-    </Report>
-  </Reports>
   <Launches>
     <ProjBinary>
       <Path>:PB:{26362F5F-E30D-418B-BCC7-885ECF0865B2}|Voxworld\Voxworld.vcxproj</Path>

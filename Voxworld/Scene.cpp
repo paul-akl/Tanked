@@ -8,7 +8,7 @@
 Scene::Scene(void)
 {
 	m_CurrentRenderMode = FILLED;
-	m_CamFollowDistance = -25.0f;
+	m_CamFollowDistance = -15.0f;
 	m_CamFollowAngle = -15.0f;
 	m_MaxTurnSpeed = 350.0f;
 	m_MouseTurnSpeed = 0.0f;
@@ -39,34 +39,36 @@ void Scene::init()
 	//addTank(mazeObject->getStartPoint());
 	//add 4 robot generators to world according to maze
 	//add walls and floors according to maze
-	m_TestMaze->generateMaze("gamedata/testmaze.txt");
 	float worldWidth = m_TestMaze->getGridWidth();
-	m_Solver->init(worldWidth,glm::vec3(worldWidth*0.5f,0.0f,worldWidth*0.5f));
-	m_AISolver->setMaze(m_TestMaze);
 	m_Camera = new CameraNode();
 	m_Camera->rotatePitch(m_CamFollowAngle);
 	m_Camera->moveForward(m_CamFollowDistance);
 	m_Camera->moveUp(3.0f);
 	m_GameDifficulty = 1;
-	while(m_TestMaze->hasNextPosition())
+	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30.0f);
+	//m_TestMaze->toConsole();
+	m_AISolver->setMaze(m_TestMaze);
+	m_Solver->init(m_TestMaze->getGridWidth(),glm::vec3(m_TestMaze->getGridWidth()*0.5f,0.0f,m_TestMaze->getGridHeight()*0.5f));
+	MazeIterator *v_mazeIterator = m_TestMaze->getIterator();
+	while(v_mazeIterator->hasNext())
 	{
-		glm::vec2 cell = m_TestMaze->nextPosition();
+		Position cell = v_mazeIterator->getNext();
 
 		//std::cout<<cell.x<<" "<<cell.y<<std::endl;
 
-		switch(m_TestMaze->getGridCellType(cell.x,cell.y))
+		switch(m_TestMaze->getGridCellType(cell))
 		{
-		case Wall:
+		case WALL:
 			{
-				addWall(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
+				addWall(m_TestMaze->getCellPosition(cell));
 			}break;
-		case MonsterGenerator:
+		case GENERATOR:
 			{
-				addRobotGenerator(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
+				addRobotGenerator(m_TestMaze->getCellPosition(cell));
 			}break;
-		case StartPosition:
+		case START:
 			{
-				addTank(glm::vec3(cell.x*30.0f,0.0f,cell.y*30.0f));
+				addTank(m_TestMaze->getCellPosition(cell));
 			}break;
 		};
 	}
@@ -123,7 +125,7 @@ void Scene::addRobotGenerator(glm::vec3 p_Location)
 void Scene::addRobot(Robot* p_Robot)
 {
 	m_Robots.push_front(p_Robot);
-	m_Solver->addEnemy(p_Robot);
+	//m_Solver->addEnemy(p_Robot);
 }
 void Scene::addCollisionSolver(CollisionSolver* p_Solver)
 {
@@ -137,16 +139,14 @@ void Scene::addAISolver(AIManager* p_Solver)
 {
 	m_AISolver = p_Solver;
 }
-void Scene::addMaze(MazeNode* p_Maze)
+void Scene::addMaze(Maze* p_Maze)
 {
 	m_TestMaze = p_Maze;
 }
-
 void Scene::addUI(HUD* p_Hud)
 {
 	m_Hud = p_Hud;
 }
-
 void Scene::updateGameObjects()
 {
 	//multi-threading candidates
@@ -191,7 +191,6 @@ void Scene::updateGameObjects()
 	//detach threads???
 	///////////////////////////////////
 }
-
 void Scene::updateUI()
 {
 	m_Hud->update(m_DeltaTimeSeconds);
@@ -312,6 +311,7 @@ int Scene::updateObjects(void* p_Objects)
 	}
 	return 0;
 }
+
 void Scene::checkGameConditions()
 {
 	// simple collision event handling & correction system, with some added game logic
@@ -529,7 +529,6 @@ void Scene::checkGameConditions()
 						m_Tank->stop();
 						m_Tank->setVelocity(glm::vec3(reflected.x,0.0f,reflected.z));
 					}break;
-				}
 			}
 			m_CollisionEvents[i]->m_InUse = false;
 			m_CollisionEvents[i]->m_Collided = false;
@@ -541,15 +540,9 @@ void Scene::checkGameConditions()
 	m_CollisionEvents.clear();
 	//Other game rules:
 	// if no active generators remain, the maze is complete
-	if(m_RoboGens.empty())
+	if(!m_RoboGens.empty())
 	{
-		//victory condition achieved
-		m_Victory = true;
-		// update hud
-	}
-	else
-	{
-		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.begin(); it++)
+		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
 		{
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
 			if((*it)->isActive() && (*it)->isReady() &&(*it)->getState()!=PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 100.0f)
@@ -557,6 +550,10 @@ void Scene::checkGameConditions()
 				addRobot((*it)->getRobot());
 			}
 		}
+	}
+	else
+	{
+		m_Victory = true;
 	}
 	// if robogen is active and is alert OR agressive & is ready to spawn, spawn robots
 	// if tank hp is depleted game is over
@@ -566,6 +563,7 @@ void Scene::checkGameConditions()
 		m_Defeat = true;
 		//update hud
 	}
+}
 }
 void Scene::ProcessUserInput()
 {

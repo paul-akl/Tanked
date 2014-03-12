@@ -12,7 +12,7 @@ AIManager::~AIManager(void)
 
 }
 
-void AIManager::setMaze(MazeNode *p_Maze)
+void AIManager::setMaze(Maze *p_Maze)
 {
 	m_maze = p_Maze;
 

@@ -170,9 +170,6 @@
     <Filter Include="Core Engine\Maze">
       <UniqueIdentifier>{0f50f100-e0a6-4f90-bd98-7a4663740dcd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core Engine\Maze\Data Based">
-      <UniqueIdentifier>{cde37376-2874-42de-b4b4-595ffdf95b98}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core Engine\Collision System\Quadtree">
       <UniqueIdentifier>{711c0e0a-bad7-443f-9b86-77aee696b3bc}</UniqueIdentifier>
     </Filter>
@@ -320,9 +317,6 @@
     <ClCompile Include="AIManager.cpp">
       <Filter>Core Engine\AI Manager</Filter>
     </ClCompile>
-    <ClCompile Include="MazeNode.cpp">
-      <Filter>Core Engine\Maze\Data Based</Filter>
-    </ClCompile>
     <ClCompile Include="EnemyNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Enemy</Filter>
     </ClCompile>
@@ -375,6 +369,11 @@
     <ClCompile Include="GeneratorDisplay.cpp">
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
+    <ClCompile Include="Maze.cpp">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="PosIterator.cpp" />
+    <ClCompile Include="Position.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -501,9 +500,6 @@
     <ClInclude Include="AIManager.h">
       <Filter>Core Engine\AI Manager</Filter>
     </ClInclude>
-    <ClInclude Include="MazeNode.h">
-      <Filter>Core Engine\Maze\Data Based</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyNode.h">
       <Filter>Core Engine\Base\SceneGraph\Enemy</Filter>
     </ClInclude>
@@ -556,6 +552,11 @@
     <ClInclude Include="FrameCounter.h">
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="PosIterator.h" />
+    <ClInclude Include="Position.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

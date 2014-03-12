@@ -43,10 +43,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGameMode.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
-    <ClCompile Include="MazeNode.cpp" />
+    <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MenuMode.cpp" />
     <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
+    <ClCompile Include="PosIterator.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
     <ClCompile Include="QTNode.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -106,10 +108,12 @@
     <ClInclude Include="LightNode.h" />
     <ClInclude Include="MainGameMode.h" />
     <ClInclude Include="MaterialNode.h" />
-    <ClInclude Include="MazeNode.h" />
+    <ClInclude Include="Maze.h" />
     <ClInclude Include="MenuMode.h" />
     <ClInclude Include="MeshNode.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
+    <ClInclude Include="PosIterator.h" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="ProjectileNode.h" />
     <ClInclude Include="QTNode.h" />
     <ClInclude Include="Renderer.h" />

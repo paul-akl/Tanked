@@ -22,7 +22,7 @@ void MainGameMode::init(Game& iGame)
 	scene->addCollisionSolver(new CollisionSolver());
 	scene->addFloorFactory(new FloorFactory());
 	scene->addRoboGenFactory(new RoboGenFactory());
-	scene->addMaze(new MazeNode());
+	scene->addMaze(new Maze());
 	scene->addWallFactory(new WallFactory());
 	scene->addUpgradeFactory(new UpgradeFactory());
 	scene->addTankFactory(new BasicTankFactory());

@@ -16,7 +16,7 @@ public:
 	void setRobotDamagedTexture(TextureNode* p_Texture){m_DamagedRobotDiffuseTexture=p_Texture;}
 	void setRobotBodyMesh(MeshNode* p_Mesh){m_RobotBodyMesh=p_Mesh;}
 	void setRobotHeadMesh(MeshNode* p_Mesh){m_RobotHeadMesh=p_Mesh;}
-	void setRobotArmMesh(MeshNode* p_Mesh){m_RobotArmMesh;}
+	void setRobotArmMesh(MeshNode* p_Mesh){m_RobotArmMesh = p_Mesh;}
 	void addDamagedDiffuseTexture(TextureNode* p_Texture){m_DamagedDiffuseTexture=p_Texture;}
 	void setHitPoints(const unsigned int p_HP){m_HitPoints = p_HP;}
 	int getHitPoints(){return m_HitPoints;}

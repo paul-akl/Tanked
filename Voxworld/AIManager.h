@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EnemyNode.h"
-#include "MazeNode.h"
+#include "Maze.h"
 #include "SceneNode.h"
 
 enum PathFindingStates	// Used for pathfinding algorithm
@@ -18,12 +18,12 @@ public:
 	AIManager(void);
 	~AIManager(void);
 
-	void setMaze(MazeNode *p_Maze);			// Sets current maze, takes in a pointer to a MazeNode
+	void setMaze(Maze *p_Maze);			// Sets current maze, takes in a pointer to a MazeNode
 	void setPlayer(SceneNode *p_sceneNode);	// Sets current player, takes in a pointer to a SceneNode
 	void doBehaviour(EnemyNode *p_Enemy);	// Process AI behaviour of EnemyNode, calls behaviour functions internaly
 
 protected:
-	MazeNode *m_maze;
+	Maze *m_maze;
 	SceneNode *m_player;
 	EnemyNode *m_currentEnemy;
 

@@ -11,11 +11,13 @@
 #include "CameraNode.h"
 #include "Renderer.h"
 #include "CollisionResponse.h"
-#include "MazeNode.h"
+//#include "Maze.h"
 #include "AIManager.h"
-#include "MazeNode.h"
+#include "Maze.h"
 #include "HUD.h"
+
 #include <SDL_thread.h>
+
 struct ThreadDBlock
 {
 	float deltaTimeS;
@@ -46,7 +48,7 @@ public:
 	void addController(Controller* p_Controller);
 	void addUI(HUD* p_Hud);
 	bool sceneComplete();
-	void addMaze(MazeNode* p_Maze);
+	void addMaze(Maze* p_Maze);
 	TestTankNode* getTank(){return m_Tank;}
 	//void addRobotGenerator(RobotGenerator* p_Factory);
 	//void addSubBossFactory(EnemyFactory* p_Factory);
@@ -80,7 +82,7 @@ protected:
 	//SubBossEnemy* m_SubBoss;
 	float m_DeltaTimeSeconds;
 	//BossEnemy* m_Boss;
-	MazeNode* m_TestMaze;
+	Maze* m_TestMaze;
 	AIManager* m_AISolver;
 	CollisionSolver* m_Solver;
 	WallFactory* m_WallFactory;
