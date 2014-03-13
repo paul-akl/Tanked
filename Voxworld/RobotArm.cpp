@@ -9,6 +9,7 @@ RobotArm::RobotArm(void)
 	m_Raised = false;
 	m_ArmRaiseSpeed = 1.0f;
 	m_OrientationDeg = 0.0f;
+	m_Damaged = false;
 }
 void RobotArm::setLeft()
 {

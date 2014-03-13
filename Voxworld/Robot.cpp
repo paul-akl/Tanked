@@ -16,9 +16,9 @@ Robot::Robot(void)
 	m_OrientationDeg = 0.0f;
 	m_Thrust = 4000.0f;
 	m_Mass = 400.0f;
-	m_HeadPosition = glm::vec3(0.0f,4.5f,0.0f);
-	m_LeftArmPosition = glm::vec3(-3.0f,3.5f,0.0f);
-	m_RightArmPosition = glm::vec3(3.0f,3.5f,0.0f);
+	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
+	m_LeftArmPosition = glm::vec3(-2.5f,3.0f,0.0f);
+	m_RightArmPosition = glm::vec3(2.5f,3.0f,0.0f);
 	m_behaviourState=PassiveStatus;
 	m_Turning = false;
 }
@@ -204,7 +204,7 @@ void Robot::update(float p_DeltaTimeS)
 		}
 	}
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position);
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,8.0f,0.0f));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);
@@ -222,6 +222,9 @@ void Robot::render(Renderer* p_Renderer)
 			//any other texture render calls go in here
 			m_Mesh->render(p_Renderer);
 			p_Renderer->end();
+			m_Head->render(p_Renderer);
+			m_LeftArm->render(p_Renderer);
+			m_RightArm->render(p_Renderer);
 		}
 	}
 	else

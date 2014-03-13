@@ -18,7 +18,8 @@ RobotGenerator::RobotGenerator(void)
 	m_NumRobots = 0;
 	m_SpawnDelay = 1.5f;
 	m_BaseTimer = 1.5f;
-	m_SpawnDistance = 5.0f;
+	m_SpawnDistance = 15.0f;
+	m_behaviourState = PassiveStatus;
 }
 bool RobotGenerator::isReady()
 {
@@ -75,7 +76,7 @@ Robot* RobotGenerator::getRobot()
 			//collision data
 			temp->setType(ENEMY_ROBOT);
 			temp->setBoundaryType(CIRCLE);
-			temp->setRadius(7.5f);
+			temp->setRadius(2.0f);
 			//visual data 
 			temp->addMesh(m_RobotBodyMesh);
 			temp->addTexture(m_DefaultRobotDiffuseTexture);
@@ -113,19 +114,33 @@ RobotArm* RobotGenerator::getArm(bool p_Left)
 	arm->addMesh(m_RobotArmMesh);
 	TransformNode* temp = new TransformNode();
 	temp->reset();
+	
 	arm->addTransform(temp);
 	arm->activate();
+
 	if(p_Left)
+	{
 		arm->setLeft();
+		arm->setName("RobotLeftArm");
+	}
+	else
+		arm->setName("RobotRightArm");
+
+	arm->addTexture(m_DefaultRobotDiffuseTexture);
+	arm->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+
 	return arm;
 }
 RobotHead* RobotGenerator::getHead()
 {
 	RobotHead* head = new RobotHead();
 	head->addMesh(m_RobotHeadMesh);
+	head->addTexture(m_DefaultRobotDiffuseTexture);
+	head->addDamagedTexture(m_DamagedRobotDiffuseTexture);
 	TransformNode* temp = new TransformNode();
 	temp->reset();
 	head->addTransform(temp);
+	head->setName("RobotHead");
 	head->activate();
 	return head;
 }
@@ -139,13 +154,14 @@ void RobotGenerator::update(float p_DeltaTimeS)
 			{
 				m_SpawnTimer+=p_DeltaTimeS;
 			}
+			//m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
+			m_RobotSpawnPoint = m_Position+(glm::vec3(1.0f,0.0f,0.0f)*m_SpawnDistance);
+		}
 			m_LocalTransform->reset();
 			m_LocalTransform->translate(m_Position+glm::vec3(0.0f,9.0f,0.0f));
 			m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 			m_LocalTransform->scale(glm::vec3(m_Radius));
 			SceneNode::update(p_DeltaTimeS);
-			m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
-		}
 	}
 	else
 	{
@@ -156,10 +172,10 @@ void RobotGenerator::render(Renderer* p_Renderer)
 {
 	if(m_HitPoints < (m_MaxHitPoints*0.5f))
 	{
-		if(m_Mesh!=nullptr && m_DamagedRobotDiffuseTexture!=nullptr && m_LocalTransform != nullptr)
+		if(m_Mesh!=nullptr && m_DamagedDiffuseTexture!=nullptr && m_LocalTransform != nullptr)
 		{
 			p_Renderer->begin();
-			m_DamagedRobotDiffuseTexture->render(p_Renderer);
+			m_DamagedDiffuseTexture->render(p_Renderer);
 			m_LocalTransform->render(p_Renderer);
 			//any other texture render calls go in here
 			m_Mesh->render(p_Renderer);

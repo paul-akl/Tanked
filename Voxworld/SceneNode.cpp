@@ -139,7 +139,9 @@ void SceneNode::render(Renderer* p_Renderer)
 					if(m_Children[i]->getName()!=m_Mesh->getName())
 						if(m_Children[i]->getName()!=m_Diffuse->getName())
 							if(m_Children[i]->getName()!=m_LocalTransform->getName())
+							{
 								m_Children[i]->render(p_Renderer);
+							}
 			}
 		}
 

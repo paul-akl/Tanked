@@ -60,7 +60,7 @@ void Scene::init()
 		{
 		case WALL:
 			{
-				addWall(m_TestMaze->getCellPosition(cell));
+				//addWall(m_TestMaze->getCellPosition(cell));
 			}break;
 		case GENERATOR:
 			{
@@ -545,9 +545,14 @@ void Scene::checkGameConditions()
 		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
 		{
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
-			if((*it)->isActive() && (*it)->isReady() &&(*it)->getState()!=PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 100.0f)
+			if((*it)->isActive() && (*it)->isReady() &&(*it)->getState()!=PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
 			{
 				addRobot((*it)->getRobot());
+			}
+			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
+			if((*it)->isActive() && (*it)->getState()==PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
+			{
+				(*it)->setState(AlertStatus);
 			}
 		}
 	}
