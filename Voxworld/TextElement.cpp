@@ -7,7 +7,7 @@ TextElement::TextElement(void)
 	m_CurrentFont = nullptr;
 	needsUpdate = false;
 	setPosition(glm::vec3(0));
-	setRenderRadius(glm::vec3(1.0f));
+	setScale(glm::vec3(1.0f));
 	setOrientation(0);
 	//m_Diffuse->setTexture(NULL);
 }

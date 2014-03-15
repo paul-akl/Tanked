@@ -30,7 +30,7 @@ void MainGameMode::init(Game& iGame)
 	/*hud = new HUD();
 	hud->setName("mainhud");
 	hud->setPosition(glm::vec3(0));
-	hud->setRenderRadius(glm::vec3(1.0));
+	hud->setScale(glm::vec3(1.0));
 	hud->init();	
 	scene->addUI(hud);*/
 

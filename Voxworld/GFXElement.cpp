@@ -4,7 +4,7 @@
 GFXElement::GFXElement(void)
 {
 	setPosition(glm::vec3(0));
-	setRenderRadius(glm::vec3(1.0f));
+	setScale(glm::vec3(1.0f));
 	setOrientation(0);
 }
 

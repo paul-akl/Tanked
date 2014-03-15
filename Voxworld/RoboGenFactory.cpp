@@ -103,8 +103,8 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 				robogen->setRobotHeadMesh(m_RoboHeadMesh);
 				robogen->setRobotArmMesh(m_RoboArmMesh);
 				//set character data
-				robogen->setHitPoints(200+10*p_Difficulty);
-				robogen->setMaxHitPoints(200+10*p_Difficulty);
+				robogen->setHitPoints(100+10*p_Difficulty);
+				robogen->setMaxHitPoints(100+10*p_Difficulty);
 				robogen->setDifficulty(p_Difficulty);
 			}
 

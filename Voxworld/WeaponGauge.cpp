@@ -37,7 +37,7 @@ void WeaponGauge::init()
 
 	m_ChargeBg = new GFXElement();
 	m_ChargeBg->setPosition(glm::vec3(0.28,0.0,0.0));
-	m_ChargeBg->setRenderRadius(glm::vec3(0.0,0.0,1.0));
+	m_ChargeBg->setScale(glm::vec3(0.0,0.0,1.0));
 	m_ChargeBg->setName("chargebg");
 	m_ChargeBg->addMesh(Mesh);	
 	m_ChargeBg->addTexture(m_GaugeBg);
@@ -60,7 +60,7 @@ void WeaponGauge::init()
 
 	/*m_Ammo = new TextElement();
 	m_Ammo->setName("shield value");
-	m_Ammo->setRenderRadius(glm::vec3(0.2));
+	m_Ammo->setScale(glm::vec3(0.2));
 	m_Ammo->setFont(font);
 	m_Ammo->setTextColour(glm::vec4(0,255,0,0));
 	m_Ammo->addMesh(Mesh);
@@ -84,14 +84,14 @@ void WeaponGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 	
 	if(m_CurrentValue == 0)
 	{
-		m_ChargeBg->setPosition(glm::vec3(0.06-m_ChargeFg->getRenderRadius().x,0.0,0.0));
-		m_ChargeBg->setRenderRadius(glm::vec3(0.0,0.0,1.0));
+		m_ChargeBg->setPosition(glm::vec3(0.06-m_ChargeFg->getScale().x,0.0,0.0));
+		m_ChargeBg->setScale(glm::vec3(0.0,0.0,1.0));
 	}
 	
 	else if(m_CurrentValue > 0 && m_CurrentValue < m_MaxValue)
 	{
-		m_ChargeBg->setPosition(glm::vec3( m_ChargeBg->getRenderRadius().x - m_ChargeBg->getLocation().x, m_ChargeBg->getLocation().y, m_ChargeBg->getLocation().z));
-		m_ChargeBg->setRenderRadius(glm::vec3(m_CurrentValue-offset,1.0,1.0));
+		m_ChargeBg->setPosition(glm::vec3( m_ChargeBg->getScale().x - m_ChargeBg->getLocation().x, m_ChargeBg->getLocation().y, m_ChargeBg->getLocation().z));
+		m_ChargeBg->setScale(glm::vec3(m_CurrentValue-offset,1.0,1.0));
 	}
 	else if(m_CurrentValue >= m_MaxValue)
 		m_ChargeBg->setPosition(glm::vec3(m_ChargeBg->getLocation()));

@@ -50,7 +50,7 @@ void ShieldGauge::init()// add uielement factory
 
 	m_TankImage = new GFXElement();
 	m_TankImage->setName("tank image");
-	m_TankImage->setRenderRadius(glm::vec3(0.5,0.7,0.5));
+	m_TankImage->setScale(glm::vec3(0.5,0.7,0.5));
 	m_TankImage->addMesh(Mesh);
 	TextureNode* shieldTexgreen = new TextureNode();
 	shieldTexgreen->setName("tanktex");
@@ -65,7 +65,7 @@ void ShieldGauge::init()// add uielement factory
 
 	m_ShieldValue = new TextElement();
 	m_ShieldValue->setName("shield value");
-	m_ShieldValue->setRenderRadius(glm::vec3(0.2));
+	m_ShieldValue->setScale(glm::vec3(0.2));
 	//Utils::GeneralUtils::generateFont(m_ShieldValue->getFont(),"Fonts/ka1.ttf"); 
 	m_ShieldValue->setFont(Utils::GeneralUtils::generateFont(m_ShieldValue->getFont(),"Fonts/ka1.ttf"));
 	m_ShieldValue->setTextColour(glm::vec4(0,255,0,0));
@@ -100,7 +100,7 @@ void ShieldGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 		m_ShieldImage->setTexture(m_ShieldDamaged);
 	}
 
-	m_ShieldImage->setRenderRadius(glm::vec3(m_ScaleFactor));
+	m_ShieldImage->setScale(glm::vec3(m_ScaleFactor));
 	m_ShieldValue->update(p_DeltaTimeS);
 	UIElement::update(p_DeltaTimeS);	
 	SceneNode::update(p_DeltaTimeS);

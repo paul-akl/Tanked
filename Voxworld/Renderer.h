@@ -11,6 +11,8 @@ class TextureNode;
 class CameraNode;
 class LightNode;
 class MaterialNode;
+class Frustum;
+
 enum RenderMode
 {
 	FILLED, //normal rendering mode
@@ -43,6 +45,9 @@ struct StandardDataSet
 
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
+	float boundingRadius;
+	glm::vec3 modelPosition;
+	glm::mat4 worldTransform;
 };
 
 struct UIDataSet
@@ -92,6 +97,7 @@ public:
 	virtual void begin(void) = 0;
 	virtual void end(void) = 0;
 	virtual void beginUIPhase(void) = 0;
+	virtual void render(SceneNode* p_Node)=0;
 	virtual void render(MeshNode* p_Mesh)=0;
 	virtual void render(TransformNode* p_Transform)=0;
 	virtual void render(TextureNode* p_TextureNode)=0;
@@ -99,6 +105,8 @@ public:
 	virtual void render(LightNode* p_LightNode)=0;
 	virtual void render(MaterialNode* p_Material)=0;
 	virtual void setTransparencyMode(const bool p_Transparency)=0;
+	virtual void updateViewFrustum() = 0;
+	virtual Frustum* getFrustum() = 0;
 	virtual SDL_Window* getWindow(void)=0;
 	virtual void shutDown(void) = 0;
 	virtual ~Renderer(void);

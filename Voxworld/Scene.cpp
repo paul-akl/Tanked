@@ -60,7 +60,7 @@ void Scene::init()
 		{
 		case WALL:
 			{
-				//addWall(m_TestMaze->getCellPosition(cell));
+				addWall(m_TestMaze->getCellPosition(cell));
 			}break;
 		case GENERATOR:
 			{
@@ -77,7 +77,7 @@ void Scene::init()
 	m_Hud->setName("mainhud");
 	m_Hud->setPosition(glm::vec3(0));
 	m_Hud->setOrientation(0);
-	m_Hud->setRenderRadius(glm::vec3(1.0));
+	m_Hud->setScale(glm::vec3(1.0));
 	m_Hud->init();
 	m_Hud->setMetricMax(SHIELDGAUGE, m_Tank->getMaxShieldHitPoints());
 	m_Hud->setMetricMax(WEAPONGAUGE, m_Tank->getMaxWeaponChargeLevel());
@@ -102,6 +102,8 @@ void Scene::addFloor(glm::vec3 p_Location, float p_wallWidth, int p_gridWidth)
 {
 	FloorNode* floor = m_FloorFactory->getFloor(p_gridWidth, p_wallWidth);
 	floor->setPosition(p_Location);
+	float rad = sqrt(((p_gridWidth/2.0f)*(p_gridWidth/2.0f))+((p_gridWidth/2.0f)*(p_gridWidth/2.0f)));
+	floor->setBoundingRadius(rad);
 	m_Floors.push_back(floor);
 }
 void Scene::addWall(glm::vec3 p_Location)
@@ -111,6 +113,8 @@ void Scene::addWall(glm::vec3 p_Location)
 	wall->setRadius(15.0f);
 	wall->setLength(30.0f);
 	wall->setPosition(p_Location);
+	// magic number represents hypotenuse of a 15 x 15 triangle very dirty must change!!!!
+	wall->setBoundingRadius(21.24f);
 	m_Solver->addScenery(wall);
 	m_Walls.push_back(wall);
 }
@@ -692,8 +696,11 @@ void Scene::addWallFactory(WallFactory* p_Factory)
 }
 void Scene::render(Renderer* p_Renderer)
 {
-	p_Renderer->beginRenderCycle(m_CurrentRenderMode);
+
 	m_Camera->render(p_Renderer);
+	p_Renderer->updateViewFrustum();
+	p_Renderer->beginRenderCycle(m_CurrentRenderMode);
+	
 	//draw static objects
 
 	m_Tank->render(p_Renderer);

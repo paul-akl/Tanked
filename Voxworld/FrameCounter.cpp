@@ -29,7 +29,7 @@ void FrameCounter::init()// add uielement factory
 	
 	m_FrameCounter = new TextElement();
 	m_FrameCounter->setName("FrameCounter value");
-	m_FrameCounter->setRenderRadius(glm::vec3(1.0));
+	m_FrameCounter->setScale(glm::vec3(1.0));
 	m_FrameCounter->setFont(Utils::GeneralUtils::generateFont(m_FrameCounter->getFont(),"Fonts/Arkitech Medium.ttf"));
 	m_FrameCounter->setTextColour(glm::vec4(255,0,0,0));
 	m_FrameCounter->addMesh(Mesh);

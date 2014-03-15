@@ -374,6 +374,8 @@
     </ClCompile>
     <ClCompile Include="PosIterator.cpp" />
     <ClCompile Include="Position.cpp" />
+    <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="Plane.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -557,6 +559,8 @@
     </ClInclude>
     <ClInclude Include="PosIterator.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="Frustum.h" />
+    <ClInclude Include="Plane.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

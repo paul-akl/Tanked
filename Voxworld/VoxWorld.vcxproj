@@ -30,6 +30,7 @@
     <ClCompile Include="FloorNode.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FrameCounter.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GBuffer.cpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="MenuMode.cpp" />
     <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PosIterator.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
@@ -96,6 +98,7 @@
     <ClInclude Include="FloorNode.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FrameCounter.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GBuffer.h" />
@@ -112,6 +115,7 @@
     <ClInclude Include="MenuMode.h" />
     <ClInclude Include="MeshNode.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="PosIterator.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProjectileNode.h" />

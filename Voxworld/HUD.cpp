@@ -35,7 +35,7 @@ void HUD::init()
 	m_Shield->setName("shield gauge");
 	m_Shield->setPosition(glm::vec3(-0.8,-0.8,0.0));
 	m_Shield->setOrientation(0);
-	m_Shield->setRenderRadius(glm::vec3(0.2f));
+	m_Shield->setScale(glm::vec3(0.2f));
 	m_Shield->init();	
 	SceneNode::addNode(m_Shield);
 	m_HudComponents.push_back(m_Shield);
@@ -44,7 +44,7 @@ void HUD::init()
 	m_Weapon->setName("weapon gauge");
 	m_Weapon->setPosition(glm::vec3(0.7,-0.9, 0.0));
 	m_Weapon->setOrientation(0);
-	m_Weapon->setRenderRadius(glm::vec3(0.3,0.1,1.0));
+	m_Weapon->setScale(glm::vec3(0.3,0.1,1.0));
 	m_Weapon->init();
 	SceneNode::addNode(m_Weapon);
 	m_HudComponents.push_back(m_Weapon);
@@ -53,7 +53,7 @@ void HUD::init()
 	m_Score->setName("player score");
 	m_Score->setPosition(glm::vec3(0.8,0.95,0.0));
 	m_Score->setOrientation(0);
-	m_Score->setRenderRadius(glm::vec3(0.1,0.03,1.0));
+	m_Score->setScale(glm::vec3(0.1,0.03,1.0));
 	m_Score->init();
 	SceneNode::addNode(m_Score);
 	m_HudComponents.push_back(m_Score);
@@ -62,7 +62,7 @@ void HUD::init()
 	m_GeneratorDisplay->setName("Generator count");
 	m_GeneratorDisplay->setPosition(glm::vec3(-0.65,0.95,0.0));
 	m_GeneratorDisplay->setOrientation(0);
-	m_GeneratorDisplay->setRenderRadius(glm::vec3(0.3,0.03,1.0));
+	m_GeneratorDisplay->setScale(glm::vec3(0.3,0.03,1.0));
 	m_GeneratorDisplay->init();
 	SceneNode::addNode(m_GeneratorDisplay);
 	m_HudComponents.push_back(m_GeneratorDisplay);
@@ -71,7 +71,7 @@ void HUD::init()
 	m_FrameCounter->setName("Frame Counter");
 	m_FrameCounter->setPosition(glm::vec3(0.0,0.95,0.0));
 	m_FrameCounter->setOrientation(0);
-	m_FrameCounter->setRenderRadius(glm::vec3(0.2,0.03,1.0));
+	m_FrameCounter->setScale(glm::vec3(0.2,0.03,1.0));
 	m_FrameCounter->init();
 	SceneNode::addNode(m_FrameCounter);
 	m_HudComponents.push_back(m_FrameCounter);

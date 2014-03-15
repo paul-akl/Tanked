@@ -6,15 +6,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "GeneralUtils.h"
 #include "Shader.h"
+#include "Frustum.h"
 
 DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Renderer(p_WindowWidth, p_WindowHeight)
 {
 		m_UI_Phase = false;
+		m_Frustum = new Frustum();
+		m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
 }
 
 void DeferredRenderer::begin(void)
 {
 }
+
+void DeferredRenderer::updateViewFrustum()
+{
+	m_Frustum->deriveFrustum(m_CurrentViewMatrix, m_ProjectionMatrix);
+}
+
 void DeferredRenderer::render(LightNode* p_LightNode)
 {
 	m_Lights.push_back(p_LightNode->getData());
@@ -68,7 +77,7 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 		m_Matrices[i] = false;
 		m_Textures[i] = false;
 	}
-	m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 1000.0f);
+	
 	m_OrthoProjectionMatrix = glm::ortho<float>(-1.0f,1.0f,-1.0f,1.0f);
 	m_Matrices[PROJECTION] = true;
 }
@@ -136,7 +145,7 @@ void DeferredRenderer::end(void)
 		v_DataSet.SpecularMapLocation = m_CurrentSpecMap;
 		v_DataSet.DepthMapLocation = m_CurrentDepthMap;
 		//material
-		v_DataSet.Material = m_CurrentMaterial;
+		//v_DataSet.Material = m_CurrentMaterial;
 		//shader
 		v_DataSet.SelectedShader = m_CurrentShader;
 		//non camera related transform matrices
@@ -144,6 +153,8 @@ void DeferredRenderer::end(void)
 		v_DataSet.viewMatrix = m_CurrentViewMatrix;
 		v_DataSet.normalMatrix = m_NormalMatrix;
 		v_DataSet.projectionMatrix = m_ProjectionMatrix;
+		v_DataSet.boundingRadius = m_CurrentBRadius;
+		v_DataSet.modelPosition =glm::vec3( m_CurrentModelMatrix*glm::vec4(glm::vec3(0.0f),1.0f));
 
 		m_DataList.push_back(v_DataSet);
 	}
@@ -186,12 +197,14 @@ void DeferredRenderer::endRenderCycle(void)
 {
 	m_GBuffer->initFrame();		// Required to clear final buffer
 	//somewhere here will be a frustum check
-	geometryPass(m_DataList);	// Render geometry of objects, pass vector of dataSets for current frame
+	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix); 
+	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
 	
 	finalPass();
 
 	m_DataList.clear();			// Clear current frame data sets, to get ready for the next frame
+	m_CulledList.clear();
 	m_UIDataList.clear();
 
 	m_Matrices[VIEW] = false;
@@ -204,6 +217,14 @@ void DeferredRenderer::beginUIPhase(void)
 {
 	m_UI_Phase = true;
 }
+
+void DeferredRenderer::render(SceneNode* p_Node)
+{
+	m_CurrentBRadius = p_Node->getBoundingRadius();
+	m_ModelPosition = p_Node->getLocation();
+	m_WorldTransform = p_Node->getWorldTransform();
+}
+
 void DeferredRenderer::render(TextureNode* p_TextureNode)
 {
 	switch(p_TextureNode->getTextureType())
@@ -329,6 +350,9 @@ void DeferredRenderer::shutDown(void)
 	m_Shaders.clear();
 	m_Lights.clear();
 	m_DataList.clear();
+	m_CulledList.clear();
+	delete m_Frustum;
+	m_Frustum = nullptr;
 }
 
 void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
@@ -502,4 +526,16 @@ void DeferredRenderer::finalPass()
 DeferredRenderer::~DeferredRenderer(void)
 {
 	m_Window = nullptr;
+}
+
+void DeferredRenderer::cullDataSet(std::vector<StandardDataSet> p_Unculled, std::vector<StandardDataSet> p_Culled, glm::mat4& p_ViewMatrix)
+{int count =0; 
+	for(std::vector<StandardDataSet>::iterator it = p_Unculled.begin(); it != p_Unculled.end(); it++)
+	{		
+		if( m_Frustum->frustumCheck( (*it).modelPosition, (*it).boundingRadius) )
+			{
+					m_CulledList.push_back((*it));
+					count++; 
+		}
+	}std::cout << "objects rendered:" << count << std::endl;
 }

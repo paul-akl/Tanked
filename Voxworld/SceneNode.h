@@ -43,8 +43,10 @@ public:
 	void deactivate(void);
 	const bool isActive(void);
 	virtual ~SceneNode(void);
-	glm::vec3 getRenderRadius(){return m_RenderRadius;}
-	void setRenderRadius(glm::vec3 radius){m_RenderRadius = radius;}
+	glm::vec3 getScale(){return m_Scale;}
+	void setScale(glm::vec3 p_Scale){m_Scale = p_Scale;}
+	float getBoundingRadius(){return m_BoundingRadius;}
+	void setBoundingRadius(float p_BoundingRadius){m_BoundingRadius = p_BoundingRadius;}
 protected:
 	std::string m_Name;
 	bool m_IsActive;
@@ -58,6 +60,7 @@ protected:
 	glm::vec3 m_Position;
 	float m_OrientationDeg;
 	glm::vec3 m_Velocity;
-	glm::vec3 m_RenderRadius;
+	glm::vec3 m_Scale;
+	float m_BoundingRadius;
 };
 

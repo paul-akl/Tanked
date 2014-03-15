@@ -29,7 +29,7 @@ void Score::init()// add uielement factory
 	
 	m_Score = new TextElement();
 	m_Score->setName("score value");
-	m_Score->setRenderRadius(glm::vec3(1.0));
+	m_Score->setScale(glm::vec3(1.0));
 	m_Score->setFont(Utils::GeneralUtils::generateFont(m_Score->getFont(),"Fonts/ka1.ttf"));
 	m_Score->setTextColour(glm::vec4(255,0,0,0));
 	m_Score->addMesh(Mesh);

@@ -14,6 +14,8 @@
 #include "GBuffer.h"
 #include <SDL.h>
 
+class Frustum;
+
 class DeferredRenderer :
 	public Renderer
 {
@@ -26,6 +28,7 @@ public:
 	virtual void beginUIPhase(void);
 	virtual void begin(void);
 	virtual void end(void);
+	virtual void render(SceneNode* p_Node);
 	virtual void render(MeshNode* p_Mesh);
 	virtual void render(TransformNode* p_Transform);
 	virtual void render(TextureNode* p_TextureNode);
@@ -45,7 +48,8 @@ public:
 	virtual void spotLightPass();	// Render a cone for each spot light
 	virtual void skyboxPass();		// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
 	virtual void finalPass();		// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
-
+	virtual void updateViewFrustum(); //update the frustum based on the view and projection matrices
+	virtual Frustum* getFrustum(){return m_Frustum;}
 private:
 	SDL_Window* m_Window;
 	SDL_GLContext m_Context;
@@ -76,5 +80,12 @@ private:
 	bool m_UI_Phase;
 	std::vector<StandardDataSet> m_DataList;
 	std::vector<UIDataSet> m_UIDataList;
+	std::vector<StandardDataSet> m_CulledList;
+	Frustum* m_Frustum;
+	void cullDataSet(std::vector<StandardDataSet> p_Unculled, std::vector<StandardDataSet> p_Culled, glm::mat4& p_ViewMatrix);
+	bool frustumCheck(StandardDataSet p_DataSet);
+	float m_CurrentBRadius;
+	glm::vec3 m_ModelPosition;
+	glm::mat4 m_WorldTransform;
 };
 

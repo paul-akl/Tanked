@@ -13,7 +13,8 @@ SceneNode::SceneNode(void)
 	m_OrientationDeg = 0.0f;
 	m_Position = glm::vec3(0.0f);
 	m_IsMoving = false;
-	m_RenderRadius = glm::vec3(0.0f);
+	m_Scale = glm::vec3(1.0f);
+	m_BoundingRadius = 5.0f;
 }
 bool SceneNode::isMoving()
 {
@@ -125,6 +126,7 @@ void SceneNode::render(Renderer* p_Renderer)
 			{
 				p_Renderer->begin();
 				m_Diffuse->render(p_Renderer);
+				p_Renderer->render(this);
 				m_LocalTransform->render(p_Renderer);
 				//any other texture render calls go in here
 				m_Mesh->render(p_Renderer);
