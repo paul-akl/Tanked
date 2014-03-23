@@ -11,15 +11,18 @@ Scene::Scene(void)
 	m_CamFollowDistance = -15.0f;
 	m_CamFollowAngle = -15.0f;
 	m_MaxTurnSpeed = 350.0f;
-	m_MouseTurnSpeed = 0.0f;
+	m_MouseTurnSpeed = -100.0f;
 	m_MouseAcceleration = 50.0f;
 	m_MainFireButtonPressed=false;
 	m_Victory = false;
 	m_Defeat = false;
+	m_Paused = false;
+	m_PausePressed = false;
+	m_Tank = nullptr;
 }
 bool Scene::sceneComplete()
 {
-	if(m_Defeat || m_Victory)
+	if(m_Victory)
 	{
 		return true;
 	}
@@ -39,16 +42,17 @@ void Scene::init()
 	//addTank(mazeObject->getStartPoint());
 	//add 4 robot generators to world according to maze
 	//add walls and floors according to maze
-	float worldWidth = m_TestMaze->getGridWidth();
+	int worldWidth = m_TestMaze->getGridWidth();
 	m_Camera = new CameraNode();
 	m_Camera->rotatePitch(m_CamFollowAngle);
 	m_Camera->moveForward(m_CamFollowDistance);
 	m_Camera->moveUp(3.0f);
 	m_GameDifficulty = 1;
-	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30.0f);
+	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30);
+	m_TestMaze->toConsole();
 	//m_TestMaze->toConsole();
 	m_AISolver->setMaze(m_TestMaze);
-	m_Solver->init(m_TestMaze->getGridWidth(),glm::vec3(m_TestMaze->getGridWidth()*0.5f,0.0f,m_TestMaze->getGridHeight()*0.5f));
+	m_Solver->init((float)m_TestMaze->getGridWidth(),glm::vec3(m_TestMaze->getGridWidth()*0.5f,0.0f,m_TestMaze->getGridHeight()*0.5f));
 	MazeIterator *v_mazeIterator = m_TestMaze->getIterator();
 	while(v_mazeIterator->hasNext())
 	{
@@ -72,7 +76,7 @@ void Scene::init()
 			}break;
 		};
 	}
-	addFloor(glm::vec3(m_TestMaze->getGridWidth() / 2, 0.0f, m_TestMaze->getGridHeight() / 2), m_TestMaze->getNumRows(), m_TestMaze->getGridWidth());
+	addFloor(glm::vec3(m_TestMaze->getGridWidth() / 2, 0.0f, m_TestMaze->getGridHeight() / 2), (float)m_TestMaze->getNumRows(), (int)m_TestMaze->getGridWidth());
 	m_Hud = new HUD();
 	m_Hud->setName("mainhud");
 	m_Hud->setPosition(glm::vec3(0));
@@ -81,22 +85,114 @@ void Scene::init()
 	m_Hud->init();
 	m_Hud->setMetricMax(SHIELDGAUGE, m_Tank->getMaxShieldHitPoints());
 	m_Hud->setMetricMax(WEAPONGAUGE, m_Tank->getMaxWeaponChargeLevel());
+	m_Hud->setMetricCurrent(SCORE,0);
 	printf("init scene complete");
+}
+void Scene::nextLevel()
+{
+	//clear world entity lists
+	for(std::list<ProjectileNode*>::iterator it = m_Projectiles.begin();it!= m_Projectiles.end();)
+	{
+		(*it)->deactivate();
+		it = m_Projectiles.erase(it);
+	}
+	for(std::list<Robot*>::iterator it = m_Robots.begin();it!= m_Robots.end();)
+	{
+		(*it)->deactivate();
+		it = m_Robots.erase(it);
+	}
+	for(std::list<UpgradeNode*>::iterator it = m_Upgrades.begin();it!= m_Upgrades.end();)
+	{
+		(*it)->deactivate();
+		it = m_Upgrades.erase(it);
+	}
+	for(std::list<RobotGenerator*>::iterator it = m_RoboGens.begin();it!= m_RoboGens.end();)
+	{
+		(*it)->deactivate();
+		it = m_RoboGens.erase(it);
+	}
+	for(std::list<OffensiveUpgrade*>::iterator it = m_AmmoBoxes.begin();it!= m_AmmoBoxes.end();)
+	{
+		(*it)->deactivate();
+		it = m_AmmoBoxes.erase(it);
+	}
+	for(std::vector<WallNode*>::iterator it = m_Walls.begin();it!= m_Walls.end();)
+	{
+		(*it)->deactivate();
+		it = m_Walls.erase(it);
+	}
+	//clear area effect & particle system lists
+	//only one floor used
+	m_Floors[0]->deactivate();
+	m_Floors.clear();
+	m_Solver->reset();
+	printf("init scene");
+
+	//will be changed upon integration of maze node
+	//addTank(mazeObject->getStartPoint());
+	//add 4 robot generators to world according to maze
+	//add walls and floors according to maze
+
+	m_GameDifficulty++;
+	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30);
+	int worldWidth = m_TestMaze->getGridWidth();
+
+	m_TestMaze->toConsole();
+
+	m_Solver->init((float)m_TestMaze->getGridWidth(),glm::vec3(m_TestMaze->getGridWidth()*0.5f,0.0f,m_TestMaze->getGridHeight()*0.5f));
+	MazeIterator *v_mazeIterator = m_TestMaze->getIterator();
+	while(v_mazeIterator->hasNext())
+	{
+		Position cell = v_mazeIterator->getNext();
+
+		//std::cout<<cell.x<<" "<<cell.y<<std::endl;
+
+		switch(m_TestMaze->getGridCellType(cell))
+		{
+		case WALL:
+			{
+				addWall(m_TestMaze->getCellPosition(cell));
+			}break;
+		case GENERATOR:
+			{
+				addRobotGenerator(m_TestMaze->getCellPosition(cell));
+			}break;
+		case START:
+			{
+				addTank(m_TestMaze->getCellPosition(cell));
+			}break;
+		};
+	}
+	addFloor(glm::vec3(m_TestMaze->getGridWidth() / 2, 0.0f, m_TestMaze->getGridHeight() / 2), (float)m_TestMaze->getNumRows(), (int)m_TestMaze->getGridWidth());
+	printf("init scene complete");
+	m_Defeat = false;
+	m_Victory = false;
+	//clear all object lists, reset collision & ai solver
+	//increment level variable, set paused to true
+	//reinitialise level
+	//generate maze
+	//set maze to ai solver
+	//get maze data
+	//construct level from walls, generators, floor
 }
 void Scene::addTank(glm::vec3 p_Location)
 {
-	m_Tank = m_TankFactory->getTank();
+	if(m_Tank==nullptr)
+	{
+		m_Tank = m_TankFactory->getTank();
+		OffensiveUpgrade* upgrade = m_UpgradeFactory->getOffensiveUpgrade(AUTOGUN);
+		upgrade->init();
+		m_Tank->AddOffensiveUpgrade(upgrade);
+		upgrade = m_UpgradeFactory->getOffensiveUpgrade(DEFAULT);
+		upgrade->init();
+		m_Tank->AddOffensiveUpgrade(upgrade);
+	}
 	m_Tank->setPosition(p_Location);
 	m_Tank->setRadius(6.0f);
 	//SceneNode::addNode(m_Tank);
 	m_Solver->addTank(m_Tank);
 	m_AISolver->setPlayer(m_Tank);
-	OffensiveUpgrade* upgrade = m_UpgradeFactory->getOffensiveUpgrade(AUTOGUN);
-	upgrade->init();
-	m_Tank->AddOffensiveUpgrade(upgrade);
-	upgrade = m_UpgradeFactory->getOffensiveUpgrade(DEFAULT);
-	upgrade->init();
-	m_Tank->AddOffensiveUpgrade(upgrade);
+
 }
 void Scene::addFloor(glm::vec3 p_Location, float p_wallWidth, int p_gridWidth)
 {
@@ -128,8 +224,12 @@ void Scene::addRobotGenerator(glm::vec3 p_Location)
 }
 void Scene::addRobot(Robot* p_Robot)
 {
-	m_Robots.push_front(p_Robot);
-	//m_Solver->addEnemy(p_Robot);
+	if(p_Robot!=nullptr)
+	{
+		m_Robots.push_front(p_Robot);
+		p_Robot->setMovementTarget(p_Robot->getLocation());
+		m_Solver->addEnemy(p_Robot);
+	}
 }
 void Scene::addCollisionSolver(CollisionSolver* p_Solver)
 {
@@ -369,7 +469,7 @@ void Scene::checkGameConditions()
 							if(m_CollisionEvents[i]->m_Collidable_B->isActive())
 							{
 								TestTankNode* tank = dynamic_cast<TestTankNode*>(m_CollisionEvents[i]->m_Collidable_A);
-								tank->AddOffensiveUpgrade((OffensiveUpgrade*)m_CollisionEvents[i]->m_Collidable_B);
+								tank->AddOffensiveUpgrade(dynamic_cast<OffensiveUpgrade*>(m_CollisionEvents[i]->m_Collidable_B));
 								//std::cout<<"COLLECTABLEvsPLAYER"<<std::endl;
 							}
 						}
@@ -384,9 +484,7 @@ void Scene::checkGameConditions()
 							//this selectes whether the angle is shallow enough for the bullet to reflect
 							if(abs(glm::dot(normal,glm::normalize(tmp->getVelocity())))<0.707f)
 							{
-								//glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
-								//glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_A->getLocation());
-								//m_CollisionEvents[i]->m_Collidable_A->setPosition(pos+correction);
+
 								//leave a bullet bounce effect
 								tmp->Bounce(normal);
 							}
@@ -411,7 +509,7 @@ void Scene::checkGameConditions()
 							else
 							{
 								tmp->deactivate();
-								//leave death effect in it's place (future feature)
+								//leave a bullet bounce effect
 							}
 						}
 					}break;
@@ -422,13 +520,14 @@ void Scene::checkGameConditions()
 					{
 						ProjectileNode* proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_A);
 						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
-						robot->dealDamage(proj->getDamage());
+						robot->dealDamage((unsigned int)proj->getDamage());
 						proj->deactivate();
 						//leave bullet death effect in its place
 						if(robot->getHitPoints() == 0)
 						{
 							//update player score
 							robot->deactivate();
+							m_PlayerScore+=25.0f;
 							//leave non hazard death effect
 						}
 					}
@@ -436,12 +535,13 @@ void Scene::checkGameConditions()
 					{
 						ProjectileNode* proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_B);
 						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
-						robot->dealDamage(proj->getDamage());
+						robot->dealDamage((unsigned int)proj->getDamage());
 						proj->deactivate();
 						//leave bullet death effect in it's place
 						if(robot->getHitPoints() == 0)
 						{
 							//update player score
+							m_PlayerScore+=25.0f;
 							robot->deactivate();
 							//leave non hazard death effect
 						}
@@ -455,13 +555,14 @@ void Scene::checkGameConditions()
 						{
 							proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_A);
 							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_B);
-							gen->dealDamage(proj->getDamage());
+							gen->dealDamage((unsigned int)proj->getDamage());
 							proj->deactivate();
 							//leave bullet death effect in its place
 							if(gen->getHitPoints() == 0)
 							{
 								//update player score
 								gen->deactivate();
+								m_PlayerScore+=50.0f;
 								//leave non hazard death effect
 							}
 						}
@@ -469,12 +570,13 @@ void Scene::checkGameConditions()
 						{
 							proj = dynamic_cast<ProjectileNode*>(m_CollisionEvents[i]->m_Collidable_B);
 							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_A);
-							gen->dealDamage(proj->getDamage());
+							gen->dealDamage((unsigned int)proj->getDamage());
 							proj->deactivate();
 							//leave bullet death effect in it's place
 							if(gen->getHitPoints() == 0)
 							{
 								//update player score
+								m_PlayerScore+=50.0f;
 								gen->deactivate();
 								//leave non hazard death effect
 							}
@@ -508,7 +610,7 @@ void Scene::checkGameConditions()
 						if(m_CollisionEvents[i]->m_Collidable_B->getType() == ENEMY_ROBOT)
 						{
 							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
-							//m_Tank->dealDamage(robot->getDeathDamage());
+							m_Tank->dealDamage((int)robot->getDamage());
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							robot->deactivate();
 						}
@@ -520,19 +622,38 @@ void Scene::checkGameConditions()
 						{
 							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
-							//m_Tank->dealDamage(robot->getDeathDamage());
+							m_Tank->dealDamage((int)robot->getDamage());
+
 							robot->deactivate();
 						}
 						if(m_CollisionEvents[i]->m_Collidable_A->getType() == ENEMY)
 						{
 							//if robogen is passive or alert, set to aggressive
+							RobotGenerator* robot = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_A);
+							robot->setState(HostileStatus);
 						}
 						//calculate reflected vector
-						glm::vec3 normal = glm::normalize(m_Tank->getLocation()-m_CollisionEvents[i]->m_Collidable_B->getLocation());
-						glm::vec3 reflected = glm::reflect(m_Tank->getVelocity()*0.5f,normal);
+						glm::vec3 reflected = glm::reflect(m_Tank->getVelocity()*2.0f,m_CollisionEvents[i]->m_CollisionNormal);
 						m_Tank->stop();
 						m_Tank->setVelocity(glm::vec3(reflected.x,0.0f,reflected.z));
 					}break;
+				//enemy hitting enemy , circle/circle collision response, no game events
+				case ENEMYVSENEMY:
+				{
+
+					glm::vec3 normal = glm::vec3(m_CollisionEvents[i]->m_CollisionNormal.x,0.0f,m_CollisionEvents[i]->m_CollisionNormal.z);
+					glm::vec3 velocity = m_CollisionEvents[i]->m_Collidable_A->getVelocity();
+					glm::vec3 velocity2 = m_CollisionEvents[i]->m_Collidable_B->getVelocity();
+					glm::vec3 reflection1 = glm::reflect(velocity,normal);
+					glm::vec3 reflection2 = glm::reflect(velocity2,normal);
+					if(m_CollisionEvents[i]->m_Collidable_A->isMoving())
+					{
+						m_CollisionEvents[i]->m_Collidable_A->stop();
+						m_CollisionEvents[i]->m_Collidable_A->setVelocity(glm::vec3(reflection1.x,0.0f,reflection1.z));
+						m_CollisionEvents[i]->m_Collidable_B->stop();
+						m_CollisionEvents[i]->m_Collidable_B->setVelocity(glm::vec3(reflection2.x,0.0f,reflection2.z));
+					}
+				}break;
 			}
 			m_CollisionEvents[i]->m_InUse = false;
 			m_CollisionEvents[i]->m_Collided = false;
@@ -542,6 +663,7 @@ void Scene::checkGameConditions()
 		}
 	}
 	m_CollisionEvents.clear();
+	}
 	//Other game rules:
 	// if no active generators remain, the maze is complete
 	if(!m_RoboGens.empty())
@@ -549,9 +671,9 @@ void Scene::checkGameConditions()
 		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
 		{
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
-			if((*it)->isActive() && (*it)->isReady() &&(*it)->getState()!=PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
+			if((*it)->isActive() && (*it)->isReady())
 			{
-				addRobot((*it)->getRobot());
+					addRobot((*it)->getRobot());
 			}
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
 			if((*it)->isActive() && (*it)->getState()==PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
@@ -572,94 +694,113 @@ void Scene::checkGameConditions()
 		m_Defeat = true;
 		//update hud
 	}
-}
+
 }
 void Scene::ProcessUserInput()
 {
 	////////////////////////////////////////////////////////////////////////
 	//////////				 USER INPUT           //////////////////////////
 	////////////////////////////////////////////////////////////////////////
-	int mouseXmove = m_Controller->getMouseMovementX();
-
-	if(m_Controller->getButtonState(MOUSELEFT))
+	if (!m_Controller->getButtonState(PAUSE))
 	{
-		if(m_MouseTurnSpeed<m_MaxTurnSpeed)
-			m_MouseTurnSpeed+=m_MouseAcceleration;
-		else
-			m_MouseTurnSpeed = m_MaxTurnSpeed;
-		//m_Camera->rotateYaw(m_MouseTurnSpeed*m_DeltaTimeSeconds);
-
-		//m_Tank->rotateTurret(m_MouseTurnSpeed*m_DeltaTimeSeconds);
-	}
-
-	else if(m_Controller->getButtonState(MOUSERIGHT))
-	{
-		if(m_MouseTurnSpeed>-m_MaxTurnSpeed)
-			m_MouseTurnSpeed-=m_MouseAcceleration;
-		else
-			m_MouseTurnSpeed = -m_MaxTurnSpeed;
-
-	}
-	else
-	{
-		m_MouseTurnSpeed *=0.5;
-	}
-	m_Camera->rotateYaw(m_MouseTurnSpeed*m_DeltaTimeSeconds);
-	m_Tank->rotateTurret(m_MouseTurnSpeed*m_DeltaTimeSeconds);
-	if(m_Controller->getButtonState(FORWARD))
-	{
-		//move tank forward
-		m_Tank->moveForward(m_DeltaTimeSeconds);
-		//printf("forward\n");
-	}
-	if(m_Controller->getButtonState(BACKPEDAL))
-	{
-		//move tank back
-		m_Tank->moveBack(m_DeltaTimeSeconds);
-		//printf("back\n");
-	}
-	if(m_Controller->getButtonState(STRAFE_L))
-	{
-		m_Tank->moveLeft(m_DeltaTimeSeconds);
-	}
-	if(m_Controller->getButtonState(STRAFE_R))
-	{
-		m_Tank->moveRight(m_DeltaTimeSeconds);
-		//printf("right\n");
-		//move tank right
-	}
-	if(m_Controller->getButtonState(PRIMARY_ATTACK))
-	{
-		//unsupported operation
-		//request autogun projectile from tank
-		//std::cout<<"LMB pressed"<<std::endl;
-		ProjectileNode* tmp = m_Tank->getAutoGunProjectile();
-		if(tmp!=nullptr)
+		if(m_PausePressed)
 		{
-			m_Projectiles.push_back(tmp);
-			m_Solver->addProjectile(tmp);
-		}
-	}
-	if(m_Controller->getButtonState(SECONDARY_ATTACK))
-	{
-		//std::cout<<"RMB pressed"<<std::endl;
-		m_MainFireButtonPressed=true;
-		m_Tank->chargeMainGun(m_DeltaTimeSeconds);
-	}
-	else
-	{
-		if(m_MainFireButtonPressed)
-		{
-			//std::cout<<"RMB released"<<std::endl;
-			m_MainFireButtonPressed = false;
-			ProjectileNode* tmp = m_Tank->getMainGunProjectile();
-			if(tmp!=nullptr)
+			if(m_Paused)
 			{
-				m_Projectiles.push_front(tmp);
-				m_Solver->addProjectile(tmp);
+				m_Paused = false;
+				m_PausePressed = false;
+			}
+			else
+			{
+				m_Paused = true;
+				m_PausePressed = false;
 			}
 		}
 	}
+	else
+	{
+		m_PausePressed = true;
+	}
+	if(!m_Paused)
+	{
+		int mouseXmove = m_Controller->getMouseMovementX();
+
+		if(m_Controller->getButtonState(MOUSELEFT))
+		{
+			//if(m_MouseTurnSpeed<m_MaxTurnSpeed)
+			//	m_MouseTurnSpeed+=m_MouseAcceleration;
+			//else
+			//	m_MouseTurnSpeed = m_MaxTurnSpeed;
+			m_Camera->rotateYaw(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+
+			m_Tank->rotateTurret(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+		}
+
+		else if(m_Controller->getButtonState(MOUSERIGHT))
+		{
+			m_Camera->rotateYaw(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+
+			m_Tank->rotateTurret(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+
+		}
+		//m_Camera->rotateYaw(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+		//m_Tank->rotateTurret(m_MouseTurnSpeed*mouseXmove*m_DeltaTimeSeconds);
+		if(m_Controller->getButtonState(FORWARD))
+		{
+			//move tank forward
+			m_Tank->moveForward(m_DeltaTimeSeconds);
+			//printf("forward\n");
+		}
+		if(m_Controller->getButtonState(BACKPEDAL))
+		{
+			//move tank back
+			m_Tank->moveBack(m_DeltaTimeSeconds);
+			//printf("back\n");
+		}
+		if(m_Controller->getButtonState(STRAFE_L))
+		{
+			m_Tank->moveLeft(m_DeltaTimeSeconds);
+		}
+		if(m_Controller->getButtonState(STRAFE_R))
+		{
+			m_Tank->moveRight(m_DeltaTimeSeconds);
+			//printf("right\n");
+			//move tank right
+		}
+		if(m_Controller->getButtonState(PRIMARY_ATTACK))
+		{
+			//unsupported operation
+			//request autogun projectile from tank
+			//std::cout<<"LMB pressed"<<std::endl;
+			ProjectileNode* tmp = m_Tank->getAutoGunProjectile();
+			if(tmp!=nullptr)
+			{
+				m_Projectiles.push_back(tmp);
+				m_Solver->addProjectile(tmp);
+			}
+		}
+		if(m_Controller->getButtonState(SECONDARY_ATTACK))
+		{
+			//std::cout<<"RMB pressed"<<std::endl;
+			m_MainFireButtonPressed=true;
+			m_Tank->chargeMainGun(m_DeltaTimeSeconds);
+		}
+		else
+		{
+			if(m_MainFireButtonPressed)
+			{
+				//std::cout<<"RMB released"<<std::endl;
+				m_MainFireButtonPressed = false;
+				ProjectileNode* tmp = m_Tank->getMainGunProjectile();
+				if(tmp!=nullptr)
+				{
+					m_Projectiles.push_front(tmp);
+					m_Solver->addProjectile(tmp);
+				}
+			}
+		}
+	}
+
 	//DEBUG CONTROLS
 	if(m_Controller->getButtonState(RENDERMODE_DEBUG))
 	{
@@ -669,6 +810,7 @@ void Scene::ProcessUserInput()
 	{
 		m_CurrentRenderMode = FILLED;
 	}
+	m_Controller->resetMouse();
 }
 void Scene::addUpgradeFactory(UpgradeFactory* p_Factory)
 {
@@ -755,29 +897,58 @@ void Scene::render(Renderer* p_Renderer)
 
 	//draw ui
 	m_Hud->render(p_Renderer);
-	p_Renderer->endRenderCycle();
+	//p_Renderer->endRenderCycle();
 }
+
 void Scene::update(float p_DeltaTimeS)
 {
 	m_DeltaTimeSeconds = p_DeltaTimeS;
+	//if game ending conditions are not met
+	ProcessUserInput();
 
 	if(!m_Victory && !m_Defeat)
 	{
-		detectCollisions();
-		checkGameConditions();
-		ProcessUserInput();
-		m_Tank->update(m_DeltaTimeSeconds);	
-		updateGameObjects();
-		cleanup();
-		m_Solver->update(m_DeltaTimeSeconds);
-		m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
-		m_Camera->moveUp(7.0f);
-		m_Hud->setMetricCurrent(SHIELDGAUGE, m_Tank->getShieldHitPoints());
-		m_Hud->setMetricCurrent(WEAPONGAUGE, m_Tank->getWeaponChargeLevel());
-		m_Hud->setMetricCurrent(GENERATORDISPLAY, m_RoboGens.size());
-		m_Hud->update(m_DeltaTimeSeconds);
+		//and game is not paused
+		if(!m_Paused)
+		{
+			detectCollisions();
+			checkGameConditions();
+			m_Tank->update(m_DeltaTimeSeconds);	
+			if(!m_Robots.empty())
+			{
+				for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
+				{
+					if((*it)->isActive())
+					{
+						m_AISolver->doBehaviour((*it));
+					}
+				}
+			}
+			if(!m_RoboGens.empty())
+			{
+				for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it!= m_RoboGens.end();it++)
+				{
+					if((*it)->isActive())
+					{
+						m_AISolver->doBehaviour((*it));
+					}
+				}
+			}
+			updateGameObjects();
+			cleanup();
+			m_Solver->update(m_DeltaTimeSeconds);
+			m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);
+			m_Camera->moveUp(7.0f);
+			m_Hud->setMetricCurrent(SHIELDGAUGE, m_Tank->getShieldHitPoints());
+			m_Hud->setMetricCurrent(WEAPONGAUGE, m_Tank->getWeaponChargeLevel());
+			m_Hud->setMetricCurrent(GENERATORDISPLAY, (float)m_RoboGens.size());
+			m_Hud->update(m_DeltaTimeSeconds);
+			m_Hud->setMetricCurrent(FRAMECOUNTER, m_DeltaTimeSeconds*CLOCKS_PER_SEC);
+			m_Hud->setMetricCurrent(SCORE,m_PlayerScore);
+
+		}
 	}
-	m_Hud->setMetricCurrent(FRAMECOUNTER, m_DeltaTimeSeconds*CLOCKS_PER_SEC);
+
 }
 void Scene::cleanup()
 {

@@ -19,19 +19,19 @@ void CameraNode::init()
 void CameraNode::rotateYaw(const float& p_Angle)
 {
 	//convert to radians and increment stored horizontal angle
-	m_Orientation.m_YawAngle+=p_Angle*PIOVER180;
+	m_Orientation.m_YawAngle+=p_Angle*(float)PIOVER180;
 	update(0.0f);
 }
 void CameraNode::rotatePitch(const float& p_Angle)
 {
 	//conevrt to radians and increment stored vertical angle
-	m_Orientation.m_PitchAngle+=p_Angle*PIOVER180;
+	m_Orientation.m_PitchAngle+=p_Angle*(float)PIOVER180;
 	update(0.0f);
 }
 void CameraNode::rotateRoll(const float& p_Angle)
 {
 	//convert to radians and increment stored roll angle
-	m_Orientation.m_RollAngle+=p_Angle*PIOVER180;
+	m_Orientation.m_RollAngle+=p_Angle*(float)PIOVER180;
 	update(0.0f);
 }
 void CameraNode::MoveTo(glm::vec3 p_NewPosition)

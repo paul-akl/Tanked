@@ -112,9 +112,10 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 					pair->m_Collidable_B = (*it);
 					pair->m_Collidable_A = p_Collidable;
 					//calculate point of contact and move circle outside collision zone.
-					
-					p_Collidable->setPosition(p_Collidable->getLocation()+pair->m_CollisionNormal*2.0f);
-					pair->m_CollisionPoint = p_Collidable->getLocation();
+					float ratio = pair->m_Penetration;
+					ratio/=glm::dot(p_Collidable->getVelocity(),pair->m_CollisionNormal);
+					p_Collidable->setPosition(p_Collidable->getLocation()+p_Collidable->getVelocity()*ratio);
+					pair->m_CollisionPoint = p_Collidable->getLocation()-pair->m_CollisionNormal*p_Collidable->getRadius();
 					switch(p_Collidable->getType())
 					{
 					case PROJECTILE:
@@ -187,7 +188,7 @@ void CollisionSolver::updateTree(QTNode* p_Node)
 				it++;
 		}
 	}
-	if(!p_Node->m_Depth < MAX_DEPTH)
+	if(!(p_Node->m_Depth < MAX_DEPTH))
 	{
 		updateTree(p_Node->m_Children[0]);
 		updateTree(p_Node->m_Children[1]);
@@ -312,6 +313,20 @@ int CollisionSolver::updateList(void* p_List)
 	}
 	return 0;
 }
+void CollisionSolver::reset()
+{
+	delete m_StaticRoot;
+	m_StaticRoot = nullptr;
+	m_Pairs.clear();
+	m_Projectiles.clear();
+	m_Scenery.clear();
+	m_Enemies.clear();
+	m_Tanks.clear();
+	m_Collectables.clear();
+	m_EnemyGens.clear();
+	//not used yet, but will be
+	m_AreaEffects.clear();
+}
 void CollisionSolver::update(float p_DeltaTime)
 {
 	//this can be multi-threaded
@@ -356,6 +371,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_Penetration = sqrt(overlap);
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
 						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
+						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 						pair->m_ResultType = ENEMYVSPROJECTILE;
 						p_Pairs.push_back(pair);
 					}
@@ -383,7 +399,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 							pair->m_ResultType = ENEMYGENVSPROJECTILE;
 							p_Pairs.push_back(pair);
 						}
-						//get overlap of two circles. if overlap is <=0 collision is true
+						//get overlap of two circles. if overlap is >=0 collision is true
 						//create a new collision pair, input absolute overlap as penetration depth
 						//collision normal is glm::normalize(aPos-bPos)
 				}
@@ -414,6 +430,11 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_Collided = true;
 						pair->m_Penetration = sqrt(overlap);
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
+						float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
+						pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
+						ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
+
+						pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
 						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
 						pair->m_ResultType = ENEMYVSENEMY;
 						p_Pairs.push_back(pair);
@@ -456,6 +477,29 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 					//collision normal is glm::normalize(aPos-bPos)
 				}
 			}
+			if(!m_EnemyGens.empty())
+			{
+				for (std::list<CollidableNode*>::iterator jt = m_EnemyGens.begin(); jt!=m_EnemyGens.end();jt++)
+				{
+						//do circle/circle check
+						float overlap = circleVsCircle((*it)->getRadius(),(*jt)->getRadius(),(*it)->getLocation(),(*jt)->getLocation());
+						if(overlap > 0)
+						{
+							CollisionPair* pair = m_PairBoss->getPair();
+							pair->m_Collidable_A = (*it);
+							pair->m_Collidable_B = (*jt);
+							pair->m_Collided = true;
+							pair->m_Penetration = sqrt(overlap);
+							pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
+							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
+							pair->m_ResultType = PLAYERVSENEMY;
+							p_Pairs.push_back(pair);
+						}
+						//get overlap of two circles. if overlap is >=0 collision is true
+						//create a new collision pair, input absolute overlap as penetration depth
+						//collision normal is glm::normalize(aPos-bPos)
+				}
+			}
 			CollideObject(m_StaticRoot,(*it),p_Pairs);
 
 		//additional checks needed for collectable objects.
@@ -473,7 +517,7 @@ float CollisionSolver::circleVsCircle(float radiusA, float radiusB, glm::vec3 po
 	}
 	return -1.0f;
 }
-bool CollisionSolver::pointVScircle(glm::vec3 p_Point,glm::vec3 p_CircleCentre, float p_Radius)
+float CollisionSolver::pointVScircle(glm::vec3 p_Point,glm::vec3 p_CircleCentre, float p_Radius)
 {
 	glm::vec3 line = p_Point-p_CircleCentre;
 	float deltaSquared = glm::dot(line,line);
@@ -494,19 +538,12 @@ float CollisionSolver::circleVsLine(glm::vec3 p_PointA,glm::vec3 p_PointB, glm::
 	glm::vec3 normal = glm::normalize(v_Edge);
 	glm::vec3 line = normal;
 	normal = glm::vec3(-normal.z,normal.y,normal.x);
-	//projections to calculate distance
-	float v_CircleLineProj = glm::dot(line,p_CircleCentre);
-	float v_EdgeProjectionMin = glm::dot(line,p_PointA);
-	float v_EdgeProjectionMax = glm::dot(line,p_PointB);
-	//distance & location of closest point
-	float v_ClosestDistance = v_CircleLineProj-v_EdgeProjectionMin;
-	glm::vec3 v_ClosestPoint = p_PointA+line*v_ClosestDistance;
-	glm::vec3 closestPointLine = p_CircleCentre-v_ClosestPoint;
-	float deltaSquared =  glm::dot(closestPointLine,closestPointLine);
-	if(deltaSquared <= p_CircleRadius*p_CircleRadius)
+	float lineOrigin = glm::dot(normal,p_PointA);
+	float circleproj = glm::dot(normal,p_CircleCentre);
+	float delta = abs(circleproj-lineOrigin);
+	if(delta<=p_CircleRadius)
 	{
-		if(v_CircleLineProj >= v_EdgeProjectionMin && v_CircleLineProj <= v_EdgeProjectionMax)
-			return p_CircleRadius*p_CircleRadius-deltaSquared;
+		return p_CircleRadius-delta;
 	}
 	return -1.0f;
 }
@@ -591,6 +628,8 @@ CollisionPair* CollisionSolver::circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 
 					v_Points[2] = p_RectCentre+glm::vec3(halfWidth,0.0f,halfHeight);
 					v_Points[3] = p_RectCentre+glm::vec3(halfWidth,0.0f,-halfHeight);
 					//case 3 edge circle collision check
+					glm::vec3 normal(0.0f);
+					float min = 0.0f;
 					for (size_t i = 0; i < 4; i++)
 					{
 						size_t secondIndex = 0;
@@ -600,25 +639,33 @@ CollisionPair* CollisionSolver::circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 
 						float intersection = circleVsLine(v_Points[i],v_Points[secondIndex],p_CircleCentre,p_Radius);
 						if(intersection>0.0f)
 						{
-							//calculate displacement vector. need more data from circleVsLine
-							CollisionPair* pair = m_PairBoss->getPair();
-							if(pair!=nullptr)
+	
+							if(min == 0.0f || intersection < min)
 							{
-								pair->m_Collided = true;
-								pair->m_Penetration = sqrt(intersection)+p_Radius;
-								pair->m_CollisionNormal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
-								pair->m_CollisionNormal = glm::vec3(-pair->m_CollisionNormal.z,0.0f,pair->m_CollisionNormal.x);
-								//better to calculate collision point based on velocity
-								//pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
-								return pair;
+								normal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
+								min=intersection;
 							}
-							else
-								return nullptr;
+
 						}
 						else
 							continue;
 					}
-					return nullptr;
+					if(min>0.0f)
+					{
+						//calculate displacement vector. need more data from circleVsLine
+						CollisionPair* pair = m_PairBoss->getPair();
+						if(pair!=nullptr)
+						{
+							pair->m_Collided = true;
+							pair->m_Penetration = sqrt(min);
+							pair->m_CollisionNormal = glm::vec3(-normal.z,0.0f,normal.x);
+							return pair;
+						}
+						else
+							return nullptr;
+					}
+					else
+						return nullptr;
 				}
 			} //no containment. 
 			else
@@ -629,6 +676,8 @@ CollisionPair* CollisionSolver::circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 
 				v_Points[2] = p_RectCentre+glm::vec3(halfWidth,0.0f,halfHeight);
 				v_Points[3] = p_RectCentre+glm::vec3(halfWidth,0.0f,-halfHeight);
 				//case 3 edge circle collision check
+				glm::vec3 normal(0.0f);
+				float min = 0.0f;
 				for (size_t i = 0; i < 4; i++)
 				{
 					size_t secondIndex = 0;
@@ -638,24 +687,32 @@ CollisionPair* CollisionSolver::circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 
 					float intersection = circleVsLine(v_Points[i],v_Points[secondIndex],p_CircleCentre,p_Radius);
 					if(intersection>0.0f)
 					{
-						//calculate displacement vector. need more data from circleVsLine
-						CollisionPair* pair = m_PairBoss->getPair();
-						if(pair!=nullptr)
+						if(min == 0.0f || intersection < min)
 						{
-							pair->m_Collided = true;
-							pair->m_Penetration = sqrt(intersection)+p_Radius;
-							pair->m_CollisionNormal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
-							pair->m_CollisionNormal = glm::vec3(-pair->m_CollisionNormal.z,0.0f,pair->m_CollisionNormal.x);
-							//better to calculate collision point based on velocity
-							//pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
-							return pair;
+							normal = glm::normalize(v_Points[secondIndex] - v_Points[i]);
+							min=intersection;
 						}
-						else
-							return nullptr;
+
 					}
 					else continue;
 				}
-				return nullptr;
+				//calculate displacement vector. need more data from circleVsLine
+				if(min>0)
+				{
+					CollisionPair* pair = m_PairBoss->getPair();
+					if(pair!=nullptr)
+					{
+						pair->m_Collided = true;
+						pair->m_Penetration = sqrt(min);
+						pair->m_CollisionNormal = glm::vec3(-normal.z,0.0f,normal.x);
+						//better to calculate collision point based on velocity
+						//pair->m_CollisionPoint = p_CircleCentre-pair->m_CollisionNormal*(p_Radius-pair->m_Penetration);
+						return pair;
+					}
+					else return nullptr;
+				}
+				else
+					return nullptr;
 			}
 		}
 		else 

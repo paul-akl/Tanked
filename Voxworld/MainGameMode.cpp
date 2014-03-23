@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "CollisionSolver.h"
 #include "CollisionResponse.h"
-
+#include "DeferredRenderer.h"
 #include <iostream>
 MainGameMode::MainGameMode(void)
 {
@@ -13,7 +13,7 @@ MainGameMode::MainGameMode(void)
 	scene=nullptr;
 	running = true;
 }
-void MainGameMode::init(Game& iGame)
+void MainGameMode::init(Game& iGame,Renderer* p_Renderer)
 {
 	scene = new Scene();
 	scene->activate();
@@ -27,6 +27,8 @@ void MainGameMode::init(Game& iGame)
 	scene->addUpgradeFactory(new UpgradeFactory());
 	scene->addTankFactory(new BasicTankFactory());
 	scene->init();
+	//change controller to game mode
+	m_Controller->setGameMode(true);
 	/*hud = new HUD();
 	hud->setName("mainhud");
 	hud->setPosition(glm::vec3(0));
@@ -37,7 +39,6 @@ void MainGameMode::init(Game& iGame)
 }
 void MainGameMode::update(float deltaTime)
 {
-
 	//game logic function.
 	//ideally, code below will be abstracted away, within manager classes
 	float deltaTimeS = deltaTime/1000.0f;
@@ -47,10 +48,21 @@ void MainGameMode::update(float deltaTime)
 	}
 	else
 	{
-		scene->update(deltaTimeS);
-		
+		if(scene->sceneComplete())
+		{
+			scene->nextLevel();
+		}
+		else if(scene->gameOver())
+		{
+			running = false;
+		}
+		else
+		{
+			scene->update(deltaTimeS);
+		}
 	}
 }
+
 bool MainGameMode::handleEvent(Game& iGame)
 {
 	//not much to do here...except changeState calls, 
@@ -64,7 +76,7 @@ void MainGameMode::draw(Renderer* p_Renderer)
 	//ideally this will be abstracted away behind p_Renderer->renderScene(SceneNode* p_Scene);
 	//p_Scene will be a root node for the entire level
 	scene->render(p_Renderer);
-	
+	p_Renderer->endRenderCycle();
 }
 MainGameMode::~MainGameMode(void)
 {

@@ -12,6 +12,7 @@ public:
 	void lowerArm();
 	void setLeft();
 	const bool& armRaised();
+	void setDamaged(bool p_Switch){m_Damaged = p_Switch;}
 	void addDamagedTexture(TextureNode* p_Texture){m_DamagedDiffuseTexture = p_Texture;}
 	virtual ~RobotArm(void);
 private:

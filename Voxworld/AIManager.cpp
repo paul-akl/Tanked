@@ -6,6 +6,12 @@ AIManager::AIManager(void)
 	m_maze = NULL;
 	m_player = NULL;
 	m_currentEnemy = NULL;
+	//m_parentCoordX = nullptr;
+	//m_parentCoordY = nullptr;
+	//m_openCoordX = nullptr;
+	//m_openCoordY = nullptr;
+	//m_parentCoordX = nullptr;
+	//m_parentCoordX = nullptr;
 }
 AIManager::~AIManager(void)
 {
@@ -16,23 +22,23 @@ void AIManager::setMaze(Maze *p_Maze)
 {
 	m_maze = p_Maze;
 
-	m_openList = new int[m_maze->getNumColumns()*m_maze->getNumRows()+2];
-	m_openCoordX = new int[m_maze->getNumColumns()*m_maze->getNumRows()+2];
-	m_openCoordY = new int[m_maze->getNumColumns()*m_maze->getNumRows()+2];
-	m_fCost = new int[m_maze->getNumColumns()*m_maze->getNumRows()+2];
-	m_hCost = new int[m_maze->getNumColumns()*m_maze->getNumRows()+2];
+	m_openList.resize(m_maze->getNumColumns()*m_maze->getNumRows()+2);
+	m_openCoordX.resize(m_maze->getNumColumns()*m_maze->getNumRows()+2);
+	m_openCoordY.resize(m_maze->getNumColumns()*m_maze->getNumRows()+2);
+	m_fCost.resize(m_maze->getNumColumns()*m_maze->getNumRows()+2);
+	m_hCost.resize(m_maze->getNumColumns()*m_maze->getNumRows()+2);
 
-	m_parentCoordX = new int *[m_maze->getNumColumns()+1];
-	m_parentCoordY = new int *[m_maze->getNumColumns()+1];
-	m_closedList = new int *[m_maze->getNumColumns()+1];
-	m_gCost = new int *[m_maze->getNumColumns()+1];
+	m_parentCoordX.resize(m_maze->getNumColumns()+1);
+	m_parentCoordY.resize(m_maze->getNumColumns()+1);
+	m_closedList.resize(m_maze->getNumColumns()+1);
+	m_gCost.resize(m_maze->getNumColumns()+1);
 	
 	for(int i=0; i<m_maze->getNumColumns()+1; i++)
 	{
-		m_parentCoordX[i] = new int[m_maze->getNumRows()+1];
-		m_parentCoordY[i] = new int[m_maze->getNumRows()+1];
-		m_closedList[i] = new int[m_maze->getNumRows()+1];
-		m_gCost[i] = new int[m_maze->getNumRows()+1];
+		m_parentCoordX[i].resize(m_maze->getNumRows()+1);
+		m_parentCoordY[i].resize(m_maze->getNumRows()+1);
+		m_closedList[i].resize(m_maze->getNumRows()+1);
+		m_gCost[i].resize(m_maze->getNumRows()+1);
 	}
 }
 void AIManager::setPlayer(SceneNode *p_sceneNode)
@@ -46,31 +52,50 @@ void AIManager::scoreGrid()
 }
 void AIManager::doBehaviour(EnemyNode *p_Enemy)
 {
-	switch(p_Enemy->getState())
-	{
-	case PassiveStatus:
-		doPassiveBehaviour(p_Enemy);
-		break;
+//	switch(p_Enemy->getState())
+//	{
+//	case PassiveStatus:
+//		doPassiveBehaviour(p_Enemy);
+//		break;
 		
-	case AlertStatus:
-		doAlertBehaviour(p_Enemy);
-		break;
+//	case AlertStatus:
+//		doAlertBehaviour(p_Enemy);
+//		break;
 		
-	case HostileStatus:
-		doHostileBehaviour(p_Enemy);
-		break;
-	}
+//	case HostileStatus:
+//		doHostileBehaviour(p_Enemy);
+//		break;
+//	}
 
 	// If enemy has reached the target grid cell, recalculate a path and set next step in a path as a movement target
-	if(m_maze->getGridCell(p_Enemy->getLocation()) == m_maze->getGridCell(p_Enemy->getMovementTarget()))
-		p_Enemy->setMovementTarget(m_maze->getCellPosition(getNextPathCell(p_Enemy->getLocation(), p_Enemy->getTargetPosition())));
+	glm::vec2 enemLoc, enemMoveLoc;
+	enemLoc =  m_maze->getGridCell(p_Enemy->getLocation());
+	enemMoveLoc=m_maze->getGridCell(p_Enemy->getMovementTarget());
+	p_Enemy->setTargetPosition(m_player->getLocation());
+	if(isPlayerVisible(p_Enemy))
+	{
+		p_Enemy->setMovementTarget(m_player->getLocation());
+		p_Enemy->setState(HostileStatus);
+	}
+	else
+	{
+		if(enemLoc == enemMoveLoc)
+		{
+			if(enemLoc == m_maze->getGridCell(m_player->getLocation()))
+				p_Enemy->setMovementTarget(m_player->getLocation());
+			else
+				p_Enemy->setMovementTarget(m_maze->getCellPosition(getNextPathCell(p_Enemy->getLocation(), m_player->getLocation())));
+		
+		}
+	}
 }
 void AIManager::doHostileBehaviour(EnemyNode *p_Enemy)
 {
-	if(!isPlayerVisible(p_Enemy))
-		p_Enemy->setState(AlertStatus);
-	else
+	//if(!isPlayerVisible(p_Enemy))
+	//	p_Enemy->setState(AlertStatus);
+	//else
 		p_Enemy->setTargetPosition(m_player->getLocation());
+		//above needs changed to plot path to player, then set the next cell in the path as target
 }
 void AIManager::doAlertBehaviour(EnemyNode *p_Enemy)
 {
@@ -84,12 +109,16 @@ void AIManager::doPassiveBehaviour(EnemyNode *p_Enemy)
 }
 bool AIManager::isPlayerVisible(EnemyNode *p_Enemy)
 {
-	glm::vec3	playerPosition = m_player->getLocation(),
-				enemyPosition = p_Enemy->getLocation();
+	glm::vec2 pPos = m_maze->getGridCell(m_player->getLocation());
+	//construct a 2d Ray to trace path from enemy to player
+	glm::vec2 ePos = m_maze->getGridCell(p_Enemy->getLocation());
 
-	return sqrt((enemyPosition.x - playerPosition.x)*(enemyPosition.x - playerPosition.x) + 
-				(enemyPosition.y - playerPosition.y)*(enemyPosition.y - playerPosition.y) + 
-				(enemyPosition.z - playerPosition.z)*(enemyPosition.z - playerPosition.z)) >= p_Enemy->getDetectionRadius();
+
+	return m_maze->isVisible(ePos,pPos);
+
+	//return	(enemyPosition.x - playerPosition.x)*(enemyPosition.x - playerPosition.x) + 
+	//		(enemyPosition.y - playerPosition.y)*(enemyPosition.y - playerPosition.y) + 
+	//		(enemyPosition.z - playerPosition.z)*(enemyPosition.z - playerPosition.z) >= p_Enemy->getDetectionRadius()*p_Enemy->getDetectionRadius();
 }
 
 glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition)
@@ -97,8 +126,25 @@ glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targ
 	int a = 0, b = 0, m = 0, u = 0, v = 0, temp = 0, corner = 0, 
 		currentOpen = 0, numOpenList = 0, gTemp = 0, gAdded = 0, path = 0,
 		parentXcoord = 0, parentYcoord = 0, openListID = 0, newOpenListID = 0,
-		xTemp = 0, xPath = 0, yPath = 0, cellPosition = 0, closedListOffset,
+		xTemp = 0, xPath = 0, yPath = 0, cellPosition = 0, closedListOffset = 0,
 		startPosX = 0, startPosY = 0, targetPosX = 0, targetPosY = 0;
+
+	m_pathLength = 0;		
+	m_pathLocation = 0;
+	
+	std::fill(m_openList.begin(), m_openList.end(), 0);
+	std::fill(m_openCoordX.begin(), m_openCoordX.end(), 0);
+	std::fill(m_openCoordY.begin(), m_openCoordY.end(), 0);
+	std::fill(m_fCost.begin(), m_fCost.end(), 0);
+	std::fill(m_hCost.begin(), m_hCost.end(), 0);
+
+	for(unsigned int i=0; i < m_parentCoordX.size(); i++)
+	{
+		std::fill(m_parentCoordX[i].begin(), m_parentCoordX[i].end(), 0);
+		std::fill(m_parentCoordY[i].begin(), m_parentCoordY[i].end(), 0);
+		std::fill(m_closedList[i].begin(), m_closedList[i].end(), 0);
+		std::fill(m_gCost[i].begin(), m_gCost[i].end(), 0);
+	}
 
 	glm::vec2 startPos = m_maze->getGridCell(p_startPosition);		// Get starting cell
 	startPosX = (int)startPos.x;
@@ -107,23 +153,25 @@ glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targ
 	glm::vec2 targetPos = m_maze->getGridCell(p_targetPosition);	// Get target cell
 	targetPosX = (int)targetPos.x;
 	targetPosY = (int)targetPos.y;
-	
+
 	if(startPosX == targetPosX && startPosY == targetPosY)			// Check if start point is at the same cell as target point
 	{
-		// Path found
-	}
-	if(m_maze->getGridCellType(targetPosX, targetPosY) == Unwalkable)	// Check if target point is a walkable cell
-	{
-		// Path doesn't exist
+		return glm::vec2(startPosX, startPosY);
 	}
 
-	if(closedListOffset > 1000000)	// Empty a shared closed list, once every now and then
+	if(m_maze->getGridCellType(targetPosX, targetPosY) == Unwalkable)	// Check if target point is a walkable cell
 	{
-		for(int i = 0; i < m_maze->getNumColumns(); i++) 
-			for(int j = 0; j < m_maze->getNumRows(); j++)
-				m_closedList[i][j] = 0;
-		closedListOffset = 10;	
+		//return glm::vec2(0.0f, 0.0f);
 	}
+
+	//if(closedListOffset > 10000)	// Empty a shared closed list, once every now and then
+	//{
+	//	for(int i = 0; i < m_closedList.size(); i++)
+	//		std::fill(m_closedList[i].begin(), m_closedList[i].end(), 0);
+			//for(int j = 0; j < m_closedList[i].size(); j++)
+				//m_closedList[i][j] = 0;
+		closedListOffset = 0;	
+	//}
 
 	closedListOffset += 2;
 	currentOpen--;
@@ -322,6 +370,7 @@ glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targ
 		{
 			// Path doesn't exist
 			path = nonexistentPath;
+			break;
 		}
 
 		if (m_closedList[(int)targetPosX][(int)targetPosY] == currentOpen)
@@ -336,7 +385,10 @@ glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targ
 	// This is done by tracing the path backwards from target to start cell
 	if (path == foundPath)
 	{
+		int xTest = 0, yTest = 0;
 		xPath = targetPosX; yPath = targetPosY;
+		if(m_parentCoordX[xPath][yPath] != startPosX || m_parentCoordY[xPath][yPath] != startPosY)
+{
 		do
 		{
 			// Get parent cells
@@ -344,9 +396,31 @@ glm::vec2 AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targ
 			yPath = m_parentCoordY[xPath][yPath];
 			xPath = xTemp;
 		// If parent cells are the same as starting cell, stop the loop
+
+			if(xPath < -100 || yPath < -100)
+			{
+				int xTest2 = m_parentCoordX[xTest][yTest];
+				int yTest2 = m_parentCoordY[xTest][yTest];
+
+				int test = xTest * yTest;
+			}
+			xTest = xPath;
+			yTest = yPath;
+
 		}while(m_parentCoordX[xPath][yPath] != startPosX || m_parentCoordY[xPath][yPath] != startPosY);
 
 		// Return the last parent cell, which is the next step from starting position
+		return glm::vec2(xPath, yPath);
+}
+else
+	{
+		return glm::vec2(xPath, yPath);
+	}
+
+
+	}
+	else
+	{
 		return glm::vec2(xPath, yPath);
 	}
 	

@@ -14,7 +14,7 @@ class MenuMode :
 {
 public:
 	MenuMode(void);
-	virtual void init(Game& iGame){printf("init menu mode\n");}
+	virtual void init(Game& iGame,Renderer* P_Renderer){printf("init menu mode\n");}
 	virtual void update(float deltaTime){printf("update menu mode\n");}
 	virtual bool handleEvent(Game& igame){return true;}
 	virtual void draw(Renderer* p_Renderer){printf("drawing menu mode\n");}

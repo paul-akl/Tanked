@@ -88,7 +88,7 @@ FloorNode* FloorFactory::getFloor(int p_numTiles, float p_tileSize)
 		floorInstance->addTransform(floorTransform);
 		floorInstance->setSize(p_numTiles / 2.0f);
 	}
-
+	floorInstance->activate();
 	return floorInstance;
 }
 FloorFactory::~FloorFactory(void)

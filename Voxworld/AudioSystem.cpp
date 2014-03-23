@@ -88,6 +88,7 @@ int AudioSystem::Init()
 		ErrorCheck(m_Result);
 		
 		InitializeSounds();
+		return 1;
 }
 
 void AudioSystem::InitializeSounds()

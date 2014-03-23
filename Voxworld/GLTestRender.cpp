@@ -16,7 +16,7 @@ void GLTestRender::begin(void)
 }
 void GLTestRender::render(LightNode* p_LightNode)
 {
-	m_Lights.push_back(p_LightNode->getData());
+	m_Lights.push_back(p_LightNode->getBaseData());
 }
 void GLTestRender::beginRenderCycle(RenderMode p_Mode)
 {
@@ -251,7 +251,7 @@ void GLTestRender::init(void)
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4); // Turn on x4 multisampling anti-aliasing (MSAA)
     // Create 800x600 window
    m_Window = SDL_CreateWindow("Tanked", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        m_ScreenWidth, m_ScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+        (int)m_ScreenWidth, (int)m_ScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 	if (!m_Window) // Check window was created OK
         Utils::GeneralUtils::exitFatalError("cannot create window");
 

@@ -49,6 +49,7 @@
     <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PointLightShader.cpp" />
     <ClCompile Include="PosIterator.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="ProjectileNode.cpp" />
@@ -65,6 +66,8 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShieldGauge.cpp" />
     <ClCompile Include="ShopMode.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="SpotLightShader.cpp" />
     <ClCompile Include="TestTankNode.cpp" />
     <ClCompile Include="TextElement.cpp" />
     <ClCompile Include="TextureNode.cpp" />
@@ -116,6 +119,7 @@
     <ClInclude Include="MeshNode.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="PointLightShader.h" />
     <ClInclude Include="PosIterator.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ProjectileNode.h" />
@@ -132,6 +136,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShieldGauge.h" />
     <ClInclude Include="ShopMode.h" />
+    <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="SpotLightShader.h" />
     <ClInclude Include="TestTankNode.h" />
     <ClInclude Include="TextElement.h" />
     <ClInclude Include="TextureNode.h" />

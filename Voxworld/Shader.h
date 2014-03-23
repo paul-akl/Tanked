@@ -27,7 +27,7 @@ public:
 	virtual void bindTexture(TextureType p_type, GLuint p_textureHandle);
 	virtual ~Shader(void);
 
-private:
+protected:
 	virtual void getDataHandles(GLuint p_programHandle);
 	GLuint loadShaders(char* p_VertexShader, char* p_PixelShader);
 	char* loadFile(const char* p_FileName, int &p_FileSize);

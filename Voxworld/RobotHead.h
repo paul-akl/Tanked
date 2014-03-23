@@ -8,8 +8,7 @@ public:
 	virtual void render(Renderer* p_Renderer);
 	virtual void update(float p_DeltaTimeS);
 	void addDamagedTexture(TextureNode* p_Texture);
-	void setDamaged(bool p_Damaged);
-	bool isDamaged();
+	void setDamaged(bool p_Switch){m_Damaged = p_Switch;}
 	void LookAt(const glm::vec3& p_Target);
 	virtual ~RobotHead(void);
 protected:

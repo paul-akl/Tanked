@@ -18,6 +18,7 @@ public:
 	void addProjectile(CollidableNode* p_Projectile);
 	void addScenery(CollidableNode* p_Scenery);
 	void addEnemyGen(CollidableNode* p_Gen);
+	void reset();
 	virtual void update(float p_DeltaTimeS);
 	virtual void processCollisions(std::vector<CollisionPair*>& p_Pairs);
 	virtual ~CollisionSolver(void);
@@ -31,7 +32,7 @@ protected:
 	float circleVsCircle(float p_RadiusA, float p_RadiusB, glm::vec3 p_CentreA, glm::vec3 p_CentreB);
 	CollisionPair*  circleVsAAB(glm::vec3 p_CircleCentre, glm::vec3 p_RectCentre, float p_Radius, float p_Width, float p_Height);
 	float circleVsLine(glm::vec3 p_PointA,glm::vec3 p_PointB, glm::vec3 p_CircleCentre,float p_CircleRadius);
-	bool pointVScircle(glm::vec3 p_Point,glm::vec3 p_CircleCentre, float p_Radius);
+	float pointVScircle(glm::vec3 p_Point,glm::vec3 p_CircleCentre, float p_Radius);
 	bool pointVsRect(glm::vec3 p_Point, glm::vec3 axisA, glm::vec3 axisB);
 	int updateCollectables(void* ptr);
 	int updateEnemies(void* ptr);

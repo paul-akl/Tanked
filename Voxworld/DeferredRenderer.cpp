@@ -24,10 +24,6 @@ void DeferredRenderer::updateViewFrustum()
 	m_Frustum->deriveFrustum(m_CurrentViewMatrix, m_ProjectionMatrix);
 }
 
-void DeferredRenderer::render(LightNode* p_LightNode)
-{
-	m_Lights.push_back(p_LightNode->getData());
-}
 void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 {
 	// bind the GBuffer to write to
@@ -277,6 +273,20 @@ void DeferredRenderer::render(CameraNode* p_CameraNode)
 	p_CameraNode->getViewMatrix(m_CurrentViewMatrix,false);
 	m_Matrices[VIEW] = true;
 }
+void DeferredRenderer::render(LightNode* p_PointLightNode)
+{
+	m_PointLightList.push_back(PointLightDataSet(	
+		p_PointLightNode->getLocation(),		 p_PointLightNode->getColour(),				p_PointLightNode->getAttenuation(),	
+		p_PointLightNode->getAmbientIntensity(), p_PointLightNode->getDiffuseIntensity(),	p_PointLightNode->getSpecularIntensity(), 
+		p_PointLightNode->getSpecularPower() ));
+}
+void DeferredRenderer::render(SpotLight* p_SpotLightNode)
+{
+	m_SpotLightList.push_back(SpotLightDataSet(
+		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),			 p_SpotLightNode->getAttenuation(),
+		p_SpotLightNode->getTransformedDirection(),	p_SpotLightNode->getCutoffAngle(),		 p_SpotLightNode->getAmbientIntensity(),
+		p_SpotLightNode->getDiffuseIntensity(),		p_SpotLightNode->getSpecularIntensity(), p_SpotLightNode->getSpecularPower() ));
+}
 
 SDL_Window* DeferredRenderer::getWindow(void)
 {
@@ -336,7 +346,7 @@ void DeferredRenderer::init(void)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_CULL_FACE);
 
-	SDL_GL_SetSwapInterval(1); // set swap buffers to sync with monitor's vertical refresh rate
+	SDL_GL_SetSwapInterval(0); // set swap buffers to sync with monitor's vertical refresh rate
 	fprintf(stderr, "Error: %s\n", glewGetErrorString(glGetError()));
 
 	//initialize the geometry buffer
@@ -365,7 +375,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Pick a shader, and render each data, looping through dataList vector
-	for(int i=0; i < p_DataList.size(); i++)
+	for(unsigned int i=0; i < p_DataList.size(); i++)
 	{
 		int v_NumTextures = 0;
 		p_DataList[i].SelectedShader->enable();
@@ -412,18 +422,18 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 
 	//glDepthMask(GL_FALSE);
 }
-
 void DeferredRenderer::geometryPass(std::vector<UIDataSet> &p_DataList)
 {
 	m_GBuffer->initGeometryPass();	// Bind buffers
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);			// turn off depth testing as the UI is drawn over everything else
 	glDisable(GL_DEPTH_TEST);		
 	//glDisable(GL_CULL_FACE);
 	//glClear(GL_DEPTH_BUFFER_BIT);
 	
 	// Pick a shader, and render each data, looping through dataList vector
-	for(int i=0; i < p_DataList.size(); i++)
+	for(unsigned int i=0; i < p_DataList.size(); i++)
 	{
 		int v_NumTextures = 0;
 		p_DataList[i].SelectedShader->enable();
@@ -473,7 +483,6 @@ void DeferredRenderer::stencilPass()
 
 	//TODO: set light's position, calculate it's radius and render a sphere using stencil shaders
 }
-
 void DeferredRenderer::dirLightPass()
 {
 	glDisable(GL_DEPTH_TEST);		
@@ -485,7 +494,7 @@ void DeferredRenderer::dirLightPass()
 	
 	glDisable(GL_BLEND);
 }
-void DeferredRenderer::pointLightPass()
+void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 {
 	m_GBuffer->initLightPass();
 
@@ -496,18 +505,84 @@ void DeferredRenderer::pointLightPass()
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
         
+	glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);	// Use face culling, so that a fragment doesn't receive light (and light calculations) for both faces
 							// Cull the front face (and not the back) so that the light will still be calculated even if the camera is inside the sphere
 
 	// TODO: set point light's uniform values, calculate sphere size (based on radius) and render a sphere using point light shader
-	
-    glCullFace(GL_BACK);
 
+	m_PointLightShader->enable();
+
+	m_PointLightShader->setModelMatrix(p_lightData.lightModel);
+	m_PointLightShader->setWorldPosition(p_lightData.worldPosition);
+	m_PointLightShader->setColour(p_lightData.colour);
+	m_PointLightShader->setAttenConstant(p_lightData.attenuation.x);
+	m_PointLightShader->setAttenLinear(p_lightData.attenuation.y);
+	m_PointLightShader->setAttenQuadratic(p_lightData.attenuation.z);
+	m_PointLightShader->setAmbientIntensity(p_lightData.ambientI);
+	m_PointLightShader->setDiffuseIntensity(p_lightData.diffuseI);
+	m_PointLightShader->setSpecularIntensity(p_lightData.SpecI);
+	m_PointLightShader->setSpecularPower(p_lightData.SpecP);
+	m_PointLightShader->setCameraWorldPosition(glm::vec3(-m_CurrentViewMatrix[3].x, -m_CurrentViewMatrix[3].y, -m_CurrentViewMatrix[3].z));
+	m_PointLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
+	
+	m_PointLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
+	m_PointLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
+	m_PointLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
+	
+	//m_PointLightMesh
+	
+	//mesh->getNumverts(); 
+	//mesh->getMeshLocations(); gpu handle
+	//glDrawArrays(handle,numVerts,GL_TRIANGLES);
+
+	glBindVertexArray(m_PointLightMesh->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
+	glBindVertexArray(0);
+
+    glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
 }
-void DeferredRenderer::spotLightPass()
+void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 {
-	// Not implemented yet
+	m_GBuffer->initLightPass();
+	glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
+	m_SpotLightShader->enable();
+
+	m_SpotLightShader->setModelMatrix(p_lightData.lightModel);
+	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
+	m_SpotLightShader->setColour(p_lightData.colour);
+	m_SpotLightShader->setAttenConstant(p_lightData.attenuation.x);
+	m_SpotLightShader->setAttenLinear(p_lightData.attenuation.y);
+	m_SpotLightShader->setAttenQuadratic(p_lightData.attenuation.z);
+	m_SpotLightShader->setAmbientIntensity(p_lightData.ambientI);
+	m_SpotLightShader->setDiffuseIntensity(p_lightData.diffuseI);
+	m_SpotLightShader->setSpecularIntensity(p_lightData.SpecI);
+	m_SpotLightShader->setSpecularPower(p_lightData.SpecP);
+	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
+	m_SpotLightShader->setCutoffAngle(p_lightData.cutoffAngle);
+	m_SpotLightShader->setCameraWorldPosition(glm::vec3(-m_CurrentViewMatrix[3].x, -m_CurrentViewMatrix[3].y, -m_CurrentViewMatrix[3].z));
+	m_SpotLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
+	
+	m_SpotLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
+	m_SpotLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
+	m_SpotLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
+
+	glBindVertexArray(m_SpotLightMesh->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_SpotLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
+	glBindVertexArray(0);
+
+    glCullFace(GL_BACK);
+	glDisable(GL_BLEND);
 }
 void DeferredRenderer::skyboxPass()
 {
@@ -537,5 +612,5 @@ void DeferredRenderer::cullDataSet(std::vector<StandardDataSet> p_Unculled, std:
 					m_CulledList.push_back((*it));
 					count++; 
 		}
-	}std::cout << "objects rendered:" << count << std::endl;
+	}//std::cout << "objects rendered:" << count << std::endl;
 }

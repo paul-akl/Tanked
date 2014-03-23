@@ -17,10 +17,13 @@ Robot::Robot(void)
 	m_Thrust = 4000.0f;
 	m_Mass = 400.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
-	m_LeftArmPosition = glm::vec3(-2.5f,3.0f,0.0f);
-	m_RightArmPosition = glm::vec3(2.5f,3.0f,0.0f);
-	m_behaviourState=PassiveStatus;
+	m_LeftArmPosition = glm::vec3(-2.8f,3.0f,0.0f);
+	m_RightArmPosition = glm::vec3(2.8f,3.0f,0.0f);
+	m_Velocity = glm::vec3(0.0f);
+	m_behaviourState=HostileStatus;
 	m_Turning = false;
+	m_BaseDamage = 50;
+	m_TargetOrientation = 0.0f;
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {
@@ -69,6 +72,9 @@ void Robot::setMaxHitPoints(const unsigned int p_MaxHP)
 void Robot::setHitPoints(const unsigned int p_HP)
 {
 	m_HitPoints = p_HP;
+	m_Head->setDamaged(false);
+	m_LeftArm->setDamaged(false);
+	m_RightArm->setDamaged(false);
 }
 void Robot::turnLeft(float p_DeltaTimeS)
 {
@@ -81,27 +87,38 @@ void Robot::turnRight(float p_DeltaTimeS)
 void Robot::update(float p_DeltaTimeS)
 {
 
-	if(m_HitPoints == 0)
+	if(m_HitPoints <= 0)
 	{
 		deactivate();
 	}
+	else
+	{
+		if(m_HitPoints < (m_MaxHitPoints*0.5f))
+		{
+			m_RightArm->setDamaged(true);
+			m_LeftArm->setDamaged(true);
+			m_Head->setDamaged(true);
+		}
+	}
 	if(m_behaviourState!=PassiveStatus)
 	{
-		m_StateTimer-=p_DeltaTimeS;
-		if(m_StateTimer>0.0f)
+		m_Head->LookAt(m_targetPosition);
+		//m_StateTimer-=p_DeltaTimeS;
+		if(true)//m_StateTimer>0.0f)
 		{
-			m_Head->LookAt(m_targetPosition);
 			if(!m_RightArm->armRaised())
 				m_RightArm->raiseArm();
-			if(m_LeftArm->armRaised())
+			if(!m_LeftArm->armRaised())
 				m_LeftArm->raiseArm();
-			m_TargetOrientation =m_Head->getOrientation()+180.0f;
-			glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(m_TargetOrientation)*PI_OVER180,0.0f,glm::cos(m_TargetOrientation*PI_OVER180)));
+			m_TargetOrientation = m_Head->getOrientation();
+			glm::vec3 v_AccelerationDir = glm::normalize(m_movementTarget-m_Position);
 			//then calculate acceleration scalar, multiply that by acceleration direction, 
 			//times delta time, to calculate impulse magnitude, and add to velocity
 			//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
 			m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
 			m_IsMoving = true;
+			m_Position+=m_Velocity*p_DeltaTimeS;
+
 		}
 		else
 		{
@@ -165,10 +182,9 @@ void Robot::update(float p_DeltaTimeS)
 		//when applying an impulse to an object, the effect is reduced by the object's mass (more mass = less effect)
 		//Simulating air resistance accurately, as it turns out, makes virtually no difference to the overall velociy of a 1 ton tank.
 		//another approach is needed for null input braking
-		//m_Velocity+=AirResImpulse/m_Mass;
+		m_Velocity+=AirResImpulse/m_Mass;
 		//so instead, cut off 0.5% each update, for a more immediate effect, and also it adds
-		m_Velocity*=0.995f;
-
+		//m_Velocity*=0.995f;
 	}
 	//to prevent calculations moving out of floating point precision range
 	//as we are only modelling
@@ -206,7 +222,7 @@ void Robot::update(float p_DeltaTimeS)
 	m_LocalTransform->reset();
 	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,8.0f,0.0f));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
-	m_LocalTransform->scale(glm::vec3(m_Radius));
+	m_LocalTransform->scale(glm::vec3(1.5f));
 	SceneNode::update(p_DeltaTimeS);
 
 }

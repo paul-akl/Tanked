@@ -20,7 +20,7 @@ TestTankNode::TestTankNode(void)
 	m_WeaponChargeLevel = 0.0f;
 	m_ShieldHitPoints = 100.0f;
 	m_ShieldMaxHitPoints = 200.0f;
-	m_ShieldChargeRate = 15.0f;
+	m_ShieldChargeRate = 1.0f;
 }
 void TestTankNode::chargeMainGun(float p_DeltaTimeS)
 {

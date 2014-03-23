@@ -49,8 +49,8 @@ void Score::update(float p_DeltaTimeS)// pass in a reference to the tank?
 {
 	
 	std::stringstream ss;
-	ss << "Score: " << (int)m_CurrentValue;	
-	m_Score->setText(ss.str().c_str());
+	ss << "Score: " << static_cast<int>(m_CurrentValue);	
+	m_Score->setText(ss.str());
 	ss.clear();
 
 	UIElement::update(p_DeltaTimeS);	

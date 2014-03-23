@@ -5,6 +5,7 @@
 #include <glm\glm.hpp>
 #include "MaterialNode.h"
 #include "Shader.h"
+#include "GeneralUtils.h"
 class MeshNode;
 class TransformNode;
 class TextureNode;
@@ -86,6 +87,53 @@ struct SpotLightShadowDataSet
 {
 	GLuint renderTargetTexture;
 	glm::mat4 depthMapLocation;
+};
+struct PointLightDataSet
+{
+	glm::mat4 lightModel;
+	glm::vec3 worldPosition;
+	glm::vec3 attenuation;
+	glm::vec3 colour;
+	float ambientI;
+	float diffuseI;
+	float SpecI;
+	float SpecP;
+	PointLightDataSet(	glm::vec3 p_worldPosition,	glm::vec3 p_colour, 
+						glm::vec3 p_attenuation,	float p_ambientI,	
+						float p_diffuseI,			float p_SpecI,			
+						float p_SpecP):
+						worldPosition(p_worldPosition), colour(p_colour),	ambientI(p_ambientI), 
+						diffuseI(p_diffuseI),			SpecI(p_SpecI),		SpecP(p_SpecP),
+						attenuation(p_attenuation){;}
+	float lightScale()
+	{
+		float maxChannel = (Utils::GeneralUtils::max(Utils::GeneralUtils::max(colour.r, colour.g), colour.b) * diffuseI);
+		return (3.0f * sqrtf(maxChannel) / attenuation.z);
+	}
+};
+struct SpotLightDataSet
+{
+	glm::mat4 lightModel;
+	glm::vec3 worldPosition;
+	glm::vec3 attenuation;
+	glm::vec3 colour;
+	glm::vec3 worldDirection;
+	float cutoffAngle;
+	float ambientI;
+	float diffuseI;
+	float SpecI;
+	float SpecP;
+	SpotLightDataSet(	glm::vec3 p_worldPosition,		glm::vec3 p_colour,		glm::vec3 p_attenuation,
+						glm::vec3 p_worldDirection,		float p_cutoffAngle,	float p_ambientI,	
+						float p_diffuseI,				float p_SpecI,			float p_SpecP):
+						worldPosition(p_worldPosition), colour(p_colour),		worldDirection(p_worldDirection),
+						cutoffAngle(p_cutoffAngle),		ambientI(p_ambientI),	diffuseI(p_diffuseI),
+						SpecI(p_SpecI),					SpecP(p_SpecP),			attenuation(p_attenuation){;}
+	float lightScale()
+	{
+		//magic number: check later
+		return 4000.0f;
+	}
 };
 class Renderer
 {

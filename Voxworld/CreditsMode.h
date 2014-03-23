@@ -5,7 +5,7 @@ class CreditsMode :
 {
 public:
 	CreditsMode(void);
-	virtual void init(Game& iGame){printf("init credits\n");}
+	virtual void init(Game& iGame,Renderer* p_Renderer){printf("init credits\n");}
 	virtual void update(float deltaTime){printf("update credits\n");}
 	virtual bool handleEvent(Game& iGame){return true;}
 	virtual void draw(Renderer* p_Renderer){printf("draw credits mode");}

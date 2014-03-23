@@ -47,7 +47,7 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 		
 		GLfloat v_TextureAnisFilter;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &v_TextureAnisFilter);					// Get the maximum anisotropic filtering available from current hardware
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, v_TextureAnisFilter);		// Set to maximum anisitropic filtering, for best quality
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)v_TextureAnisFilter);		// Set to maximum anisitropic filtering, for best quality
 	}
 	else	// If image wasn't loaded, throw an exception
 	{

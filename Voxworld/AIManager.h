@@ -37,15 +37,15 @@ protected:
 	glm::vec2 getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition);
 	
 	// Variables only used by pathfinding
-	int *m_openList,		
-		**m_closedList,		
-		*m_openCoordX,		
-		*m_openCoordY,		
-		**m_parentCoordX,	
-		**m_parentCoordY,	
-		*m_fCost,			
-		**m_gCost,			
-		*m_hCost,			
-		m_pathLength,		
+	std::vector<int>	m_openList,		
+						m_openCoordX,		
+						m_openCoordY,	
+						m_fCost,			
+						m_hCost;
+std::vector<std::vector<int>>	m_parentCoordX,	
+								m_parentCoordY,		
+								m_closedList,		
+								m_gCost;		
+	int m_pathLength,		
 		m_pathLocation;		
 };

@@ -6,9 +6,9 @@
 RobotHead::RobotHead(void)
 {
 	m_DamagedDiffuseTexture = nullptr;
-	m_TurnSpeed = 5.0f;
-	m_TargetOrientation = 0.0;
-	m_OrientationDeg = 0.0;
+	m_TurnSpeed = 30.0f;
+	m_TargetOrientation = 0.0f;
+	m_OrientationDeg = 0.0f;
 	m_Damaged = false;
 }
 
@@ -47,11 +47,11 @@ void RobotHead::update(float p_DeltaTimeS)
 			//(make deltaAngle either positive or negative
 			if (abs(deltaAngle) > 180.0f)
 				deltaAngle += deltaAngle > 0? -360.0f:360.0f;
-			if(deltaAngle < 0)
+			if(deltaAngle > 0)
 			{
 				turnLeft(p_DeltaTimeS);
 			}
-			else if(deltaAngle > 0)
+			else if(deltaAngle < 0)
 			{
 				turnRight(p_DeltaTimeS);
 			}
@@ -64,14 +64,7 @@ void RobotHead::update(float p_DeltaTimeS)
 	//m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);
 }
-void RobotHead::setDamaged(bool p_Damaged)
-{
-	m_Damaged = p_Damaged;
-}
-bool RobotHead::isDamaged()
-{
-	return m_Damaged;
-}
+
 void RobotHead::addDamagedTexture(TextureNode* p_Texture)
 {
 	m_DamagedDiffuseTexture = p_Texture;
@@ -86,7 +79,7 @@ void RobotHead::turnRight(float p_DeltaTimeS)
 }
 void RobotHead::LookAt(const glm::vec3& p_Target)
 {
-	m_TargetOrientation = atan2(p_Target.x,p_Target.z)*RAD_TO_DEG;
+	m_TargetOrientation = (atan2(p_Target.z,p_Target.x)*RAD_TO_DEG);
 }
 void RobotHead::render(Renderer* p_Renderer)
 {

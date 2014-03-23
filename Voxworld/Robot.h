@@ -22,6 +22,7 @@ public:
 	void setDamageMultiplier(float p_DamageMultipler){m_DamageMultiplier = p_DamageMultipler;}
 	float getDamageMultipler(){return m_DamageMultiplier;}
 	float getMass(){return m_Mass;}
+	int getDamage(){return m_BaseDamage*(1+m_DamageMultiplier);}
 	virtual ~Robot(void);
 protected:
 	void turnLeft(float p_DeptaTimeS);
@@ -35,12 +36,13 @@ protected:
 	float m_TurnSpeed;
 	bool m_Turning;
 	TextureNode* m_DamagedTextureDiffuse;
-	unsigned int m_HitPoints;
-	unsigned int m_MaxHitPoints;
+	int m_HitPoints;
+	int m_MaxHitPoints;
 	float m_TargetOrientation;
 	float m_MaxVelocityScalar; //max V, in m/s
 	float m_Thrust; //forward thrust scalar measured in Newtons/second.
 	float m_Mass; //mass of the robot, measured in Kilograms
 	float m_DamageMultiplier;
+	int m_BaseDamage;
 };
 

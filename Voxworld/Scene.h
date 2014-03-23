@@ -47,13 +47,17 @@ public:
 	void addCollisionSolver(CollisionSolver* p_Solver);
 	void addController(Controller* p_Controller);
 	void addUI(HUD* p_Hud);
+	void nextLevel();
+
 	bool sceneComplete();
+	bool gameOver(){return m_Defeat;}
 	void addMaze(Maze* p_Maze);
 	TestTankNode* getTank(){return m_Tank;}
 	//void addRobotGenerator(RobotGenerator* p_Factory);
 	//void addSubBossFactory(EnemyFactory* p_Factory);
 	//void addBossFactory(EnemyFactory* p_Factory);
 	void addAISolver(AIManager* p_Solver);
+	bool isPaused(){return m_Paused;}
 	virtual void render(Renderer* p_Renderer);
 	virtual void update(float p_DeltaTimeS);
 	~Scene(void);
@@ -110,10 +114,13 @@ protected:
 	float m_MaxTurnSpeed;
 	float m_CamFollowDistance;
 	float m_CamFollowAngle;
+	float m_PlayerScore;
 	unsigned int m_GameDifficulty;
 	RenderMode m_CurrentRenderMode;
 	bool m_Victory;
 	bool m_Defeat;
+	bool m_Paused;
+	bool m_PausePressed;
 	SDL_Thread* projThread;
 	SDL_Thread* enemyThread;
 	SDL_Thread* enemyGenThread;

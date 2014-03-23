@@ -7,8 +7,28 @@ Controller::Controller(void)
 	{
 		keyBuffer[i]= false;
 	}
+	mouseX = 0;
+	mouseY = 0;
+
+}
+void Controller::setGameMode(bool p_Switch)
+{
+	SDL_SetRelativeMouseMode((SDL_bool)p_Switch);
+	m_GameMode = p_Switch;
 	mouseX = 0.0f;
-	mouseY = 0.0f;
+	mouseY = 0.0;
+	keyBuffer[MOUSERIGHT] = false;
+	keyBuffer[MOUSELEFT] = false;
+}	
+float Controller::getMousePositionX()
+{
+	SDL_GetMouseState(&mouseX,&mouseY);
+	return mouseX;
+}
+float Controller::getMousePositionY()
+{
+	SDL_GetMouseState(&mouseX,&mouseY);
+	return mouseY;
 }
 bool Controller::update(SDL_Event& p_Event)
 {
@@ -22,6 +42,11 @@ bool Controller::update(SDL_Event& p_Event)
 			case SDL_SCANCODE_ESCAPE:
 			{
 				keyBuffer[EXIT] = true;
+			}
+			break;
+			case SDL_SCANCODE_P:
+			{
+				keyBuffer[PAUSE] = true;
 			}
 			break;
 			case SDL_SCANCODE_Q:
@@ -75,6 +100,11 @@ bool Controller::update(SDL_Event& p_Event)
 				keyBuffer[EXIT] = false;
 			}
 			break;
+			case SDL_SCANCODE_P:
+			{
+				keyBuffer[PAUSE] = false;
+			}
+			break;
 			case SDL_SCANCODE_Q:
 			{
 				keyBuffer[TURN_L] = false;
@@ -119,17 +149,24 @@ bool Controller::update(SDL_Event& p_Event)
 	}
 	if(p_Event.type == SDL_MOUSEWHEEL)
 	{
-		mouseWheelturn = p_Event.wheel.y;
+		mouseWheelturn = (float)p_Event.wheel.y;
 	}
 	if(p_Event.type == SDL_MOUSEBUTTONDOWN)
 	{
 		if(p_Event.button.button == SDL_BUTTON_LEFT)
 		{
-			keyBuffer[PRIMARY_ATTACK] = true;
+			if(m_GameMode)
+				keyBuffer[PRIMARY_ATTACK] = true;
+			else
+				keyBuffer[LMB] = true;
+
 		}
 		if(p_Event.button.button == SDL_BUTTON_RIGHT)
 		{
-			keyBuffer[SECONDARY_ATTACK] = true;
+			if(m_GameMode)
+				keyBuffer[SECONDARY_ATTACK] = true;
+			else
+				keyBuffer[RMB] = true;
 		}
 	}
 	if(p_Event.type == SDL_MOUSEBUTTONUP)
@@ -143,41 +180,48 @@ bool Controller::update(SDL_Event& p_Event)
 			keyBuffer[SECONDARY_ATTACK] = false;
 		}
 	}
+	if(p_Event.type == SDL_MOUSEMOTION)
+	{
 
+		mouseX = p_Event.motion.xrel;
+		if(mouseX<0)
+		{
+			keyBuffer[MOUSERIGHT] = false;
+			keyBuffer[MOUSELEFT] = true;
+		}
+		else if(mouseX>0)
+		{
+			keyBuffer[MOUSERIGHT] = true;
+			keyBuffer[MOUSELEFT] = false;
+		}
+		else
+		{
+			keyBuffer[MOUSERIGHT] = false;
+			keyBuffer[MOUSELEFT] = false;
+		}
+	}
+	else
+	{
+		mouseX = 0.0f;
+		keyBuffer[MOUSERIGHT] = false;
+		keyBuffer[MOUSELEFT] = false;
+	}
 	
 	return true;
 }
 int Controller::getMouseMovementX()
 {
-		lastMouseX = mouseX;
-		lastMouseY = mouseY;
-		SDL_GetMouseState(&mouseX,&mouseY);
-		if(mouseX-lastMouseX > 0)
-		{
-			keyBuffer[MOUSELEFT] = false;
-			keyBuffer[MOUSERIGHT] = true;
-		}
-		else if(mouseX-lastMouseX < 0)
-		{
-			keyBuffer[MOUSELEFT] = true;
-			keyBuffer[MOUSERIGHT] = false;
-		}
-		else
-		{
-			keyBuffer[MOUSELEFT] = false;
-			keyBuffer[MOUSERIGHT] = false;
-		}
-		return mouseX-lastMouseX;
-
+		return mouseX;
 }
 int Controller::getMouseMovementY()
 {
-		lastMouseX = mouseX;
-		lastMouseY = mouseY;
-		SDL_GetMouseState(&mouseX,&mouseY);
-		return mouseY-lastMouseY;
-		SDL_WarpMouseInWindow(m_Window,400,300);
-
+		return mouseY;
+}
+void Controller::resetMouse()
+{
+		keyBuffer[MOUSERIGHT] = false;
+		mouseX = 0.0f;
+		keyBuffer[MOUSELEFT] = false;
 }
 Controller::~Controller(void)
 {

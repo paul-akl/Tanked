@@ -38,7 +38,7 @@ class Maze
 public:
 	Maze(void);
 
-	void generateMaze(int p_width, int p_height, float p_cellSize);
+	void generateMaze(int p_width, int p_height, int p_cellSize);
 	bool isOk(glm::vec2 p_Cell);								// Checks if a cell is at least 1 cell away from any wall, in any direction
 	bool isOk(glm::vec3 p_Location);							// Takes in world position and converts it into grid cell array position first
 	int getGridCellType(int p_row, int p_column);				// Returns GridType enum of a cell as integer
@@ -47,14 +47,15 @@ public:
 	glm::vec2 getGridCell(glm::vec3 p_position);				// Returns a grid cell position (row and column), takes in position in world space
 	glm::vec3 getCellPosition(glm::vec2 p_cell);				// Returns world position of a cell, takes in grid cell array position (row and column)
 	glm::vec3 getCellPosition(Position p_pos);
+	bool isVisible(glm::vec2 startPosition, glm::vec2 enPosition);
 	MazeIterator *getIterator();
 	void toConsole();
 
-	inline int getGridWidth()	{ return m_width * m_CellSize;	}
+	inline int getGridWidth()	{ return m_width  * m_CellSize;	}
 	inline int getGridHeight()	{ return m_height * m_CellSize; }
 	inline int getNumRows()		{ return m_width;	 }
 	inline int getNumColumns()	{ return m_width;	 }
-	inline float getCellSize()	{ return m_CellSize; }
+	inline int getCellSize()	{ return m_CellSize; }
 
 	~Maze(void);
 
@@ -71,6 +72,5 @@ private:
 
 	std::vector<std::vector<int>> m_Grid;
 	MazeIterator *m_iterator;
-	int m_width, m_height;
-	float m_CellSize;
+	int m_width, m_height, m_CellSize;
 };

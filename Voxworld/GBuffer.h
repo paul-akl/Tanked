@@ -37,6 +37,11 @@ public:
 	virtual void initLightPass();		// Bind buffers from geometry pass so they can be accessed when rendering lights
 	virtual void initFinalPass();		// Bind the final buffer to 'read from' and the default screen buffer to 'write to'
 
+	virtual GLuint getPositionBufferHandle(){		return m_TexBuffers[GBufferPosition];	}
+	virtual GLuint getDiffuseBufferHandle(){		return m_TexBuffers[GBufferDiffuse];	}
+	virtual GLuint getNormalBufferHandle(){			return m_TexBuffers[GBufferNormal];		}
+	virtual GLuint getTextureCoordBufferHandle(){	return m_TexBuffers[GBufferTexCoord];	}
+
 protected:
 
 GLuint  m_GBTextures[GBufferNumTextures],	// Geometry pass textures

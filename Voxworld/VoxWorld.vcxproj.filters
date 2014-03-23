@@ -188,6 +188,9 @@
     <Filter Include="Core Engine\Maze\Procedural">
       <UniqueIdentifier>{dc54c56f-d18a-4bee-981d-d7c6ae313cb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\Renderer\Shader\Lighting">
+      <UniqueIdentifier>{3db18173-101c-49c5-b5ea-576304611eaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -372,10 +375,27 @@
     <ClCompile Include="Maze.cpp">
       <Filter>Core Engine\Maze\Procedural</Filter>
     </ClCompile>
-    <ClCompile Include="PosIterator.cpp" />
-    <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Frustum.cpp" />
-    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PosIterator.cpp">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="Position.cpp">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Core Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Core Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightShader.cpp">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLightShader.cpp">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -557,10 +577,27 @@
     <ClInclude Include="Maze.h">
       <Filter>Core Engine\Maze\Procedural</Filter>
     </ClInclude>
-    <ClInclude Include="PosIterator.h" />
-    <ClInclude Include="Position.h" />
-    <ClInclude Include="Frustum.h" />
-    <ClInclude Include="Plane.h" />
+    <ClInclude Include="PosIterator.h">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>Core Engine\Maze\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Core Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Core Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Core Engine\Base\SceneGraph\GFXNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightShader.h">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLightShader.h">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

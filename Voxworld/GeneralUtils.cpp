@@ -40,7 +40,7 @@ namespace Utils
 	GLuint GeneralUtils::textToTexture(GLuint texId, const char* str, TTF_Font* fontType, glm::vec4 fontColour) {
 		
 	TTF_Font* font = fontType;
-	SDL_Color colour = {fontColour.r, fontColour.g, fontColour.b, fontColour.a};
+	SDL_Color colour = {(Uint8)fontColour.r, (Uint8)fontColour.g, (Uint8)fontColour.b, (Uint8)fontColour.a};
 	SDL_Color bg = { 0, 0, 0 };
 
 	SDL_Surface *stringImage;

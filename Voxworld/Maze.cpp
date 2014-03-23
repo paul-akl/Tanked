@@ -27,11 +27,11 @@ Maze::Maze(void)
 	m_iterator = nullptr;
 }
 
-void Maze::generateMaze(int p_width, int p_height, float cellSize)
+void Maze::generateMaze(int p_width, int p_height, int cellSize)
 {
 	printf("generating maze\n");
 	//init random seed
-	srand (time(NULL));
+	srand((unsigned int)time(NULL));
 	//initial storage set up
 	m_width = p_width;
 	m_height = p_height;
@@ -142,7 +142,7 @@ void Maze::generateMaze(int p_width, int p_height, float cellSize)
 		m_iterator->m_positionArray.clear();
 		m_iterator->m_index = -1;
 	}
-
+	m_iterator->m_positionArray.clear();
 	for(std::vector<std::vector<int>>::size_type i = 0; i < m_Grid.size(); i++)
 		for(std::vector<int>::size_type j = 0; j < m_Grid[i].size(); j++)
 			m_iterator->m_positionArray.push_back(Position(i, j));
@@ -155,6 +155,33 @@ bool Maze::isOk(glm::vec2 p_Cell)
 		else return false;
 	else return false;
 }
+bool Maze::isVisible(glm::vec2 startPosition, glm::vec2 enPosition)
+{
+	glm::vec2 ray = enPosition-startPosition;
+	glm::vec2 rayDir;
+	rayDir.x = ray.x/m_CellSize;
+	rayDir.y = ray.y/m_CellSize;
+	for (int i = 0; i < m_CellSize; i++)
+	{
+		int X = int(startPosition.x+rayDir.x*i);
+		int Y = int(startPosition.y+rayDir.y*i);
+		if(X < m_width && X >= 0)
+		{
+			if(Y < m_height && Y >= 0)
+			{
+				if(m_Grid[X][Y] == WALL)
+				{
+					return false;
+				}
+			}
+			else return false;
+		}
+		else return false;
+
+	}
+	return true;
+}
+
 bool Maze::isOk(glm::vec3 p_Location)
 {
 	if(p_Location.x > 0 && p_Location.x < m_width*m_CellSize)
@@ -180,18 +207,8 @@ glm::vec2 Maze::getGridCell(glm::vec3 p_position)
 {
 	glm::vec2 cellLocation;
 
-	cellLocation.x = ceil(p_position.x / m_CellSize);
-	cellLocation.y = ceil(p_position.z / m_CellSize);
-
-	if(cellLocation.x <= m_width)
-		cellLocation.x = fabs(p_position.x - cellLocation.x*m_CellSize) > fabs((p_position.x - cellLocation.x-1)*m_CellSize) ? cellLocation.x-1 : cellLocation.x;
-	else
-		cellLocation.x = m_width;
-
-	if(cellLocation.y <= m_height)
-		cellLocation.y = fabs(p_position.y - cellLocation.y*m_CellSize) > fabs((p_position.y - cellLocation.y-1)*m_CellSize) ? cellLocation.y-1 : cellLocation.y;
-	else
-		cellLocation.y = m_height;
+	cellLocation.x = (float)((int)(p_position.x / m_CellSize));
+	cellLocation.y = (float)((int)(p_position.z / m_CellSize));
 
 	return cellLocation;
 }
@@ -205,6 +222,7 @@ glm::vec3 Maze::getCellPosition(Position p_pos)
 }
 MazeIterator *Maze::getIterator()
 {
+	m_iterator->m_index = 0;
 	return m_iterator;
 }
 PosIterator Maze::getIterator(Position p_pos)
@@ -215,7 +233,7 @@ void Maze::toConsole()
 {
 	for (int i = 0; i < m_width;i++)
 	{
-		for (int j = 0; j < m_height;j++)
+		for (int j = m_height-1; j > -1;j--)
 		{
 			if(m_Grid[i][j] == WALL)
 				printf("#");

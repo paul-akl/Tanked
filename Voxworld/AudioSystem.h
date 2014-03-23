@@ -30,7 +30,7 @@ public:
 	int Init();
 	void PlaySound(Sound sound);
 	Sound GetSound(GameSounds i) { return m_SoundList[i];}
-	void setLooping(GameSounds sound, bool loop){m_SoundList[sound].looping == loop;}
+	void setLooping(GameSounds sound, bool loop){m_SoundList[sound].looping = loop;}
 	void Update();
 
 private:

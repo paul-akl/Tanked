@@ -10,8 +10,11 @@
 #include "UpgradeFactory.h"
 #include <list>
 #include "CollisionSolver.h"
+#include "DeferredRenderer.h"
 #include "Scene.h"
 #include "HUD.h"
+#include <SDL_thread.h>
+
 //each game mode will have it's own render class.
 class Renderer;
 /////////////////////////////////////////
@@ -24,15 +27,17 @@ class MainGameMode :
 {
 public:
 	MainGameMode(void);
-	virtual void init(Game& iGame);
+	virtual void init(Game& iGame,Renderer* p_Renderer);
 	virtual void update(float deltaTime);
 	virtual bool handleEvent(Game& igame);
 	virtual void draw(Renderer* p_Renderer);
 	~MainGameMode(void);
 private:
 	void OpenMenu(Game& iGame);
+
 	bool running;
 	Scene* scene;
+
 	HUD * hud;
 };
 

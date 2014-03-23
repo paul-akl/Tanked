@@ -16,27 +16,50 @@ RobotGenerator::RobotGenerator(void)
 	m_Reusing = false;
 	m_SpawnTimer = 0.0f;
 	m_NumRobots = 0;
-	m_SpawnDelay = 1.5f;
-	m_BaseTimer = 1.5f;
-	m_SpawnDistance = 15.0f;
-	m_behaviourState = PassiveStatus;
+	m_SpawnDelay = 5.0f;
+	m_BaseTimer = 5.0f;
+	m_SpawnDistance = 10.0f;
+	m_behaviourState = HostileStatus;
 }
 bool RobotGenerator::isReady()
 {
-	return (m_SpawnTimer>=m_SpawnDelay);
+	return (m_SpawnTimer >= m_SpawnDelay);
 }
 void RobotGenerator::setDifficulty(const unsigned int p_Difficulty)
 {
 	m_Level = p_Difficulty;
 	m_SpawnDelay = m_BaseTimer-(m_BaseTimer*0.01f)*m_Level;
 }
+void RobotGenerator::init()
+{
+
+	for (int i = 0; i < MAX_ROBOTS;i++)
+	{
+		Robot* tmp = new Robot();
+		tmp->setType(ENEMY_ROBOT);
+		tmp->setBoundaryType(CIRCLE);
+		tmp->setRadius(5.0f);
+		//visual data 
+		tmp->addMesh(m_RobotBodyMesh);
+		tmp->addTexture(m_DefaultRobotDiffuseTexture);
+		TransformNode* temp = new TransformNode();
+		temp->reset();
+		temp->setName("RobotTransform");
+		tmp->addTransform(temp);
+		//character data
+		tmp->addHead(getHead());
+		tmp->addLeftArm(getArm(true));
+		tmp->addRightArm(getArm(false));
+		tmp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+		m_Robots.push_front(tmp);
+		tmp->deactivate();
+	}
+}
 Robot* RobotGenerator::getRobotFromPool()
 {
 	if(m_Robots.empty())
 	{
-		Robot* tmp = new Robot();
-		m_Robots.push_front(tmp);
-		return tmp;
+		return nullptr;
 	}
 	else
 	{
@@ -55,56 +78,34 @@ Robot* RobotGenerator::getRobotFromPool()
 		}
 		//if we reach this part, then we haven't found a reusable robot, so make a new one.
 		m_Reusing = false;
-		Robot* tmp = new Robot();
-		m_Robots.push_front(tmp);
-		return tmp;
+		return nullptr;
 	}
 }
 Robot* RobotGenerator::getRobot()
 {
 	Robot* temp = nullptr;
+	m_SpawnTimer = 0.0f;
 	temp = getRobotFromPool();
 	{
 		if(m_Reusing)
 		{
+
+			temp->setPosition(m_RobotSpawnPoint);
+			//character data
+			temp->setMaxHitPoints(200+10*m_Level);
+			temp->setHitPoints(200+10*m_Level);
+			temp->setDamageMultiplier(0.05f*m_Level);
 			temp->activate();
 		}
 		else
 		{
-			//set up "on creation" data:
-			//object type
-			//collision data
-			temp->setType(ENEMY_ROBOT);
-			temp->setBoundaryType(CIRCLE);
-			temp->setRadius(2.0f);
-			//visual data 
-			temp->addMesh(m_RobotBodyMesh);
-			temp->addTexture(m_DefaultRobotDiffuseTexture);
-			TransformNode* tmp = new TransformNode();
-			tmp->reset();
-			temp->addTransform(tmp);
-			temp->setPosition(m_RobotSpawnPoint);
-			//character data
-			temp->addHead(getHead());
-			temp->addLeftArm(getArm(true));
-			temp->addRightArm(getArm(false));
-			temp->setMaxHitPoints(200+10*m_Level);
-			temp->setHitPoints(200+10*m_Level);
-			temp->setDamageMultiplier(0.05f*m_Level);
-			temp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
-
-			//mesh, texture & transform nodes
-			//collision data: radius, position, collidable metric type 
-			//character data: hp/max hp.
-			//create robot parts
-			//add mesh, texture and transform nodes to 
-			
+			return nullptr;
 		}
 		m_NumRobots++;
 		std::stringstream ss;
 		ss<<getName()<<"Robot"<<m_NumRobots;
 		temp->setName(ss.str());
-		ss.clear();
+		ss.str(std::string());
 	}
 	return temp;
 }
@@ -122,9 +123,13 @@ RobotArm* RobotGenerator::getArm(bool p_Left)
 	{
 		arm->setLeft();
 		arm->setName("RobotLeftArm");
+		temp->setName("leftArmTransform");
 	}
 	else
+	{
 		arm->setName("RobotRightArm");
+		temp->setName("rightArmTransform");
+	}
 
 	arm->addTexture(m_DefaultRobotDiffuseTexture);
 	arm->addDamagedTexture(m_DamagedRobotDiffuseTexture);
@@ -138,6 +143,8 @@ RobotHead* RobotGenerator::getHead()
 	head->addTexture(m_DefaultRobotDiffuseTexture);
 	head->addDamagedTexture(m_DamagedRobotDiffuseTexture);
 	TransformNode* temp = new TransformNode();
+	temp->setName("HeadTransform");
+
 	temp->reset();
 	head->addTransform(temp);
 	head->setName("RobotHead");
@@ -154,8 +161,8 @@ void RobotGenerator::update(float p_DeltaTimeS)
 			{
 				m_SpawnTimer+=p_DeltaTimeS;
 			}
-			//m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
-			m_RobotSpawnPoint = m_Position+(glm::vec3(1.0f,0.0f,0.0f)*m_SpawnDistance);
+			m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
+			//m_RobotSpawnPoint = m_Position+(glm::vec3(1.0f,0.0f,0.0f)*m_SpawnDistance);
 		}
 			m_LocalTransform->reset();
 			m_LocalTransform->translate(m_Position+glm::vec3(0.0f,9.0f,0.0f));

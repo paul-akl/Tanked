@@ -120,6 +120,7 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 	ss<<"RobotGenerator"<<m_NumObjects;
 	robogen->setName(ss.str());
 	ss.clear();
+	robogen->init();
 	return robogen;
 
 }

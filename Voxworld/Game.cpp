@@ -5,6 +5,7 @@
 #include "CreditsMode.h"
 #include "GeneralUtils.h"
 #include "DeferredRenderer.h"
+#include "Renderer.h"
 #include <ctime>
 #include <GL\GLU.h>
 #include "Controller.h"
@@ -30,12 +31,11 @@ void Game::init()
 	//and initialise our game Mode
 	m_Controller = new Controller();
 	m_MainMode->setController(m_Controller);
-	m_IntroMode->init(*this);
-	m_MainMode->init(*this);
-	m_MenuMode->init(*this);
-	m_CreditsMode->init(*this);
+	m_IntroMode->init(*this,m_Renderer);
+	m_MainMode->init(*this,m_Renderer);
+	m_MenuMode->init(*this,m_Renderer);
+	m_CreditsMode->init(*this,m_Renderer);
 	m_Controller->setWindow(m_Renderer->getWindow());
-
 	//mShopMode->init(*this);
 	//and set our default starting mode, which would normally be intro mode, but for now we will stick with main mode.
 	m_CurrentMode = m_MainMode;
@@ -68,11 +68,12 @@ void Game::Run()
 
 	bool running = true;
 	float deltaTimeS = 0.0f;
-	float timeMS = clock();
+	float timeMS = (float)clock();
 	float lastTimeMS = 0.0f;
+	m_Renderer->beginRenderCycle(DEBUG);
 	while (running)	
 	{	// the event loop
-		timeMS = clock();
+		timeMS = (float)clock();
 		deltaTimeS = timeMS-lastTimeMS;
 		while (SDL_PollEvent(&sdlEvent)) {
 			if (sdlEvent.type == SDL_QUIT)
@@ -85,13 +86,26 @@ void Game::Run()
 		running = m_CurrentMode->handleEvent(*this);
 		if(running)
 		{
+			int num = 0;
 			//	then update the current Game Mode with elapsed time as parameter
+			//DefferredRenderBlock block;
+			//block.renderer = m_Renderer;
+			//m_RenderThread= SDL_CreateThread(RenderScene,"render thread",&m_Renderer);
 			m_CurrentMode->update(deltaTimeS);
+			//SDL_WaitThread(m_RenderThread,&num);	
 			//	and draw the resultant changes.
+
 			m_CurrentMode->draw(m_Renderer);
 			lastTimeMS = timeMS;
 		}
 	}
+}
+int Game::RenderScene(void* p_Renderer)
+{
+	DeferredRenderer* p_RendererObject = static_cast<DeferredRenderer*>(p_Renderer);
+
+	p_RendererObject->endRenderCycle();
+	return 0;
 }
 Game::~Game(void)
 {

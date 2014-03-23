@@ -12,6 +12,7 @@ public:
 	virtual void update(float p_DeltaTimeS);
 	bool isReady();
 	Robot* getRobot();
+	void init();
 	void setRobotDefaultTexture(TextureNode* p_Texture){m_DefaultRobotDiffuseTexture=p_Texture;}
 	void setRobotDamagedTexture(TextureNode* p_Texture){m_DamagedRobotDiffuseTexture=p_Texture;}
 	void setRobotBodyMesh(MeshNode* p_Mesh){m_RobotBodyMesh=p_Mesh;}
@@ -31,6 +32,7 @@ protected:
 	Robot* getRobotFromPool();
 	bool m_Reusing;
 	float m_BaseTimer;
+	static const int MAX_ROBOTS = 25;
 	TextureNode* m_DefaultRobotDiffuseTexture;
 	TextureNode* m_DamagedRobotDiffuseTexture;
 	TextureNode* m_DamagedDiffuseTexture;

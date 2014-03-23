@@ -10,8 +10,8 @@ Frustum::Frustum(void)
 Frustum::~Frustum(void)
 {
 	for( int i = 0; i < MAX_PLANES; i++)
-		m_Planes[i] = nullptr;
-	delete[] m_Planes;
+		delete m_Planes[i];
+	//delete[] m_Planes;
 }
 
 void Frustum::deriveFrustum( glm::mat4& p_ViewMatrix,  glm::mat4& p_ProjMatrix)

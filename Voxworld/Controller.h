@@ -12,6 +12,8 @@ enum ButtonType
 	CROUCH,
 	RUN,
 	PRIMARY_ATTACK,
+	LMB,
+	RMB,
 	SECONDARY_ATTACK,
 	TERTIARY_ATTACK,
 	INTERACTION,
@@ -21,6 +23,7 @@ enum ButtonType
 	PITCH_DOWN,
 	ASCEND,
 	DESCEND,
+	PAUSE,
 	EXIT,
 	RENDERMODE_DEBUG,
 	RENDERMODE_DEFAULT,
@@ -41,9 +44,13 @@ public:
 	bool getButtonState(ButtonType buttonQuery){return keyBuffer[buttonQuery];}
 	int getMouseMovementX();
 	int getMouseMovementY();
-	int getMouseWheelRoll(){return mouseWheelturn;}
+	float getMousePositionX();
+	float getMousePositionY();
+	void resetMouse();
+	int getMouseWheelRoll(){return (int)mouseWheelturn;}
 	void setWindow(SDL_Window* p_Window){m_Window = p_Window;}
 	bool update(SDL_Event& p_Event);
+	void setGameMode(bool p_Switch);
 	~Controller(void);
 private:
 	bool keyBuffer[256];
@@ -52,5 +59,6 @@ private:
 	int lastMouseX;
 	int lastMouseY;
 	float mouseWheelturn;
+	bool m_GameMode;
 	SDL_Window* m_Window;
 };

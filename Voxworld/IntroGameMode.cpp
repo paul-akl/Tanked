@@ -5,7 +5,7 @@ IntroGameMode::IntroGameMode(void)
 {
 	printf("creating intro mode \n");
 }
-void IntroGameMode::init(Game& iGame)
+void IntroGameMode::init(Game& iGame,Renderer* p_Renderer)
 {
 	printf("init intro mode \n");
 }

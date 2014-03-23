@@ -1,6 +1,5 @@
 #version 330 core
 
-//layout(location = 0) out vec4 fragColor;
 out vec4 fragColor;
                                                       
 struct BaseLight
@@ -26,7 +25,7 @@ uniform sampler2D positionMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 
-uniform PointLight		 pointLight;
+uniform PointLight	light;
 
 uniform float	specularIntensity;
 uniform float	specularPower;
@@ -60,15 +59,15 @@ vec4 calcLightInternal(BaseLight light, vec3 lightDirection, vec3 worldPos, vec3
 }
 vec4 calcPointLight(vec3 worldPos, vec3 normal)
 {
-    vec3 lightDirection = worldPos - pointLight.position;
+    vec3 lightDirection = worldPos - light.position;
     float distance = length(lightDirection);
     lightDirection = normalize(lightDirection);
 
-    vec4 lightColor = calcLightInternal(pointLight.base, lightDirection, worldPos, normal);
+    vec4 lightColor = calcLightInternal(light.base, lightDirection, worldPos, normal);
 
-    float attenuation =  pointLight.atten.constant	+
-                         pointLight.atten.linear	* distance +
-                         pointLight.atten.exp		* distance * distance;
+    float attenuation =  light.atten.constant	+
+                         light.atten.linear	* distance +
+                         light.atten.exp		* distance * distance;
 
     //attenuation = min(1.0, attenuation);
 
@@ -88,9 +87,5 @@ void main()
 	vec3 normal = texture(normalMap, texCoord).xyz;
 	normal = normalize(normal);
 	
-    //vec3 vertexToEye = normalize(cameraPos - worldPos);
-	//fragColor = vec4(vertexToEye, 1.0);
     fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal);
-	//fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-	//fragColor = vec4(color, 1.0);
 }
