@@ -52,16 +52,24 @@ void RobotArm::update(float p_DeltaTimeS)
 	//set orientation of arm on Y axis, depending on state.
 	if(m_Raised)
 	{
-		if(m_OrientationDeg < 90.0f)
+		if(m_OrientationDeg > -90.0f)
 		{
-			m_OrientationDeg+=m_ArmRaiseSpeed*p_DeltaTimeS;
+			m_OrientationDeg-=m_ArmRaiseSpeed*p_DeltaTimeS;
+		}
+		else
+		{
+			m_OrientationDeg = -90.0f;
 		}
 	}
 	else
 	{
-		if(m_OrientationDeg > 0.0f)
+		if(m_OrientationDeg < 0.0f)
 		{
 			m_OrientationDeg+=m_ArmRaiseSpeed*p_DeltaTimeS;
+		}
+		else
+		{
+			m_OrientationDeg = 0.0f;
 		}
 	}
 	m_LocalTransform->reset();

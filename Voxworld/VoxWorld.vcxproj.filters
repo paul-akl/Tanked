@@ -191,6 +191,9 @@
     <Filter Include="Core Engine\Renderer\Shader\Lighting">
       <UniqueIdentifier>{3db18173-101c-49c5-b5ea-576304611eaa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\AI Manager\Support classes">
+      <UniqueIdentifier>{020729ef-ae22-414b-8f67-7668bc163a91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -396,6 +399,11 @@
     <ClCompile Include="SpotLightShader.cpp">
       <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="AStarIterator.cpp">
+      <Filter>Core Engine\AI Manager\Support classes</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="ParticleSystemFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -598,6 +606,11 @@
     <ClInclude Include="SpotLightShader.h">
       <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="AStarIterator.h">
+      <Filter>Core Engine\AI Manager\Support classes</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="ParticleSystemFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

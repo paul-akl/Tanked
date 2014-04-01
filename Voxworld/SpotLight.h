@@ -10,8 +10,8 @@ class SpotLight :
 {
 public:
 	SpotLight(void);
-	virtual void render(Renderer* p_Renderer){;}
-	virtual void update(float p_DeltaTimeS){;}
+	virtual void render(Renderer* p_Renderer);
+	virtual void update(float p_DeltaTimeS);
 	void setTransform(glm::mat4& p_WorldTransform);
 	glm::vec3 getDirection(){return m_Direction;}
 	void setDirection(glm::vec3 p_Direction){m_Direction = p_Direction;}

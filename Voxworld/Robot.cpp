@@ -11,7 +11,7 @@ Robot::Robot(void)
 	m_Head = nullptr;
 	m_MaxVelocityScalar = 125.0f;
 	m_DamagedTextureDiffuse = nullptr;
-	m_TurnSpeed = 2.5f;
+	m_TurnSpeed = 25.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
 	m_Thrust = 4000.0f;
@@ -20,10 +20,10 @@ Robot::Robot(void)
 	m_LeftArmPosition = glm::vec3(-2.8f,3.0f,0.0f);
 	m_RightArmPosition = glm::vec3(2.8f,3.0f,0.0f);
 	m_Velocity = glm::vec3(0.0f);
-	m_behaviourState=HostileStatus;
+	m_behaviourState=PassiveStatus;
 	m_Turning = false;
 	m_BaseDamage = 50;
-	m_TargetOrientation = 0.0f;
+	m_LastMoveTarget =glm::vec3(0.0f); 
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {
@@ -86,7 +86,10 @@ void Robot::turnRight(float p_DeltaTimeS)
 }
 void Robot::update(float p_DeltaTimeS)
 {
-
+	
+	//printf("moveTarget: %f,%f\n",m_movementTarget.x,m_movementTarget.z);
+	//printf("Target: %f,%f\n",m_targetPosition.x,m_targetPosition.z);
+	//printf("Position: %f,%f\n",m_Position.x,m_Position.z);
 	if(m_HitPoints <= 0)
 	{
 		deactivate();
@@ -102,7 +105,8 @@ void Robot::update(float p_DeltaTimeS)
 	}
 	if(m_behaviourState!=PassiveStatus)
 	{
-		m_Head->LookAt(m_targetPosition);
+		if(m_PathChanged)
+			m_Head->LookAt(m_movementTarget);
 		//m_StateTimer-=p_DeltaTimeS;
 		if(true)//m_StateTimer>0.0f)
 		{
@@ -110,14 +114,18 @@ void Robot::update(float p_DeltaTimeS)
 				m_RightArm->raiseArm();
 			if(!m_LeftArm->armRaised())
 				m_LeftArm->raiseArm();
-			m_TargetOrientation = m_Head->getOrientation();
-			glm::vec3 v_AccelerationDir = glm::normalize(m_movementTarget-m_Position);
+			
+			//printf("orientation t: %f\n",m_TargetOrientation);
+			//printf("orientation a: %f\n",m_OrientationDeg);
+			//glm::vec3 v_AccelerationDir = glm::vec3(sin(PI_OVER180*m_TargetOrientation),0.0f,cos(m_TargetOrientation*PI_OVER180));
+			glm::vec3 v_AccelerationDir = m_lookDirection;
+			m_TargetOrientation = m_Head->getOrientation()-180;
+			//m_TargetOrientation = atan2(m_lookDirection.z,m_lookDirection.x)*RAD_TO_DEG;
 			//then calculate acceleration scalar, multiply that by acceleration direction, 
 			//times delta time, to calculate impulse magnitude, and add to velocity
 			//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
 			m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
 			m_IsMoving = true;
-			m_Position+=m_Velocity*p_DeltaTimeS;
 
 		}
 		else
@@ -172,6 +180,7 @@ void Robot::update(float p_DeltaTimeS)
 	///////////////////////////////////////////////////////////////////////////////////////
 	if(m_IsMoving)
 	{
+		m_Position+=m_Velocity*p_DeltaTimeS;
 
 		//Fd = 0.5*air density* v^2 * TankAeroConstant * area
 		//1.5f is air density, tank aero constant is the coefficient of it's cross sectional area
@@ -193,10 +202,12 @@ void Robot::update(float p_DeltaTimeS)
 		m_IsMoving = false;
 		m_Velocity = glm::vec3(0.0f);
 	}
-
+	
 	if(m_TargetOrientation!=m_OrientationDeg)
 	{
-		if(abs(m_TargetOrientation-m_OrientationDeg)<5.5f)
+		float delta = m_TargetOrientation-m_OrientationDeg;
+		float deltaAngle = abs(delta);
+		if(deltaAngle<2.5f)
 		{
 			m_OrientationDeg = m_TargetOrientation;
 			m_Turning = false;
@@ -204,16 +215,16 @@ void Robot::update(float p_DeltaTimeS)
 		else
 		{
 			m_Turning = true;
-			float deltaAngle = m_TargetOrientation-m_OrientationDeg;
+
 			//if theta is greater than 180 degrees, then make a small adjustment, to make deltaAngle relative to zero
 			//(make deltaAngle either positive or negative
-			if (abs(deltaAngle) > 180.0f)
-				deltaAngle += deltaAngle > 0? -360.0f:360.0f;
-			if(deltaAngle < 0)
+			if (deltaAngle > 180.0f)
+				delta += delta > 0? -360.0f:360.0f;
+			if(delta < 0)
 			{
 				turnLeft(p_DeltaTimeS);
 			}
-			else if(deltaAngle > 0)
+			else if(delta > 0)
 			{
 				turnRight(p_DeltaTimeS);
 			}

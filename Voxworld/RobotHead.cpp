@@ -57,12 +57,16 @@ void RobotHead::update(float p_DeltaTimeS)
 			}
 		}
 	}
+
 	m_LocalTransform->reset();
+	m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0,1.0,0.0));
 	m_LocalTransform->translate(m_Position);
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(1.0f));
 	//m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);
+
+	//m_WorldTransform = m_LocalTransform->getLocalTransform();
 }
 
 void RobotHead::addDamagedTexture(TextureNode* p_Texture)
@@ -77,9 +81,10 @@ void RobotHead::turnRight(float p_DeltaTimeS)
 {
 	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
 }
-void RobotHead::LookAt(const glm::vec3& p_Target)
+void RobotHead::LookAt(const glm::vec3 p_Target)
 {
 	m_TargetOrientation = (atan2(p_Target.z,p_Target.x)*RAD_TO_DEG);
+	m_Turning = true;
 }
 void RobotHead::render(Renderer* p_Renderer)
 {

@@ -5,10 +5,17 @@
 TurretNode::TurretNode(void)
 {
 	m_MuzzleOffset = glm::vec3(0.0f,3.0f,0.0f);
+	m_SearchLightOffset = glm::vec3(4.0f,3.0f,0.0f);
+	m_SearchLight = nullptr;
 }
 void TurretNode::render(Renderer *p_Renderer)
 {
 	SceneNode::render(p_Renderer);
+	if(m_SearchLight!=nullptr)
+	{
+		if(m_SearchLight->isActive())
+			m_SearchLight->render(p_Renderer);
+	}
 }
 void TurretNode::update(float p_DeltaTimeS)
 {
@@ -39,6 +46,18 @@ void TurretNode::update(float p_DeltaTimeS)
 	m_AutoGun->update(p_DeltaTimeS);
 	if(!m_MainGunUpgrades.empty())
 	m_MainGunUpgrades.top()->update(p_DeltaTimeS);
+	if(m_SearchLight!=nullptr)
+	{
+		if(m_SearchLight->isActive())
+			m_SearchLight->update(p_DeltaTimeS);
+	}
+}
+void TurretNode::setSearchLight(SpotLight* p_Light)
+{
+	m_SearchLight = p_Light;
+	m_SearchLight->setPosition(m_SearchLightOffset);
+	m_SearchLight->setParent(this);
+	//m_SearchLight->setOrientation(m_OrientationDeg);
 }
 void TurretNode::rotateTurret(float p_Rotation)
 {

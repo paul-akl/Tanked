@@ -3,6 +3,7 @@
 #include "EnemyNode.h"
 #include "Maze.h"
 #include "SceneNode.h"
+#include "AStarIterator.h"
 
 enum PathFindingStates	// Used for pathfinding algorithm
 {
@@ -34,18 +35,19 @@ protected:
 	bool isPlayerVisible(EnemyNode *p_Enemy); 
 
 	// Main pathfinding algorithm, takes in start and target position in world space coordinates
-	glm::vec2 getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition);
-	
+	void getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition,std::vector<glm::ivec2>& path);
 	// Variables only used by pathfinding
 	std::vector<int>	m_openList,		
 						m_openCoordX,		
 						m_openCoordY,	
 						m_fCost,			
 						m_hCost;
-std::vector<std::vector<int>>	m_parentCoordX,	
-								m_parentCoordY,		
-								m_closedList,		
-								m_gCost;		
+	std::vector<glm::ivec2> m_Path;
+	std::vector<std::vector<int>>	m_parentCoordX,	
+									m_parentCoordY,				
+									m_gCost;		
+	std::vector<std::vector<int>> m_closedList;
+	
 	int m_pathLength,		
 		m_pathLocation;		
 };

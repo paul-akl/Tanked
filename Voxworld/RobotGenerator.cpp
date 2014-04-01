@@ -51,6 +51,7 @@ void RobotGenerator::init()
 		tmp->addLeftArm(getArm(true));
 		tmp->addRightArm(getArm(false));
 		tmp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+		tmp->setDetectionRadius(200.0f);
 		m_Robots.push_front(tmp);
 		tmp->deactivate();
 	}
@@ -86,6 +87,7 @@ Robot* RobotGenerator::getRobot()
 	Robot* temp = nullptr;
 	m_SpawnTimer = 0.0f;
 	temp = getRobotFromPool();
+	if(temp!=nullptr)
 	{
 		if(m_Reusing)
 		{

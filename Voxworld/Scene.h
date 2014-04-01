@@ -28,6 +28,14 @@ struct ThreadCDBlock
 	float deltaTimeS;
 	std::list<UpgradeNode*>* list;
 };
+struct ThreadEnemyBlock
+{
+	float deltaTimeS;
+	std::list<EnemyNode*>* list;
+	AIManager* solver;
+	Maze* maze;
+	SceneNode* player;
+};
 struct ThreadSceneryBlock
 {
 	float deltaTimeS;
@@ -76,9 +84,9 @@ protected:
 	void updateGameObjects();
 	void updateWalls();
 	void updateFloors();
-	void updateEnemies();
 	void updateProjectiles();
 	void updateUI();
+	static int updateEnemies(void* p_EnemBlock);
 	static int updateScenery(void* p_Scenery);
 	static int updateCollectables(void* p_Collectables);
 	static int updateObjects(void* p_Objects);
@@ -114,7 +122,7 @@ protected:
 	float m_MaxTurnSpeed;
 	float m_CamFollowDistance;
 	float m_CamFollowAngle;
-	float m_PlayerScore;
+	int m_PlayerScore;
 	unsigned int m_GameDifficulty;
 	RenderMode m_CurrentRenderMode;
 	bool m_Victory;

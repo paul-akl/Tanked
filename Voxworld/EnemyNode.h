@@ -33,7 +33,8 @@ public:
 protected:
 	glm::vec3	m_targetPosition,
 				m_movementTarget,
-				m_lookDirection;
+				m_lookDirection,
+				m_LastTarget;
 
 	float	m_viewConeAngle,
 			m_maxLookDistance,
@@ -41,4 +42,5 @@ protected:
 
 	int m_behaviourState;
 	float m_StateTimer;
+	bool m_PathChanged;
 };

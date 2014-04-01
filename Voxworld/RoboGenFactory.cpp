@@ -106,6 +106,7 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 				robogen->setHitPoints(100+10*p_Difficulty);
 				robogen->setMaxHitPoints(100+10*p_Difficulty);
 				robogen->setDifficulty(p_Difficulty);
+				robogen->setDetectionRadius(300.0f);
 			}
 
 		}break;

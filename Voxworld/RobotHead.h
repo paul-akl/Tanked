@@ -9,7 +9,8 @@ public:
 	virtual void update(float p_DeltaTimeS);
 	void addDamagedTexture(TextureNode* p_Texture);
 	void setDamaged(bool p_Switch){m_Damaged = p_Switch;}
-	void LookAt(const glm::vec3& p_Target);
+	void LookAt(const glm::vec3 p_Target);
+	float getTargetOrientation(){return m_TargetOrientation;}
 	virtual ~RobotHead(void);
 protected:
 	void turnLeft(float p_DeptaTimeS);

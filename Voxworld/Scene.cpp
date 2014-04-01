@@ -48,6 +48,7 @@ void Scene::init()
 	m_Camera->moveForward(m_CamFollowDistance);
 	m_Camera->moveUp(3.0f);
 	m_GameDifficulty = 1;
+	m_PlayerScore = 0;
 	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30);
 	m_TestMaze->toConsole();
 	//m_TestMaze->toConsole();
@@ -87,6 +88,7 @@ void Scene::init()
 	m_Hud->setMetricMax(WEAPONGAUGE, m_Tank->getMaxWeaponChargeLevel());
 	m_Hud->setMetricCurrent(SCORE,0);
 	printf("init scene complete");
+	
 }
 void Scene::nextLevel()
 {
@@ -227,7 +229,6 @@ void Scene::addRobot(Robot* p_Robot)
 	if(p_Robot!=nullptr)
 	{
 		m_Robots.push_front(p_Robot);
-		p_Robot->setMovementTarget(p_Robot->getLocation());
 		m_Solver->addEnemy(p_Robot);
 	}
 }
@@ -257,6 +258,7 @@ void Scene::updateGameObjects()
 	int num;
 	//create thread data blocks for new threads
 	ThreadDBlock projblock, enemBlock,enemyGenBlock;
+	ThreadEnemyBlock enemyBlock;
 	ThreadCDBlock collectblock;
 	ThreadSceneryBlock floorBlock, wallBlock;
 
@@ -313,32 +315,33 @@ void Scene::updateWalls()
 	} 
 }
 //NOT NEEDED
-void Scene::updateEnemies()
+int Scene::updateEnemies(void* p_EnemBlock)
 {
-	//nested multi-threading?
-	if(!m_Robots.empty())
-	{
-		for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
-		{
-			if((*it)->isActive())
-			{
-				m_AISolver->doBehaviour((*it));
-				(*it)->update(m_DeltaTimeSeconds);
-			}
-		}
-	}
-	//update robo generators
-	if(!m_RoboGens.empty())
-	{
-		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it!= m_RoboGens.end();it++)
-		{
-			if((*it)->isActive())
-			{
-				m_AISolver->doBehaviour((*it));
-				(*it)->update(m_DeltaTimeSeconds);
-			}
-		}
-	}
+	////nested multi-threading?
+	//if(!m_Robots.empty())
+	//{
+	//	for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
+	//	{
+	//		if((*it)->isActive())
+	//		{
+	//			m_AISolver->doBehaviour((*it));
+	//			(*it)->update(m_DeltaTimeSeconds);
+	//		}
+	//	}
+	//}
+	////update robo generators
+	//if(!m_RoboGens.empty())
+	//{
+	//	for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it!= m_RoboGens.end();it++)
+	//	{
+	//		if((*it)->isActive())
+	//		{
+	//			m_AISolver->doBehaviour((*it));
+	//			(*it)->update(m_DeltaTimeSeconds);
+	//		}
+	//	}
+	//}
+	return 0;
 }
 //NOT NEEDED
 void Scene::updateFloors()
@@ -541,7 +544,7 @@ void Scene::checkGameConditions()
 						if(robot->getHitPoints() == 0)
 						{
 							//update player score
-							m_PlayerScore+=25.0f;
+							m_PlayerScore+=25;
 							robot->deactivate();
 							//leave non hazard death effect
 						}
@@ -562,7 +565,7 @@ void Scene::checkGameConditions()
 							{
 								//update player score
 								gen->deactivate();
-								m_PlayerScore+=50.0f;
+								m_PlayerScore+=50;
 								//leave non hazard death effect
 							}
 						}
@@ -590,15 +593,16 @@ void Scene::checkGameConditions()
 							glm::vec3 normal = glm::vec3(m_CollisionEvents[i]->m_CollisionNormal.x,0.0f,m_CollisionEvents[i]->m_CollisionNormal.z);
 							glm::vec3 velocity = m_CollisionEvents[i]->m_Collidable_A->getVelocity();
 							glm::vec3 reflection = glm::reflect(velocity,normal);
-							m_CollisionEvents[i]->m_Collidable_A->setPosition(m_CollisionEvents[i]->m_Collidable_A->getLocation()-glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration));
 							m_CollisionEvents[i]->m_Collidable_A->stop();
+							//m_CollisionEvents[i]->m_Collidable_A->setPosition(m_CollisionEvents[i]->m_Collidable_A->getLocation()-glm::normalize(m_CollisionEvents[i]->m_Collidable_A->getVelocity())*(m_CollisionEvents[i]->m_Penetration));
+
 							m_CollisionEvents[i]->m_Collidable_A->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 						}
 						else
 						{
 							glm::vec3 normal = glm::vec3(m_CollisionEvents[i]->m_CollisionNormal.x,0.0f,m_CollisionEvents[i]->m_CollisionNormal.z);
 							glm::vec3 reflection = glm::reflect(m_CollisionEvents[i]->m_Collidable_B->getVelocity(),glm::normalize(-normal))*0.8f;
-							m_CollisionEvents[i]->m_Collidable_B->setPosition(m_CollisionEvents[i]->m_Collidable_B->getLocation()-glm::normalize(m_CollisionEvents[i]->m_Collidable_B->getVelocity())*(m_CollisionEvents[i]->m_Penetration));
+							//m_CollisionEvents[i]->m_Collidable_B->setPosition(m_CollisionEvents[i]->m_Collidable_B->getLocation()-glm::normalize(m_CollisionEvents[i]->m_Collidable_B->getVelocity())*(m_CollisionEvents[i]->m_Penetration));
 							m_CollisionEvents[i]->m_Collidable_B->stop();
 							m_CollisionEvents[i]->m_Collidable_B->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 
@@ -649,9 +653,9 @@ void Scene::checkGameConditions()
 					if(m_CollisionEvents[i]->m_Collidable_A->isMoving())
 					{
 						m_CollisionEvents[i]->m_Collidable_A->stop();
-						m_CollisionEvents[i]->m_Collidable_A->setVelocity(glm::vec3(reflection1.x,0.0f,reflection1.z));
+						m_CollisionEvents[i]->m_Collidable_A->setVelocity(glm::vec3(reflection1.x,0.0f,reflection1.z)*0.8f);
 						m_CollisionEvents[i]->m_Collidable_B->stop();
-						m_CollisionEvents[i]->m_Collidable_B->setVelocity(glm::vec3(reflection2.x,0.0f,reflection2.z));
+						m_CollisionEvents[i]->m_Collidable_B->setVelocity(glm::vec3(reflection2.x,0.0f,reflection2.z)*0.8f);
 					}
 				}break;
 			}
@@ -671,15 +675,15 @@ void Scene::checkGameConditions()
 		for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
 		{
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
-			if((*it)->isActive() && (*it)->isReady())
+			if((*it)->getState()!=PassiveStatus && (*it)->isActive() && (*it)->isReady())
 			{
 					addRobot((*it)->getRobot());
 			}
 			//if robogen is ready to spawn, active OR aggressive, alert, and m_Tank is within aggression radius, spawn robots
-			if((*it)->isActive() && (*it)->getState()==PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
-			{
-				(*it)->setState(AlertStatus);
-			}
+			//if((*it)->isActive() && (*it)->getState()==PassiveStatus && glm::distance(m_Tank->getLocation(),(*it)->getLocation()) <= 200.0f)
+			//{
+			//	(*it)->setState(AlertStatus);
+			//}
 		}
 	}
 	else
@@ -912,7 +916,6 @@ void Scene::update(float p_DeltaTimeS)
 		if(!m_Paused)
 		{
 			detectCollisions();
-			checkGameConditions();
 			m_Tank->update(m_DeltaTimeSeconds);	
 			if(!m_Robots.empty())
 			{
@@ -924,17 +927,10 @@ void Scene::update(float p_DeltaTimeS)
 					}
 				}
 			}
-			if(!m_RoboGens.empty())
-			{
-				for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it!= m_RoboGens.end();it++)
-				{
-					if((*it)->isActive())
-					{
-						m_AISolver->doBehaviour((*it));
-					}
-				}
-			}
+			
 			updateGameObjects();
+			checkGameConditions();
+
 			cleanup();
 			m_Solver->update(m_DeltaTimeSeconds);
 			m_Camera->LookAt(m_Tank->getLocation(),m_CamFollowDistance);

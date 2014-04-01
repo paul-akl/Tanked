@@ -2,7 +2,7 @@
 #include "CollidableNode.h"
 #include "TurretNode.h"
 #include "OffensiveUpgrade.h"
-
+#include "SpotLight.h"
 class TestTankNode :
 	public CollidableNode
 {
@@ -24,7 +24,9 @@ public:
 	const float getMaxShieldHitPoints(){return m_ShieldMaxHitPoints;}
 	const float getWeaponChargeLevel(){return m_WeaponChargeLevel;}
 	const float getMaxWeaponChargeLevel(){return m_MaxWeaponChargeLevel;}
-	void dealDamage(float p_DamageAmount) {m_ShieldHitPoints-=p_DamageAmount;} 
+	void dealDamage(float p_DamageAmount) {m_ShieldHitPoints-=p_DamageAmount;}
+	void setHeadLight(SpotLight* p_Light, bool p_Right);
+	void setHoverLight(LightNode* p_Light);
 	virtual ~TestTankNode(void);
 protected:
 	TurretNode* m_Turret;
@@ -41,5 +43,11 @@ protected:
 	float m_ShieldHitPoints; //shield hp, essentially life points
 	float m_ShieldMaxHitPoints; //maximum hp for this tank
 	float m_ShieldChargeRate; //rate at which shield recharges per second
+	glm::vec3 m_RHLampOffset;
+	glm::vec3 m_LHLampOffset;
+	glm::vec3 m_HoverLampOffset;
+	SpotLight* m_RHeadLight;
+	SpotLight* m_LHeadlight;
+	LightNode* m_HoverLight;
 };
 

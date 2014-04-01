@@ -44,5 +44,6 @@ protected:
 	float m_Mass; //mass of the robot, measured in Kilograms
 	float m_DamageMultiplier;
 	int m_BaseDamage;
+	glm::vec3 m_LastMoveTarget;
 };
 

@@ -147,18 +147,22 @@ void Maze::generateMaze(int p_width, int p_height, int cellSize)
 		for(std::vector<int>::size_type j = 0; j < m_Grid[i].size(); j++)
 			m_iterator->m_positionArray.push_back(Position(i, j));
 }
-bool Maze::isOk(glm::vec2 p_Cell)
+bool Maze::isOk(glm::ivec2 p_Cell)
 {
-	if(p_Cell.x > 0 && p_Cell.x < m_width)
-		if(p_Cell.y > 0 && p_Cell.y < m_height)
-			return true;
+	if(p_Cell.x > 0 && p_Cell.x < m_width-1)
+		if(p_Cell.y > 0 && p_Cell.y < m_height-1)
+			if(!isWall(Position(p_Cell.x,p_Cell.y)))
+				if(m_Grid[p_Cell.x][p_Cell.y]!=GENERATOR)
+					return true;
+				else return false;
+			else return false;
 		else return false;
 	else return false;
 }
-bool Maze::isVisible(glm::vec2 startPosition, glm::vec2 enPosition)
+bool Maze::isVisible(glm::ivec2 startPosition, glm::ivec2 enPosition)
 {
-	glm::vec2 ray = enPosition-startPosition;
-	glm::vec2 rayDir;
+	glm::ivec2 ray = enPosition-startPosition;
+	glm::ivec2 rayDir;
 	rayDir.x = ray.x/m_CellSize;
 	rayDir.y = ray.y/m_CellSize;
 	for (int i = 0; i < m_CellSize; i++)
@@ -200,15 +204,15 @@ int Maze::getGridCellType(Position p_pos)
 }
 glm::vec3 Maze::getNearestCell(glm::vec3 p_position)
 {
-	glm::vec2 cellLocation = getGridCell(p_position);
+	glm::ivec2 cellLocation = getGridCell(p_position);
 	return glm::vec3(cellLocation.x*m_CellSize, 0.0f, cellLocation.y*m_CellSize);
 }
-glm::vec2 Maze::getGridCell(glm::vec3 p_position)
+glm::ivec2 Maze::getGridCell(glm::vec3 p_position)
 {
-	glm::vec2 cellLocation;
+	glm::ivec2 cellLocation;
 
-	cellLocation.x = (float)((int)(p_position.x / m_CellSize));
-	cellLocation.y = (float)((int)(p_position.z / m_CellSize));
+	cellLocation.x = (int)(p_position.x / m_CellSize);
+	cellLocation.y = (int)(p_position.z / m_CellSize);
 
 	return cellLocation;
 }

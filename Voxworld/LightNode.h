@@ -22,7 +22,7 @@ class LightNode :
 public:
 	LightNode(void);
 	virtual void render(Renderer* p_Renderer);
-	virtual void update(float p_DeltaTimeMS){;}
+	virtual void update(float p_DeltaTimeMS);
 	LightStruct getBaseData(){return m_BaseData;}
 
 	float getAttenConstant()	{ return m_BaseData.m_Attenuation.m_Constant;	}

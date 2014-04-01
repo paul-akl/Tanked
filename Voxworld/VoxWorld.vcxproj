@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIManager.cpp" />
+    <ClCompile Include="AStarIterator.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="AutoGun.cpp" />
     <ClCompile Include="BasicTankFactory.cpp" />
@@ -48,6 +49,8 @@
     <ClCompile Include="MenuMode.cpp" />
     <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="ParticleSystemFactory.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PointLightShader.cpp" />
     <ClCompile Include="PosIterator.cpp" />
@@ -83,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIManager.h" />
+    <ClInclude Include="AStarIterator.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="AutoGun.h" />
     <ClInclude Include="BasicTankFactory.h" />
@@ -118,6 +122,8 @@
     <ClInclude Include="MenuMode.h" />
     <ClInclude Include="MeshNode.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="ParticleSystemFactory.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="PointLightShader.h" />
     <ClInclude Include="PosIterator.h" />

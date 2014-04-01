@@ -21,7 +21,11 @@ TestTankNode::TestTankNode(void)
 	m_ShieldHitPoints = 100.0f;
 	m_ShieldMaxHitPoints = 200.0f;
 	m_ShieldChargeRate = 1.0f;
+	m_RHeadLight = nullptr;
+	m_LHeadlight = nullptr;
+	m_HoverLight = nullptr;
 }
+
 void TestTankNode::chargeMainGun(float p_DeltaTimeS)
 {
 	m_WeaponChargeLevel += m_WeaponChargeRate*p_DeltaTimeS;
@@ -71,6 +75,30 @@ void TestTankNode::addTurretNode(TurretNode* p_Turret)
 	m_Turret = p_Turret;
 	SceneNode::addNode(p_Turret);
 	m_OrientationDeg=m_Turret->getOrientation();
+}
+void TestTankNode::setHoverLight(LightNode* p_Light)
+{
+	m_HoverLampOffset = glm::vec3(0.0,3.0f,0.0f);
+	m_HoverLight = p_Light;
+	m_HoverLight->setParent(this);
+	m_HoverLight->setPosition(m_HoverLampOffset);
+}
+void TestTankNode::setHeadLight(SpotLight* p_Light,bool p_Right)
+{
+	if(p_Right)
+	{
+		m_RHLampOffset = glm::vec3(m_Radius,5.0f,m_Radius/2.0f);
+		m_RHeadLight = p_Light;
+		m_RHeadLight->setPosition(m_RHLampOffset);
+		m_RHeadLight->setParent(this);
+	}
+	else
+	{
+		m_LHLampOffset = glm::vec3(m_Radius,5.0f,-m_Radius/2.0f);
+		m_LHeadlight = p_Light;
+		m_LHeadlight->setPosition(m_LHLampOffset);
+		m_LHeadlight->setParent(this);
+	}
 }
 void TestTankNode::rotateTurret(const float p_Rotation)
 {
@@ -224,15 +252,49 @@ void TestTankNode::update(float p_DeltaTimeS)
 
 	//update local transformation
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position+glm::vec3(0.0,5.0,0.0));
-	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0,0.0));
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0,5.0f,0.0));
+	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0f,0.0));
 	m_LocalTransform->scale(glm::vec3(1.0f));
 	//then do default behaviour
 	SceneNode::update(p_DeltaTimeS);
+	//update light transforms
+	if(m_LHeadlight!=nullptr)
+	{
+		if(m_LHeadlight->isActive())
+			m_LHeadlight->update(p_DeltaTimeS);
+	}
+	if(m_LHeadlight!=nullptr)
+	{
+		if(m_RHeadLight->isActive())
+			m_RHeadLight->update(p_DeltaTimeS);
+	}
+	if(m_HoverLight!=nullptr)
+	{
+		if(m_HoverLight->isActive())
+			m_HoverLight->update(p_DeltaTimeS);
+	}
+
+	
+	
 }
 void TestTankNode::render(Renderer* p_Renderer)
 {
 	SceneNode::render(p_Renderer);
+	if(m_LHeadlight!=nullptr)
+	{
+		if(m_LHeadlight->isActive())
+			m_LHeadlight->render(p_Renderer);
+	}
+	if(m_LHeadlight!=nullptr)
+	{
+		if(m_RHeadLight->isActive())
+			m_RHeadLight->render(p_Renderer);
+	}
+	if(m_HoverLight!=nullptr)
+	{
+		if(m_HoverLight->isActive())
+			m_HoverLight->render(p_Renderer);
+	}
 }
 TestTankNode::~TestTankNode(void)
 {

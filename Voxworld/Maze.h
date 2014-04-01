@@ -39,15 +39,15 @@ public:
 	Maze(void);
 
 	void generateMaze(int p_width, int p_height, int p_cellSize);
-	bool isOk(glm::vec2 p_Cell);								// Checks if a cell is at least 1 cell away from any wall, in any direction
+	bool isOk(glm::ivec2 p_Cell);								// Checks if a cell is at least 1 cell away from any wall, in any direction
 	bool isOk(glm::vec3 p_Location);							// Takes in world position and converts it into grid cell array position first
 	int getGridCellType(int p_row, int p_column);				// Returns GridType enum of a cell as integer
 	int getGridCellType(Position p_pos);						// Returns GridType enum of a cell as integer
 	glm::vec3 getNearestCell(glm::vec3 p_position);				// Returns a world position of the nearest cell. If p_position is not in the maze, returns nearest edge cell
-	glm::vec2 getGridCell(glm::vec3 p_position);				// Returns a grid cell position (row and column), takes in position in world space
+	glm::ivec2 getGridCell(glm::vec3 p_position);				// Returns a grid cell position (row and column), takes in position in world space
 	glm::vec3 getCellPosition(glm::vec2 p_cell);				// Returns world position of a cell, takes in grid cell array position (row and column)
 	glm::vec3 getCellPosition(Position p_pos);
-	bool isVisible(glm::vec2 startPosition, glm::vec2 enPosition);
+	bool isVisible(glm::ivec2 startPosition, glm::ivec2 enPosition);
 	MazeIterator *getIterator();
 	void toConsole();
 

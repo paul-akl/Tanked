@@ -2,7 +2,9 @@
 
 EnemyNode::EnemyNode(void)
 {
-
+	m_movementTarget = glm::vec3(0.0f);
+	m_targetPosition = glm::vec3(0.0f);
+	m_PathChanged = false;
 }
 EnemyNode::~EnemyNode(void)
 {
@@ -53,6 +55,15 @@ glm::vec3 EnemyNode::getMovementTarget()
 void EnemyNode::setMovementTarget(glm::vec3 p_Target)
 {
 	m_movementTarget = p_Target;
+	if(m_LastTarget!=m_movementTarget)
+	{
+		m_PathChanged = true;
+		//printf("target changed\n");
+	}
+	else
+		m_PathChanged = false;
+	m_lookDirection = glm::normalize(p_Target-m_Position);
+	//printf("move to: %f,%f",m_movementTarget.x,m_movementTarget.z);
 }
 glm::vec3 EnemyNode::getTargetPosition()
 {

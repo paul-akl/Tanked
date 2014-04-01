@@ -50,7 +50,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 		//set name
 		m_Instance->setName("tank0");
 		//set to two metres off the ground
-		m_Instance->setPosition(glm::vec3(0.0f,1.5f,0.0f));
+		m_Instance->setPosition(glm::vec3(0.0f,0.0f,0.0f));
 		m_Instance->addTransform(tankTransform);
 		//this might be better to add to the mesh instead of the tank itself.
 		//This way, multiple meshes can be added to a tank.
