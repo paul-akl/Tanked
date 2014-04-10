@@ -13,6 +13,13 @@ DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Render
 		m_UI_Phase = false;
 		m_Frustum = new Frustum();
 		m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
+		m_CurrentMesh=0,
+		m_CurrentMeshVerts=0,
+		m_CurrentDiffuse=0,
+		m_CurrentEmissiveMap=0,
+		m_CurrentNormalMap=0,
+		m_CurrentHeightMap=0;
+		m_CurrentBRadius=0.0f;
 }
 
 void DeferredRenderer::begin(void)
@@ -84,7 +91,7 @@ void DeferredRenderer::end(void)
 	//calculating this within render to gbuffer
 	//glm::mat4 modelview = m_CurrentViewMatrix*m_CurrentModelMatrix;
 	int v_NumMatrices=0;
-	int v_NumTextures=0;
+	int v_NumTextures=-1;
 	//select shader based on v_NumTextures
 
 	for(size_t i = 0; i < 4; i++)
@@ -94,35 +101,38 @@ void DeferredRenderer::end(void)
 		case(true):
 			{
 				v_NumTextures++;
-				switch(i)
-				{
-				case(DIFFUSE):
-					{
-						m_CurrentShader = m_Shaders[DIFFUSE];
-						break;
-					}
-				case(NORMAL):
-					{
-						m_CurrentShader = m_Shaders[NORMAL];
-						break;
-					}
-				case(SPECULAR):
-					{
-						m_CurrentShader = m_Shaders[SPECULAR];
-						break;
-					}
-				case(DEPTH):
-					{
-						m_CurrentShader = m_Shaders[DEPTH];
-						break;
-					}
-				}
 			}
 		case(false):
 			{
+				continue;
 				break;
 			}
 		}
+	}
+	switch(v_NumTextures)
+	{
+		case(DIFFUSE):
+			{
+				m_CurrentShader = m_Shaders[DIFFUSE];
+				break;
+			}
+		case(EMISSIVE):
+			{
+				m_CurrentShader = m_Shaders[EMISSIVE];
+				break;
+			}
+		case(NORMAL):
+			{
+				m_CurrentShader = m_Shaders[NORMAL];
+				break;
+			}
+		case(HEIGHT):
+			{
+				m_CurrentShader = m_Shaders[HEIGHT];
+				break;
+			}
+		case -1:
+			return;
 	}
 
 	if(!m_UI_Phase)
@@ -138,8 +148,8 @@ void DeferredRenderer::end(void)
 		// may need to add flags
 		v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
 		v_DataSet.NormalMapLocation = m_CurrentNormalMap;
-		v_DataSet.SpecularMapLocation = m_CurrentSpecMap;
-		v_DataSet.DepthMapLocation = m_CurrentDepthMap;
+		v_DataSet.EmissiveMapLocation = m_CurrentEmissiveMap;
+		v_DataSet.HeightMapLocation = m_CurrentHeightMap;
 		//material
 		//v_DataSet.Material = m_CurrentMaterial;
 		//shader
@@ -187,6 +197,12 @@ void DeferredRenderer::end(void)
 
 	m_Matrices[MODEL] = false;
 	m_Matrices[NORMALMATRIX] = false;
+	m_CurrentMesh=0,
+	m_CurrentMeshVerts=0,
+	m_CurrentDiffuse=0,
+	m_CurrentEmissiveMap=0,
+	m_CurrentNormalMap=0,
+	m_CurrentHeightMap=0;
 }
 //this is called only when every object to be rendered has called its own render function
 void DeferredRenderer::endRenderCycle(void)
@@ -237,16 +253,16 @@ void DeferredRenderer::render(TextureNode* p_TextureNode)
 			m_Textures[NORMAL] = true;
 			break;
 		}
-		case(SPECULAR):
+		case(EMISSIVE):
 		{
-			m_CurrentSpecMap = p_TextureNode->getTexture();
-			m_Textures[SPECULAR] = true;
+			m_CurrentEmissiveMap = p_TextureNode->getTexture();
+			m_Textures[EMISSIVE] = true;
 			break;
 		}
-		case(DEPTH):
+		case(HEIGHT):
 		{
-			m_CurrentDepthMap = p_TextureNode->getTexture();
-			m_Textures[DEPTH] = true;
+			m_CurrentHeightMap = p_TextureNode->getTexture();
+			m_Textures[HEIGHT] = true;
 			break;
 		}
 	}
@@ -385,12 +401,12 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		{
 			p_DataList[i].SelectedShader->bindTexture(DIFFUSE, p_DataList[i].DiffuseMapLocation);
 		}
-		/*if(v_NumTextures > SPECULAR)
+		/*if(v_NumTextures > EMISSIVE)
 		{
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D,p_DataList[i].SpecularMapLocation);
-			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"specularMap");
-			glUniform1i(textureLocation,SPECULAR);
+			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"emissiveMap");
+			glUniform1i(textureLocation,EMISSIVE);
 		}
 		if(v_NumTextures > NORMAL)
 		{

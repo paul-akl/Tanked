@@ -8,13 +8,15 @@ SceneNode::SceneNode(void)
 	m_Parent = nullptr;
 	m_Mesh = nullptr;
 	m_Diffuse = nullptr;
+	m_EmissiveMap = nullptr;
+	m_NormalMap = nullptr;
+	m_HeightMap = nullptr;
 	m_LocalTransform = nullptr;
 	m_IsActive = true;
 	m_OrientationDeg = 0.0f;
 	m_Position = glm::vec3(0.0f);
 	m_IsMoving = false;
-	m_Scale = glm::vec3(1.0f);
-	m_BoundingRadius = 5.0f;
+	m_RenderRadius = glm::vec3(0.0f);
 }
 bool SceneNode::isMoving()
 {
@@ -48,7 +50,30 @@ void SceneNode::addMesh(MeshNode* p_Mesh)
 }
 void SceneNode::addTexture(TextureNode* p_Texture)
 {
-	m_Diffuse = p_Texture;
+	switch(p_Texture->getTextureType())
+	{
+	case DIFFUSE:
+		{
+			m_Diffuse = p_Texture; 
+		}break;
+	case EMISSIVE:
+		{
+			m_EmissiveMap = p_Texture;
+		}
+	break;
+	case NORMAL:
+		{
+			m_NormalMap = p_Texture;
+		}break;
+	case HEIGHT:
+		{
+			m_HeightMap = p_Texture;
+		}break;
+	default:
+		return;
+		break;
+	}
+
 	addNode(p_Texture);
 }
 const glm::mat4& SceneNode::getWorldTransform(void)
@@ -125,11 +150,18 @@ void SceneNode::render(Renderer* p_Renderer)
 			if(m_Diffuse->isActive() && m_Mesh->isActive() && m_LocalTransform->isActive())
 			{
 				p_Renderer->begin();
-				m_Diffuse->render(p_Renderer);
 				p_Renderer->render(this);
+				m_Diffuse->render(p_Renderer);
 				m_LocalTransform->render(p_Renderer);
 				//any other texture render calls go in here
 				m_Mesh->render(p_Renderer);
+				if(m_EmissiveMap!=nullptr)
+					m_EmissiveMap->render(p_Renderer);
+				if(m_NormalMap!=nullptr)
+					m_NormalMap->render(p_Renderer);
+				if(m_HeightMap!=nullptr)
+					m_HeightMap->render(p_Renderer);
+				//signal the renderer we are done with this item
 				p_Renderer->end();
 			}
 		}
@@ -141,12 +173,12 @@ void SceneNode::render(Renderer* p_Renderer)
 					if(m_Children[i]->getName()!=m_Mesh->getName())
 						if(m_Children[i]->getName()!=m_Diffuse->getName())
 							if(m_Children[i]->getName()!=m_LocalTransform->getName())
-							{
-								m_Children[i]->render(p_Renderer);
-							}
+								if(m_EmissiveMap==nullptr || m_Children[i]->getName()!=m_EmissiveMap->getName())
+									if(m_NormalMap==nullptr ||	m_Children[i]->getName()!=m_NormalMap->getName())
+										if(m_HeightMap==nullptr ||	m_Children[i]->getName()!=m_HeightMap->getName())
+											m_Children[i]->render(p_Renderer);
 			}
 		}
-
 	}
 }
 void SceneNode::addNode(SceneNode* p_Child)
@@ -234,4 +266,7 @@ SceneNode::~SceneNode(void)
 	//local transforms are unique, so need deleted
 	delete m_LocalTransform;
 	m_Diffuse = nullptr;
+	m_EmissiveMap = nullptr;
+	m_NormalMap = nullptr;
+	m_HeightMap = nullptr;
 }

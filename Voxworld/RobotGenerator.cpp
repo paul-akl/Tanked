@@ -20,11 +20,6 @@ RobotGenerator::RobotGenerator(void)
 	m_BaseTimer = 5.0f;
 	m_SpawnDistance = 10.0f;
 	m_behaviourState = HostileStatus;
-	m_Level = 1; //number of the current level of difficulty
-	m_RobotSpawnPoint = glm::vec3(0.0f);
-	m_HitPoints = 400;
-	m_MaxHitPoints = 400;
-	m_NumRobots = 4;
 }
 bool RobotGenerator::isReady()
 {
@@ -44,6 +39,7 @@ void RobotGenerator::init()
 		tmp->setType(ENEMY_ROBOT);
 		tmp->setBoundaryType(CIRCLE);
 		tmp->setRadius(5.0f);
+		tmp->setBoundingRadius(5.0f);
 		//visual data 
 		tmp->addMesh(m_RobotBodyMesh);
 		tmp->addTexture(m_DefaultRobotDiffuseTexture);
@@ -121,6 +117,7 @@ RobotArm* RobotGenerator::getArm(bool p_Left)
 	RobotArm* arm = new RobotArm();
 	arm->addMesh(m_RobotArmMesh);
 	TransformNode* temp = new TransformNode();
+	arm->setBoundingRadius(3.0f);
 	temp->reset();
 	
 	arm->addTransform(temp);
@@ -146,6 +143,7 @@ RobotArm* RobotGenerator::getArm(bool p_Left)
 RobotHead* RobotGenerator::getHead()
 {
 	RobotHead* head = new RobotHead();
+	head->setBoundingRadius(3.0f);
 	head->addMesh(m_RobotHeadMesh);
 	head->addTexture(m_DefaultRobotDiffuseTexture);
 	head->addDamagedTexture(m_DamagedRobotDiffuseTexture);

@@ -91,6 +91,7 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 				robogen->addMesh(m_RoboGenMesh);
 				//set personal collision data
 				robogen->setRadius(5.0f);
+				robogen->setBoundingRadius(5.0f);
 				robogen->setType(ENEMY);
 				robogen->setBoundaryType(CIRCLE);
 				TransformNode* tmp = new TransformNode();

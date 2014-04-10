@@ -67,9 +67,9 @@ void GLTestRender::end(void)
 						m_CurrentShader = m_Shaders[NORMAL];
 						break;
 					}
-				case(SPECULAR):
+				case(EMISSIVE):
 					{
-						m_CurrentShader = m_Shaders[SPECULAR];
+						m_CurrentShader = m_Shaders[EMISSIVE];
 						break;
 					}
 				case(DEPTH):
@@ -107,12 +107,12 @@ void GLTestRender::end(void)
 		glUniform1i(textureLocation,DIFFUSE);
 		//fprintf(stderr, "Error: %s\n", glewGetErrorString(glGetError()));
 	}
-	if(v_NumTextures > SPECULAR)
+	if(v_NumTextures > EMISSIVE)
 	{
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D,m_CurrentSpecMap);
 		int textureLocation = glGetUniformLocation(m_CurrentShader->getShaderLocation(),"specularMap");
-		glUniform1i(textureLocation,SPECULAR);
+		glUniform1i(textureLocation,EMISSIVE);
 		//fprintf(stderr, "Error: %s\n", glewGetErrorString(glGetError()));
 	}
 	if(v_NumTextures > NORMAL)
@@ -197,10 +197,10 @@ void GLTestRender::render(TextureNode* p_TextureNode)
 			m_Textures[NORMAL] = true;
 			break;
 		}
-		case(SPECULAR):
+		case(EMISSIVE):
 		{
 			m_CurrentSpecMap = p_TextureNode->getTexture();
-			m_Textures[SPECULAR] = true;
+			m_Textures[EMISSIVE] = true;
 			break;
 		}
 		case(DEPTH):

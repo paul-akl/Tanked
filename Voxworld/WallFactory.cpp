@@ -16,7 +16,7 @@ void WallFactory::init()
 	m_WallDiffuse1->setTextureType(DIFFUSE);
 	m_WallDiffuse1->setName("WallDiffuse0");
 	m_WallMesh1->setName("WallMesh0");
-	m_WallDiffuse1->loadTexture("images/openWallWrap_D.jpg");
+	m_WallDiffuse1->loadTexture("images/openWallWrap_D.png");
 	m_WallMesh1->loadModel("models/cube.obj");
 	m_ReusingObject = false;
 }

@@ -43,6 +43,8 @@ public:
 	void deactivate(void);
 	const bool isActive(void);
 	virtual ~SceneNode(void);
+	glm::vec3 getRenderRadius(){return m_RenderRadius;}
+	void setRenderRadius(glm::vec3 radius){m_RenderRadius = radius;}
 	glm::vec3 getScale(){return m_Scale;}
 	void setScale(glm::vec3 p_Scale){m_Scale = p_Scale;}
 	float getBoundingRadius(){return m_BoundingRadius;}
@@ -55,11 +57,15 @@ protected:
 	TransformNode* m_LocalTransform;
 	MeshNode* m_Mesh;
 	TextureNode* m_Diffuse;
+	TextureNode* m_EmissiveMap;
+	TextureNode* m_NormalMap;
+	TextureNode* m_HeightMap;
 	std::vector<SceneNode*> m_Children;
 	glm::mat4 m_WorldTransform;
 	glm::vec3 m_Position;
 	float m_OrientationDeg;
 	glm::vec3 m_Velocity;
+	glm::vec3 m_RenderRadius;
 	glm::vec3 m_Scale;
 	float m_BoundingRadius;
 };

@@ -4,8 +4,9 @@
 enum TextureType
 {
 	DIFFUSE=0,
-	SPECULAR,
+	EMISSIVE,
 	NORMAL,
+	HEIGHT,
 	DEPTH,
 };
 class Renderer;

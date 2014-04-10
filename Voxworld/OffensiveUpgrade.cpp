@@ -23,6 +23,7 @@ void OffensiveUpgrade::init()
 		v_Instance->setType(PROJECTILE);
 		v_Instance->setProjectileType(DEFAULT_MAIN);
 		v_Instance->setRadius(4.0f);
+		v_Instance->setBoundingRadius(4.0f);
 		v_Instance->setLifeTime(3.0f);
 		v_Instance->setBaseDamage(50.0f);
 		v_Instance->deactivate();
@@ -72,6 +73,7 @@ ProjectileNode* OffensiveUpgrade::getProjectile()
 				v_Instance->setType(PROJECTILE);
 				v_Instance->setProjectileType(DEFAULT_MAIN);
 				v_Instance->setRadius(3.0f);
+				v_Instance->setBoundingRadius(3.0f);
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(50.0f);
 			}

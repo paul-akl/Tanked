@@ -53,7 +53,7 @@ void UpgradableTank::update(float p_DeltaTimeS)
 	//apply modifiers to mobility attributes
 	m_TankAeroConstant=v_AeroConstantMod*m_BaseAeroConstant;
 	m_Mass=v_MassMod*m_BaseMass;
-	v_ThrustMod*m_BaseThrust;
+	m_Thrust = v_ThrustMod*m_BaseThrust;
 	//calculate total modifiers, and remove expires bonus's
 	for(;jt!=lt;)
 	{

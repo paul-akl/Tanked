@@ -29,6 +29,8 @@ ProjectileNode* AutoGun::getProjectile()
 				v_Instance->setProjectileType(DEFAULT_SECONDARY);
 				v_Instance->setType(PROJECTILE);
 				v_Instance->setRadius(2.0f);
+				v_Instance->setBoundingRadius(2.0f);
+
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(10.0f);
 			}
@@ -109,6 +111,8 @@ void AutoGun::init()
 		temp->setProjectileType(DEFAULT_SECONDARY);
 		temp->setType(PROJECTILE);
 		temp->setRadius(1.5f);
+		temp->setBoundingRadius(1.5f);
+
 		temp->setLifeTime(3.0f);
 		temp->setBaseDamage(10.0f);
 		temp->deactivate();

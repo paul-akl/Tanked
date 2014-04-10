@@ -40,6 +40,8 @@ TestTankNode* BasicTankFactory::getTank(void)
 		m_Instance =new TestTankNode();
 		//set collidability parameters
 		m_Instance->setRadius(10.0f);
+		m_Instance->setBoundingRadius(10.0f);
+
 		m_Instance->setType(PLAYER);
 		//no heirarchical collision boundaries
 		m_Instance->setRecursive(false);
@@ -60,6 +62,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 		TransformNode* turtrans = new TransformNode();
 		turtrans->reset();
 		turret->addMesh(m_TurretMesh1);
+		turret->setBoundingRadius(10.0f);
 		turret->addTexture(m_BodyDiffuse1);
 		turret->addTransform(turtrans);
 		//turret->setOrientation(180.0f);
@@ -96,6 +99,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 			m_Instance =new TestTankNode();
 			//set collidability parameters
 			m_Instance->setRadius(30.0f);
+			m_Instance->setBoundingRadius(30.0f);
 			m_Instance->setType(PLAYER);
 			//no heirarchical collision boundaries
 			m_Instance->setRecursive(false);

@@ -93,9 +93,9 @@ private:
 	GLuint	m_CurrentMesh,
 			m_CurrentMeshVerts,
 			m_CurrentDiffuse,
-			m_CurrentSpecMap,
+			m_CurrentEmissiveMap,
 			m_CurrentNormalMap,
-			m_CurrentDepthMap;
+			m_CurrentHeightMap;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;

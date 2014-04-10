@@ -36,8 +36,8 @@ struct StandardDataSet
 	//texture locations
 	GLuint DiffuseMapLocation;
 	GLuint NormalMapLocation;
-	GLuint SpecularMapLocation;
-	GLuint DepthMapLocation;
+	GLuint EmissiveMapLocation;
+	GLuint HeightMapLocation;
 	Material* Material;
 	Shader* SelectedShader;
 	//non camera related transform matrices

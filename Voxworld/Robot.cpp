@@ -24,9 +24,6 @@ Robot::Robot(void)
 	m_Turning = false;
 	m_BaseDamage = 50;
 	m_LastMoveTarget =glm::vec3(0.0f); 
-	m_HitPoints = 100;
-	m_MaxHitPoints = 200;
-	m_DamageMultiplier = 2.0f;
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {

@@ -93,11 +93,11 @@ void ShieldGauge::update(float p_DeltaTimeS)// pass in a reference to the tank?
 
 	if(m_CurrentValue == m_MaxValue)
 	{
-		m_ShieldImage->setTexture(m_ShieldFull);
+		m_ShieldImage->addTexture(m_ShieldFull);
 	}
 	else
 	{
-		m_ShieldImage->setTexture(m_ShieldDamaged);
+		m_ShieldImage->addTexture(m_ShieldDamaged);
 	}
 
 	m_ShieldImage->setScale(glm::vec3(m_ScaleFactor));
