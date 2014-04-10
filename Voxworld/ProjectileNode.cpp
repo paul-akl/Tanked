@@ -28,7 +28,7 @@ void ProjectileNode::update(float p_DeltaTimeS)
 		}
 	}
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,7.0f,0.0f));
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,10.0f,0.0f));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);
@@ -46,7 +46,7 @@ void ProjectileNode::Bounce(const glm::vec3& p_Normal)
 //override SceneNode::setOrientation
 void ProjectileNode::setOrientation(const float p_OrientationDeg)
 {
-	m_Velocity = glm::vec3(glm::sin((p_OrientationDeg-180.0f)*(PI_OVER180)),0.0f,glm::cos((p_OrientationDeg-180.0f)*(PI_OVER180)))*m_VelocityScalar;
+	m_Velocity = glm::vec3(glm::sin((p_OrientationDeg)*(PI_OVER180)),0.0f,glm::cos((p_OrientationDeg)*(PI_OVER180)))*m_VelocityScalar;
 	SceneNode::setOrientation(p_OrientationDeg);
 }
 ProjectileNode::~ProjectileNode(void)

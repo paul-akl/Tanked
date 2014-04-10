@@ -12,11 +12,29 @@ TextureNode::TextureNode(void)
 
 bool TextureNode::loadTexture(const std::string& p_FileName)
 {
+	//i put this here in case it's needed. images are being loaded upside down
+
+	//	int width_in_bytes = x * 4;
+	//unsigned char *top = NULL;
+	//unsigned char *bottom = NULL;
+	//unsigned char temp = 0;
+	//int half_height = y / 2;
+	//
+	//for (int row = 0; row < half_height; row++) {
+	//  top = image_data + row * width_in_bytes;
+	//  bottom = image_data + (y - row - 1) * width_in_bytes;
+	//  for (int col = 0; col < width_in_bytes; col++) {
+	//    temp = *top;
+	//    *top = *bottom;
+	//    *bottom = temp;
+	//    top++;
+	//    bottom++;
+	//  }
+	//}
 	FREE_IMAGE_FORMAT v_ImageFormat = FreeImage_GetFileType(p_FileName.c_str(), 0);	// Get the format of the image
 	FIBITMAP* v_Bitmap = FreeImage_Load(v_ImageFormat, p_FileName.c_str());			// Reading the actual image
 
 	v_Bitmap = FreeImage_ConvertTo32Bits(v_Bitmap);		// Conversion to internat format
-		
 	int v_imageWidth = FreeImage_GetWidth(v_Bitmap);	// Get image width
 	int v_imageHeight = FreeImage_GetHeight(v_Bitmap);	// and height
 
@@ -38,7 +56,7 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 		glGenTextures(1, &m_Texture);											// Generate texture ID
 		glBindTexture(GL_TEXTURE_2D, m_Texture);								// Bind it, for changes below
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, v_imageWidth, v_imageHeight,	// Upload image to OpenGL
-					 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)v_Texture2D );		
+					 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)v_Texture2D );		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// Texture2D filtering mode, when image is minimized, Linear with mipmaps for best quality
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// Texture2D filtering mode, when image is magnified
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			// Set image clamping parameters

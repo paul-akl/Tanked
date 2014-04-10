@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIManager.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AStarIterator.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="AutoGun.cpp" />
@@ -25,6 +26,7 @@
     <ClCompile Include="CollisionSolver.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="CreditsMode.cpp" />
+    <ClCompile Include="DefensiveUpgrade.cpp" />
     <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="EnemyNode.cpp" />
     <ClCompile Include="FloorFactory.cpp" />
@@ -42,12 +44,16 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="IntroGameMode.cpp" />
     <ClCompile Include="LightNode.cpp" />
+    <ClCompile Include="Locator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGameMode.cpp" />
     <ClCompile Include="MaterialNode.cpp" />
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MenuMode.cpp" />
     <ClCompile Include="MeshNode.cpp" />
+    <ClCompile Include="MobilityUpgrade.cpp" />
+    <ClCompile Include="Notification.cpp" />
+    <ClCompile Include="NotificationFactory.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemFactory.cpp" />
@@ -78,6 +84,7 @@
     <ClCompile Include="TurretNode.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIWindow.cpp" />
+    <ClCompile Include="UpgradableTank.cpp" />
     <ClCompile Include="UpgradeFactory.cpp" />
     <ClCompile Include="UpgradeNode.cpp" />
     <ClCompile Include="WallFactory.cpp" />
@@ -86,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIManager.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AStarIterator.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="AutoGun.h" />
@@ -99,6 +107,7 @@
     <ClInclude Include="CollisionSolver.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CreditsMode.h" />
+    <ClInclude Include="DefensiveUpgrade.h" />
     <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="EnemyNode.h" />
     <ClInclude Include="FloorFactory.h" />
@@ -115,12 +124,19 @@
     <ClInclude Include="GLTestRender.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="IntroGameMode.h" />
+    <ClInclude Include="I_Audio.h" />
+    <ClInclude Include="I_MeshManager.h" />
+    <ClInclude Include="I_TextureManager.h" />
     <ClInclude Include="LightNode.h" />
+    <ClInclude Include="Locator.h" />
     <ClInclude Include="MainGameMode.h" />
     <ClInclude Include="MaterialNode.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MenuMode.h" />
     <ClInclude Include="MeshNode.h" />
+    <ClInclude Include="MobilityUpgrade.h" />
+    <ClInclude Include="Notification.h" />
+    <ClInclude Include="NotificationFactory.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemFactory.h" />
@@ -151,6 +167,7 @@
     <ClInclude Include="TurretNode.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIWindow.h" />
+    <ClInclude Include="UpgradableTank.h" />
     <ClInclude Include="UpgradeFactory.h" />
     <ClInclude Include="UpgradeNode.h" />
     <ClInclude Include="WallFactory.h" />

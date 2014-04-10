@@ -15,6 +15,7 @@
 #include "AIManager.h"
 #include "Maze.h"
 #include "HUD.h"
+#include "I_Audio.h"
 
 #include <SDL_thread.h>
 
@@ -115,8 +116,7 @@ protected:
 	//std::List<DefensiveUpgrade*> m_ShieldBoosts;
 	//std::list<MobilityUpgrade*> m_SpeedBoosts;
 	Controller* m_Controller;
-	CameraNode* m_Camera;
-	bool m_MainFireButtonPressed;
+	CameraNode* m_Camera;	
 	float m_MouseTurnSpeed;
 	float m_MouseAcceleration;
 	float m_MaxTurnSpeed;
@@ -129,11 +129,16 @@ protected:
 	bool m_Defeat;
 	bool m_Paused;
 	bool m_PausePressed;
+	bool m_MainFireButtonPressed;
+	bool m_MoveKeyPressed;
+	bool movesoundplaying;
+	bool chargesoundplaying;
 	SDL_Thread* projThread;
 	SDL_Thread* enemyThread;
 	SDL_Thread* enemyGenThread;
 	SDL_Thread* collectThread;
 	SDL_Thread* SceneryThread;
 	SDL_Thread* floorThread;
+	I_Audio* m_Audio;
 };
 

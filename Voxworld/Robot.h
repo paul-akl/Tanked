@@ -15,7 +15,7 @@ public:
 	void addRightArm(RobotArm* p_RightArm);
 	void addHead(RobotHead* p_Head);
 	void addDamagedTexture(TextureNode* p_Texture);
-	const unsigned int getHitPoints();
+	const int getHitPoints();
 	void setHitPoints(const unsigned int p_HP);
 	void dealDamage(unsigned int p_DamageAmount);
 	void setMaxHitPoints(const unsigned int p_MaxHP);

@@ -54,7 +54,7 @@ void FloorFactory::init()
 	m_FloorMesh1 = new MeshNode();
 	m_FloorTexture1 = new TextureNode();
 	m_FloorTexture1->setTextureType(DIFFUSE);
-	m_FloorTexture1->loadTexture("images/studdedmetal.png");
+	m_FloorTexture1->loadTexture("images/diamond.jpg");
 	m_FloorTexture1->setName("floor0diffuse0");
 	m_FloorMesh1->setName("floor0mesh0");
 	m_FloorMesh1->loadModel("plane.obj");

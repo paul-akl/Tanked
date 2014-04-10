@@ -1,6 +1,8 @@
 #pragma once
 #include <GL\glew.h>
 #include "GameMode.h"
+#include "AssetManager.h"
+#include "NotificationFactory.h"
 
 struct DefferredRenderBlock
 {
@@ -28,6 +30,8 @@ private:
 	Controller* m_Controller;
 	static int RenderScene(void* p_Renderer);
 	//Controller* m_Controller
+	AssetManager* m_AssetManager;
+	NotificationFactory* m_NotificationSystem;
 
 };
 

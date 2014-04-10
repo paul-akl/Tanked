@@ -13,10 +13,10 @@ void UpgradeFactory::init()
 {
 	//assets for the objects the upgrade will create
 	m_DefaultProjectileMesh =  new MeshNode();
-	m_DefaultProjectileMesh->loadModel("models/lowpolybullet.obj");
+	m_DefaultProjectileMesh->loadModel("models/capsule.obj");
 	m_DefaultProjectileMesh->setName("bulletDefaultMesh");
 	m_DefaultProjectileTexture =  new TextureNode();
-	m_DefaultProjectileTexture->loadTexture("images/bullet.png");
+	m_DefaultProjectileTexture->loadTexture("images/RoboGenDamaged.png");
 	m_DefaultProjectileTexture->setTextureType(DIFFUSE);
 	m_DefaultProjectileTexture->setName("bulletDefaultTexture");
 	//assets for the upgrade itself

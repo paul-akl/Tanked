@@ -12,6 +12,7 @@ public:
 	virtual void init();
 	virtual void render(Renderer* p_Renderer);
 	virtual void update(float p_DeltaTimeS);
+	virtual void Collect(UpgradableTank* p_Tank){;}
 	ProjectileType getProjectileType(){return m_ProjectileType;}
 	void setProjectileMesh(MeshNode* p_DefaultProjectileMesh){m_DefaultProjectileMesh = p_DefaultProjectileMesh;}
 	void setProjectileDiffuse(TextureNode* p_DefaultProjectileTexture){m_DefaultProjectileTexture = p_DefaultProjectileTexture;}

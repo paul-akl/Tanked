@@ -17,13 +17,16 @@ Robot::Robot(void)
 	m_Thrust = 4000.0f;
 	m_Mass = 400.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
-	m_LeftArmPosition = glm::vec3(-2.8f,3.0f,0.0f);
-	m_RightArmPosition = glm::vec3(2.8f,3.0f,0.0f);
+	m_LeftArmPosition = glm::vec3(0.0f,3.0f,-2.8f);
+	m_RightArmPosition = glm::vec3(0.0f,3.0f,2.8f);
 	m_Velocity = glm::vec3(0.0f);
 	m_behaviourState=PassiveStatus;
 	m_Turning = false;
 	m_BaseDamage = 50;
 	m_LastMoveTarget =glm::vec3(0.0f); 
+	m_HitPoints = 100;
+	m_MaxHitPoints = 200;
+	m_DamageMultiplier = 2.0f;
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {
@@ -43,7 +46,7 @@ void Robot::addHead(RobotHead* p_Head)
 	SceneNode::addNode(p_Head);
 	m_Head->setPosition(m_HeadPosition);
 }
-const unsigned int Robot::getHitPoints()
+const int Robot::getHitPoints()
 {
 	return m_HitPoints;
 }
@@ -87,9 +90,6 @@ void Robot::turnRight(float p_DeltaTimeS)
 void Robot::update(float p_DeltaTimeS)
 {
 	
-	//printf("moveTarget: %f,%f\n",m_movementTarget.x,m_movementTarget.z);
-	//printf("Target: %f,%f\n",m_targetPosition.x,m_targetPosition.z);
-	//printf("Position: %f,%f\n",m_Position.x,m_Position.z);
 	if(m_HitPoints <= 0)
 	{
 		deactivate();
@@ -103,11 +103,11 @@ void Robot::update(float p_DeltaTimeS)
 			m_Head->setDamaged(true);
 		}
 	}
+	/////////////////////////////////////////////////////////////////////////////
+	// TARGET HANDLING														/////
+	/////////////////////////////////////////////////////////////////////////////
 	if(m_behaviourState!=PassiveStatus)
 	{
-		if(m_PathChanged)
-			m_Head->LookAt(m_movementTarget);
-		//m_StateTimer-=p_DeltaTimeS;
 		if(true)//m_StateTimer>0.0f)
 		{
 			if(!m_RightArm->armRaised())
@@ -115,12 +115,18 @@ void Robot::update(float p_DeltaTimeS)
 			if(!m_LeftArm->armRaised())
 				m_LeftArm->raiseArm();
 			
-			//printf("orientation t: %f\n",m_TargetOrientation);
-			//printf("orientation a: %f\n",m_OrientationDeg);
-			//glm::vec3 v_AccelerationDir = glm::vec3(sin(PI_OVER180*m_TargetOrientation),0.0f,cos(m_TargetOrientation*PI_OVER180));
+			// calculate vector from current position to target position
+			// convert vector to angle in degrees
+			// set angle to head
+			if(m_PathChanged)
+			{
+				m_OrientationDeg = acos(m_lookDirection.x)*RAD_TO_DEG;
+				m_OrientationDeg+=180.0f;
+				m_Head->setOrientation(m_OrientationDeg);
+
+			}
+			//m_Head->LookAt(m_movementTarget);
 			glm::vec3 v_AccelerationDir = m_lookDirection;
-			m_TargetOrientation = m_Head->getOrientation()-180;
-			//m_TargetOrientation = atan2(m_lookDirection.z,m_lookDirection.x)*RAD_TO_DEG;
 			//then calculate acceleration scalar, multiply that by acceleration direction, 
 			//times delta time, to calculate impulse magnitude, and add to velocity
 			//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
@@ -149,23 +155,6 @@ void Robot::update(float p_DeltaTimeS)
 			m_RightArm->lowerArm();
 	}
 
-	if(m_TargetOrientation >= 360.0f)
-	{
-		m_TargetOrientation-=360.0f;
-	}
-	else if(m_TargetOrientation < 0.0f)
-	{
-		m_TargetOrientation=360.0f+m_TargetOrientation;
-	}
-	//normalize current orientation if needed
-	if(m_OrientationDeg >= 360.0f)
-	{
-		m_OrientationDeg-=360.0f;
-	}
-	else if(m_OrientationDeg < 0.0f)
-	{
-		m_OrientationDeg=360.0f+m_OrientationDeg;
-	}
 	//////////////////////////////////////////////////////
 	// VELOCITY INTERPOLATION
 	//////////////////////////////////////////////////////
@@ -203,33 +192,12 @@ void Robot::update(float p_DeltaTimeS)
 		m_Velocity = glm::vec3(0.0f);
 	}
 	
-	if(m_TargetOrientation!=m_OrientationDeg)
-	{
-		float delta = m_TargetOrientation-m_OrientationDeg;
-		float deltaAngle = abs(delta);
-		if(deltaAngle<2.5f)
-		{
-			m_OrientationDeg = m_TargetOrientation;
-			m_Turning = false;
-		}
-		else
-		{
-			m_Turning = true;
+	//deal with rotations
+	//get target orientation from look direction or movement target
+	// convert to angle
+	// calculate delta angle (angle - orientation)
+	// 
 
-			//if theta is greater than 180 degrees, then make a small adjustment, to make deltaAngle relative to zero
-			//(make deltaAngle either positive or negative
-			if (deltaAngle > 180.0f)
-				delta += delta > 0? -360.0f:360.0f;
-			if(delta < 0)
-			{
-				turnLeft(p_DeltaTimeS);
-			}
-			else if(delta > 0)
-			{
-				turnRight(p_DeltaTimeS);
-			}
-		}
-	}
 	m_LocalTransform->reset();
 	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,8.0f,0.0f));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));

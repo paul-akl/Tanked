@@ -15,18 +15,14 @@ void BasicTankFactory::init()
 	m_BodyDiffuse1 = new TextureNode();
 	m_BodyDiffuse1->setTextureType(DIFFUSE);
 	m_BodyDiffuse1->setName("tank0diffuse0");
-	std::string v_FileName = "tankbody.png";
+	std::string v_FileName = "images/Tank_D.tga";
 	m_BodyDiffuse1->loadTexture(v_FileName);
 	m_BodyMesh1 = new MeshNode();
-	m_BodyMesh1->loadModel("tankBody.obj");
+	m_BodyMesh1->loadModel("models/Tank_base.obj");
 	//now set up uniform tank mesh and texture
 	m_TurretMesh1  = new MeshNode();
-	m_TurretDiffuse1 = new TextureNode();
-	m_TurretDiffuse1->setTextureType(DIFFUSE);
-	m_TurretDiffuse1->setName("turret0diffuse0");
-	m_TurretDiffuse1->loadTexture("images/turret uv layout.png");
 	m_TurretMesh1->setName("turret0mesh0");
-	m_TurretMesh1->loadModel("turret.obj");
+	m_TurretMesh1->loadModel("models/Tank_turret.obj");
 }
 TestTankNode* BasicTankFactory::getTank(void)
 {
@@ -64,11 +60,11 @@ TestTankNode* BasicTankFactory::getTank(void)
 		TransformNode* turtrans = new TransformNode();
 		turtrans->reset();
 		turret->addMesh(m_TurretMesh1);
-		turret->addTexture(m_TurretDiffuse1);
+		turret->addTexture(m_BodyDiffuse1);
 		turret->addTransform(turtrans);
-		turret->setOrientation(180.0f);
+		//turret->setOrientation(180.0f);
 		turret->setName("turret0");
-		turret->setPosition(glm::vec3(0.0f,1.5f,0.0f));
+		turret->setPosition(glm::vec3(0.0f,0.0f,0.0f));
 		m_Instance->addTurretNode(turret);
 		//end turret factory code
 		m_Instance->setPosition(glm::vec3(1.0,1.0f,1.0f));
@@ -99,7 +95,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 			//instantiate a tank node
 			m_Instance =new TestTankNode();
 			//set collidability parameters
-			m_Instance->setRadius(10.0f);
+			m_Instance->setRadius(30.0f);
 			m_Instance->setType(PLAYER);
 			//no heirarchical collision boundaries
 			m_Instance->setRecursive(false);
@@ -122,7 +118,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 			turret->addTransform(turtrans);
 			turret->setOrientation(180.0f);
 			turret->setName("turret0");
-			turret->setPosition(glm::vec3(0.0f,1.5f,0.0f));
+			turret->setPosition(glm::vec3(0.0f,1.5f,-10.0f));
 			m_Instance->addTurretNode(turret);
 			//end turret factory code
 			m_Instance->setPosition(glm::vec3(1.0,1.0f,1.0f));
@@ -139,6 +135,5 @@ BasicTankFactory::~BasicTankFactory(void)
 	}
 	delete m_BodyDiffuse1;
 	delete m_BodyMesh1;
-	delete m_TurretDiffuse1;
 	delete m_TurretMesh1;
 }

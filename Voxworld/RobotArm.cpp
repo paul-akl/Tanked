@@ -76,7 +76,7 @@ void RobotArm::update(float p_DeltaTimeS)
 	m_LocalTransform->translate(m_Position);
 	m_LocalTransform->translate(glm::vec3(0.0f,-1.75f,0.0f));
 
-	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(1.0f,0.0f,0.0f));
+	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,0.0f,1.0f));
 	SceneNode::update(p_DeltaTimeS);
 }
 RobotArm::~RobotArm(void)

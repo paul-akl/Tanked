@@ -20,6 +20,11 @@ RobotGenerator::RobotGenerator(void)
 	m_BaseTimer = 5.0f;
 	m_SpawnDistance = 10.0f;
 	m_behaviourState = HostileStatus;
+	m_Level = 1; //number of the current level of difficulty
+	m_RobotSpawnPoint = glm::vec3(0.0f);
+	m_HitPoints = 400;
+	m_MaxHitPoints = 400;
+	m_NumRobots = 4;
 }
 bool RobotGenerator::isReady()
 {

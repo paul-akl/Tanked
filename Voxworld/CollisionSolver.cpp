@@ -114,7 +114,7 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 					//calculate point of contact and move circle outside collision zone.
 					float ratio = pair->m_Penetration;
 					ratio/=glm::dot(p_Collidable->getVelocity(),pair->m_CollisionNormal);
-					p_Collidable->setPosition(p_Collidable->getLocation()+p_Collidable->getVelocity()*ratio);
+					p_Collidable->setPosition(p_Collidable->getLocation()+p_Collidable->getVelocity()*ratio*5.0f);
 					pair->m_CollisionPoint = p_Collidable->getLocation()-pair->m_CollisionNormal*p_Collidable->getRadius();
 					switch(p_Collidable->getType())
 					{
@@ -370,7 +370,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_Collided = true;
 						pair->m_Penetration = sqrt(overlap);
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
-						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
+						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*overlap;
 						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 						pair->m_ResultType = ENEMYVSPROJECTILE;
 						p_Pairs.push_back(pair);
@@ -395,7 +395,7 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 							pair->m_Collided = true;
 							pair->m_Penetration = sqrt(overlap);
 							pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
-							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
+							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*overlap;
 							pair->m_ResultType = ENEMYGENVSPROJECTILE;
 							p_Pairs.push_back(pair);
 						}

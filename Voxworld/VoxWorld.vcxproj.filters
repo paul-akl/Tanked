@@ -194,6 +194,18 @@
     <Filter Include="Core Engine\AI Manager\Support classes">
       <UniqueIdentifier>{020729ef-ae22-414b-8f67-7668bc163a91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core Engine\Particle System">
+      <UniqueIdentifier>{0906456d-ff66-4314-9013-0cfae21582eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Base\SceneGraph\Tank\Base">
+      <UniqueIdentifier>{35853176-2b9d-4dfc-914e-ba3783c0d0b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Asset Management System">
+      <UniqueIdentifier>{9c69fecc-79ca-4eeb-b59c-b48c5a388948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Engine\Game\Class Factories\Notification">
+      <UniqueIdentifier>{9263e635-0893-4243-9c99-8de8b92947f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp">
@@ -232,9 +244,6 @@
     <ClCompile Include="CameraNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="TestTankNode.cpp">
-      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Core Engine\Renderer\Base</Filter>
     </ClCompile>
@@ -252,9 +261,6 @@
     </ClCompile>
     <ClCompile Include="FloorNode.cpp">
       <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
-    </ClCompile>
-    <ClCompile Include="TurretNode.cpp">
-      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Core Engine\Game\Controller</Filter>
@@ -368,7 +374,6 @@
     <ClCompile Include="Score.cpp">
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
-    <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="FrameCounter.cpp">
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
@@ -402,8 +407,40 @@
     <ClCompile Include="AStarIterator.cpp">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="ParticleSystemFactory.cpp" />
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Core Engine\Particle System</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystemFactory.cpp">
+      <Filter>Core Engine\Particle System</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem.cpp">
+      <Filter>Core Engine\Sound Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="DefensiveUpgrade.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Defensive</Filter>
+    </ClCompile>
+    <ClCompile Include="MobilityUpgrade.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Mobility</Filter>
+    </ClCompile>
+    <ClCompile Include="UpgradableTank.cpp" />
+    <ClCompile Include="TestTankNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Tank\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="TurretNode.cpp">
+      <Filter>Core Engine\Base\SceneGraph\Tank\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClCompile>
+    <ClCompile Include="Locator.cpp">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationFactory.cpp">
+      <Filter>Core Engine\Game\Class Factories\Notification</Filter>
+    </ClCompile>
+    <ClCompile Include="Notification.cpp">
+      <Filter>Core Engine\UI System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -442,9 +479,6 @@
     <ClInclude Include="CameraNode.h">
       <Filter>Core Engine\Base\SceneGraph\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="TestTankNode.h">
-      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>Core Engine\Renderer\Base</Filter>
     </ClInclude>
@@ -462,9 +496,6 @@
     </ClInclude>
     <ClInclude Include="FloorNode.h">
       <Filter>Core Engine\Base\SceneGraph\Scenery</Filter>
-    </ClInclude>
-    <ClInclude Include="TurretNode.h">
-      <Filter>Core Engine\Base\SceneGraph\Tank</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>Core Engine\Game\Controller</Filter>
@@ -575,7 +606,6 @@
     <ClInclude Include="Score.h">
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
-    <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="GeneratorDisplay.h">
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
@@ -609,8 +639,49 @@
     <ClInclude Include="AStarIterator.h">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="ParticleSystemFactory.h" />
+    <ClInclude Include="ParticleSystemFactory.h">
+      <Filter>Core Engine\Particle System</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Core Engine\Particle System</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem.h">
+      <Filter>Core Engine\Sound Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="DefensiveUpgrade.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Defensive</Filter>
+    </ClInclude>
+    <ClInclude Include="MobilityUpgrade.h">
+      <Filter>Core Engine\Base\SceneGraph\Upgrade\Mobility</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradableTank.h" />
+    <ClInclude Include="TestTankNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Tank\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="TurretNode.h">
+      <Filter>Core Engine\Base\SceneGraph\Tank\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClInclude>
+    <ClInclude Include="I_Audio.h">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClInclude>
+    <ClInclude Include="I_MeshManager.h">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClInclude>
+    <ClInclude Include="I_TextureManager.h">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClInclude>
+    <ClInclude Include="Locator.h">
+      <Filter>Core Engine\Asset Management System</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationFactory.h">
+      <Filter>Core Engine\Game\Class Factories\Notification</Filter>
+    </ClInclude>
+    <ClInclude Include="Notification.h">
+      <Filter>Core Engine\UI System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">

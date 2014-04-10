@@ -1,24 +1,52 @@
 #include "Scene.h"
 #include "Renderer.h"
+#include "NotificationFactory.h"
+#include "Locator.h"
+#include "TransformNode.h"
 #include <glm\glm.hpp>
 #include <iostream>
-#include "TransformNode.h"
 #include <ctime>
 #include <typeinfo>
+
 Scene::Scene(void)
 {
 	m_CurrentRenderMode = FILLED;
-	m_CamFollowDistance = -15.0f;
-	m_CamFollowAngle = -15.0f;
+	m_CamFollowDistance = -25.0f;
+	m_CamFollowAngle = -25.0f;
 	m_MaxTurnSpeed = 350.0f;
 	m_MouseTurnSpeed = -100.0f;
 	m_MouseAcceleration = 50.0f;
 	m_MainFireButtonPressed=false;
+	m_MoveKeyPressed = false;
+	movesoundplaying = false;
+	chargesoundplaying = false;
 	m_Victory = false;
 	m_Defeat = false;
 	m_Paused = false;
 	m_PausePressed = false;
 	m_Tank = nullptr;
+	m_Audio = Locator::getAudioSystem();
+	m_DeltaTimeSeconds = 0.0f;
+	m_TestMaze = nullptr;
+	m_AISolver = nullptr;
+	m_Solver = nullptr;
+	m_WallFactory = nullptr;
+	m_FloorFactory = nullptr;
+	m_TankFactory = nullptr;
+	m_UpgradeFactory = nullptr;
+	m_RoboGenFactory = nullptr;
+	m_Hud = nullptr;
+	m_Tank = nullptr;
+	m_Controller = nullptr;
+	m_Camera = nullptr;
+	m_PlayerScore = 0;
+	m_GameDifficulty = 0;
+	projThread = nullptr;
+	enemyThread = nullptr;
+	enemyGenThread = nullptr;
+	collectThread = nullptr;
+	SceneryThread = nullptr;
+	floorThread = nullptr;
 }
 bool Scene::sceneComplete()
 {
@@ -58,7 +86,7 @@ void Scene::init()
 	while(v_mazeIterator->hasNext())
 	{
 		Position cell = v_mazeIterator->getNext();
-
+		int num = 0;
 		//std::cout<<cell.x<<" "<<cell.y<<std::endl;
 
 		switch(m_TestMaze->getGridCellType(cell))
@@ -69,7 +97,10 @@ void Scene::init()
 			}break;
 		case GENERATOR:
 			{
-				addRobotGenerator(m_TestMaze->getCellPosition(cell));
+				if (num < 1)
+				{
+					addRobotGenerator(m_TestMaze->getCellPosition(cell));
+				}
 			}break;
 		case START:
 			{
@@ -87,6 +118,10 @@ void Scene::init()
 	m_Hud->setMetricMax(SHIELDGAUGE, m_Tank->getMaxShieldHitPoints());
 	m_Hud->setMetricMax(WEAPONGAUGE, m_Tank->getMaxWeaponChargeLevel());
 	m_Hud->setMetricCurrent(SCORE,0);
+
+	m_Audio->setMusicVolume(0.1f);
+	m_Audio->Music(TRACK3).play(1.0f);
+
 	printf("init scene complete");
 	
 }
@@ -440,6 +475,7 @@ void Scene::checkGameConditions()
 							glm::vec3 reflection = glm::reflect(velocity,normal);
 							if(m_CollisionEvents[i]->m_Collidable_A->isMoving())
 							{
+								m_Audio->Effect(TANKCOLLISION).play();
 								m_CollisionEvents[i]->m_Collidable_A->stop();
 								m_CollisionEvents[i]->m_Collidable_A->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 							}
@@ -450,6 +486,7 @@ void Scene::checkGameConditions()
 							glm::vec3 reflection = glm::reflect(m_CollisionEvents[i]->m_Collidable_B->getVelocity(),glm::normalize(-normal))*0.8f;
 							if(m_CollisionEvents[i]->m_Collidable_B->isMoving())
 							{
+								m_Audio->Effect(TANKCOLLISION).play();
 								m_CollisionEvents[i]->m_Collidable_B->stop();
 								m_CollisionEvents[i]->m_Collidable_B->setVelocity(glm::vec3(reflection.x,0.0f,reflection.z)*0.8f);
 							}
@@ -462,6 +499,7 @@ void Scene::checkGameConditions()
 						{
 							if(m_CollisionEvents[i]->m_Collidable_A->isActive())
 							{
+								m_Audio->Effect(PICKUP).play();
 								TestTankNode* tank = dynamic_cast<TestTankNode*>(m_CollisionEvents[i]->m_Collidable_B);
 								tank->AddOffensiveUpgrade((OffensiveUpgrade*)m_CollisionEvents[i]->m_Collidable_A);
 								//std::cout<<"PLAYERvsCOLLECTABLE"<<std::endl;
@@ -471,6 +509,7 @@ void Scene::checkGameConditions()
 						{
 							if(m_CollisionEvents[i]->m_Collidable_B->isActive())
 							{
+								m_Audio->Effect(PICKUP).play();
 								TestTankNode* tank = dynamic_cast<TestTankNode*>(m_CollisionEvents[i]->m_Collidable_A);
 								tank->AddOffensiveUpgrade(dynamic_cast<OffensiveUpgrade*>(m_CollisionEvents[i]->m_Collidable_B));
 								//std::cout<<"COLLECTABLEvsPLAYER"<<std::endl;
@@ -487,12 +526,13 @@ void Scene::checkGameConditions()
 							//this selectes whether the angle is shallow enough for the bullet to reflect
 							if(abs(glm::dot(normal,glm::normalize(tmp->getVelocity())))<0.707f)
 							{
-
+								m_Audio->Effect(RICOCHET).play(0.1f);
 								//leave a bullet bounce effect
 								tmp->Bounce(normal);
 							}
 							else
 							{
+								m_Audio->Effect(PROJECTILECOLLISION).play(0.1f);
 								tmp->deactivate();
 								//leave death effect in it's place (future feature)
 							}
@@ -506,11 +546,13 @@ void Scene::checkGameConditions()
 								glm::vec3 correction = -glm::normalize(m_CollisionEvents[i]->m_Collidable_B->getVelocity())*(m_CollisionEvents[i]->m_Penetration);
 								glm::vec3 pos(m_CollisionEvents[i]->m_Collidable_B->getLocation());
 								m_CollisionEvents[i]->m_Collidable_B->setPosition(pos+correction);
+								m_Audio->Effect(RICOCHET).play(0.1f);
 								//leave a bullet bounce effect
 								tmp->Bounce(normal);
 							}
 							else
 							{
+								m_Audio->Effect(PROJECTILECOLLISION).play(0.1f);
 								tmp->deactivate();
 								//leave a bullet bounce effect
 							}
@@ -525,9 +567,11 @@ void Scene::checkGameConditions()
 						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
 						robot->dealDamage((unsigned int)proj->getDamage());
 						proj->deactivate();
+						m_Audio->Effect(PROJECTILEWITHENEMY).play();
 						//leave bullet death effect in its place
-						if(robot->getHitPoints() == 0)
+						if(robot->getHitPoints() <= 0)
 						{
+							m_Audio->Effect(EXPLOSION).play();
 							//update player score
 							robot->deactivate();
 							m_PlayerScore+=25.0f;
@@ -540,9 +584,11 @@ void Scene::checkGameConditions()
 						Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
 						robot->dealDamage((unsigned int)proj->getDamage());
 						proj->deactivate();
+						m_Audio->Effect(PROJECTILEWITHENEMY).play();
 						//leave bullet death effect in it's place
-						if(robot->getHitPoints() == 0)
+						if(robot->getHitPoints() <= 0)
 						{
+							m_Audio->Effect(EXPLOSION).play();
 							//update player score
 							m_PlayerScore+=25;
 							robot->deactivate();
@@ -560,9 +606,11 @@ void Scene::checkGameConditions()
 							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_B);
 							gen->dealDamage((unsigned int)proj->getDamage());
 							proj->deactivate();
+							m_Audio->Effect(PROJECTILEWITHENEMY).play();
 							//leave bullet death effect in its place
-							if(gen->getHitPoints() == 0)
+							if(gen->getHitPoints() <= 0)
 							{
+								m_Audio->Effect(EXPLOSION).play();
 								//update player score
 								gen->deactivate();
 								m_PlayerScore+=50;
@@ -575,9 +623,11 @@ void Scene::checkGameConditions()
 							gen = dynamic_cast<RobotGenerator*>(m_CollisionEvents[i]->m_Collidable_A);
 							gen->dealDamage((unsigned int)proj->getDamage());
 							proj->deactivate();
+							m_Audio->Effect(PROJECTILEWITHENEMY).play();
 							//leave bullet death effect in it's place
-							if(gen->getHitPoints() == 0)
+							if(gen->getHitPoints() <= 0)
 							{
+								m_Audio->Effect(EXPLOSION).play();
 								//update player score
 								m_PlayerScore+=50.0f;
 								gen->deactivate();
@@ -615,6 +665,7 @@ void Scene::checkGameConditions()
 						{
 							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
 							m_Tank->dealDamage((int)robot->getDamage());
+							m_Audio->Effect(EXPLOSION).play();
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							robot->deactivate();
 						}
@@ -627,7 +678,7 @@ void Scene::checkGameConditions()
 							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_A);
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							m_Tank->dealDamage((int)robot->getDamage());
-
+							m_Audio->Effect(EXPLOSION).play();
 							robot->deactivate();
 						}
 						if(m_CollisionEvents[i]->m_Collidable_A->getType() == ENEMY)
@@ -711,11 +762,16 @@ void Scene::ProcessUserInput()
 		{
 			if(m_Paused)
 			{
+				m_Audio->musicChannel()->setPaused(false);
+				m_Audio->effectChannel()->setPaused(false);
+				
 				m_Paused = false;
 				m_PausePressed = false;
 			}
 			else
 			{
+				m_Audio->musicChannel()->setPaused(true);
+				m_Audio->effectChannel()->setPaused(true);
 				m_Paused = true;
 				m_PausePressed = false;
 			}
@@ -779,6 +835,7 @@ void Scene::ProcessUserInput()
 			ProjectileNode* tmp = m_Tank->getAutoGunProjectile();
 			if(tmp!=nullptr)
 			{
+				m_Audio->Effect(TANKAUTOGUN).play(0.8f);
 				m_Projectiles.push_back(tmp);
 				m_Solver->addProjectile(tmp);
 			}
@@ -798,6 +855,7 @@ void Scene::ProcessUserInput()
 				ProjectileNode* tmp = m_Tank->getMainGunProjectile();
 				if(tmp!=nullptr)
 				{
+					m_Audio->Effect(TANKCANNON).play(0.8f);
 					m_Projectiles.push_front(tmp);
 					m_Solver->addProjectile(tmp);
 				}
@@ -902,6 +960,10 @@ void Scene::render(Renderer* p_Renderer)
 	//draw ui
 	m_Hud->render(p_Renderer);
 	//p_Renderer->endRenderCycle();
+
+	if(!NotificationFactory::m_NotificationList.empty())
+	for(std::list<Notification*>::iterator it = NotificationFactory::m_NotificationList.begin(); it != NotificationFactory::m_NotificationList.end(); it++)
+		(*it)->render(p_Renderer);
 }
 
 void Scene::update(float p_DeltaTimeS)
@@ -927,6 +989,38 @@ void Scene::update(float p_DeltaTimeS)
 					}
 				}
 			}
+
+			if( m_Controller->getButtonState(FORWARD) || 
+				m_Controller->getButtonState(BACKPEDAL) || 
+				m_Controller->getButtonState(STRAFE_L) || 
+				m_Controller->getButtonState(STRAFE_R) )  
+				m_MoveKeyPressed = true; 
+			else 
+				m_MoveKeyPressed = false;
+							
+			if(m_MoveKeyPressed && !movesoundplaying)
+			{				
+				
+				m_Audio->Effect(TANKMOVEMENT).playLooping(0.3f);				
+				movesoundplaying = true;
+			}	
+			if(!m_Tank->isMoving())
+			{
+				m_Audio->Effect(TANKMOVEMENT).Stop();
+				movesoundplaying = false;
+			}
+			
+			if(m_MainFireButtonPressed && !chargesoundplaying)
+			{
+				m_Audio->Effect(WEAPONCHARGE).playLooping(1.0f);
+				chargesoundplaying = true;
+			}
+			
+			if(!m_MainFireButtonPressed || m_Tank->getWeaponChargeLevel() == m_Tank->getMaxWeaponChargeLevel())
+			{
+				m_Audio->Effect(WEAPONCHARGE).Stop();
+				chargesoundplaying = false;
+			}
 			
 			updateGameObjects();
 			checkGameConditions();
@@ -943,6 +1037,21 @@ void Scene::update(float p_DeltaTimeS)
 			m_Hud->setMetricCurrent(SCORE,m_PlayerScore);
 
 		}
+	}
+
+	if(!NotificationFactory::m_NotificationList.empty())
+	{
+		// loop through notifications and check if their duration has timed out, if so erase from list, else update
+		for(std::list<Notification*>::iterator it = NotificationFactory::m_NotificationList.begin(); it != NotificationFactory::m_NotificationList.end();)
+			if ((*it)->timeOut())
+			{
+				it = NotificationFactory::m_NotificationList.erase((it));
+			}
+			else
+			{
+				(*it)->update(m_DeltaTimeSeconds);
+				it++;
+			}		
 	}
 
 }

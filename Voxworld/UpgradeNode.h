@@ -25,6 +25,7 @@ enum MobilityUpgradeType
 	MASSREDUCTION, //temporarily reduces mass which increases responsiveness
 	THRUSTBUFF, //temporarily increases thrust, increasing acceleration and top speed
 };
+class UpgradableTank;
 class UpgradeNode :
 	public CollidableNode
 {
@@ -33,6 +34,7 @@ public:
 	virtual void update(float p_DeltaTimeS);
 	virtual void render(Renderer* p_Renderer);
 	virtual void init()=0;
+	virtual void Collect(UpgradableTank* p_Tank)=0;
 	void setCollected(){m_Collected = true;}
 	bool isCollected(){return m_Collected;}
 	void setLifeTimeS(float p_Seconds){m_Timer = p_Seconds;}

@@ -22,6 +22,12 @@ void Game::init()
 	m_Renderer = new DeferredRenderer(800,600);
 	m_Renderer->init();
 	m_Window = m_Renderer->getWindow();
+	//initialise asset system
+	m_AssetManager = new AssetManager();
+	Locator::provide(m_AssetManager->getAudioSystem());
+	//initialise notifications
+	m_NotificationSystem = new NotificationFactory();
+	m_NotificationSystem->init();
 	//initialise the stored pointers
 	m_IntroMode = new IntroGameMode();
 	m_MainMode = new MainGameMode();
@@ -92,6 +98,9 @@ void Game::Run()
 			//block.renderer = m_Renderer;
 			//m_RenderThread= SDL_CreateThread(RenderScene,"render thread",&m_Renderer);
 			m_CurrentMode->update(deltaTimeS);
+			//update asset system (used for updating fmod)
+			m_AssetManager->updateSubSystems();
+
 			//SDL_WaitThread(m_RenderThread,&num);	
 			//	and draw the resultant changes.
 
@@ -115,6 +124,8 @@ Game::~Game(void)
 	delete m_MainMode;
 	delete m_CreditsMode;
 	//delete m_ShopMode;
+	delete m_AssetManager;
+	delete m_NotificationSystem;
 	m_Window = nullptr;
 	delete m_Renderer;
 	printf("destroy game \n");

@@ -1,5 +1,5 @@
 #pragma once
-class I_Audio;
+#include "I_Audio.h"
 class I_MeshManager;
 class I_TextureManager;
 

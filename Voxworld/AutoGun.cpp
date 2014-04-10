@@ -28,7 +28,7 @@ ProjectileNode* AutoGun::getProjectile()
 				v_Instance->setBoundaryType(CIRCLE);
 				v_Instance->setProjectileType(DEFAULT_SECONDARY);
 				v_Instance->setType(PROJECTILE);
-				v_Instance->setRadius(1.0f);
+				v_Instance->setRadius(2.0f);
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(10.0f);
 			}

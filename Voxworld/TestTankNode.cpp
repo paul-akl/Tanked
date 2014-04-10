@@ -106,7 +106,7 @@ void TestTankNode::rotateTurret(const float p_Rotation)
 }
 void TestTankNode::moveForward(float p_DeltaTimeS)
 {
-	m_TargetOrientation = m_Turret->getOrientation()+180.0f;
+	m_TargetOrientation = m_Turret->getOrientation();
 	//perform a quick conversion to radians and calculate direction of acceleration
 	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
 	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
@@ -121,7 +121,7 @@ void TestTankNode::moveForward(float p_DeltaTimeS)
 }
 void TestTankNode::moveBack(float p_DeltaTimeS)
 {
-	m_TargetOrientation = m_Turret->getOrientation();
+	m_TargetOrientation = m_Turret->getOrientation()+180.0f;
 	//perform a quick conversion to radians and calculate direction of acceleration
 	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
 	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
@@ -133,7 +133,7 @@ void TestTankNode::moveBack(float p_DeltaTimeS)
 }
 void TestTankNode::moveLeft(float p_DeltaTimeS)
 {
-	m_TargetOrientation = m_Turret->getOrientation()+270.0f;
+	m_TargetOrientation = m_Turret->getOrientation()+90.0f;
 	//perform a quick conversion to radians and calculate direction of acceleration
 	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
 	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
@@ -145,7 +145,7 @@ void TestTankNode::moveLeft(float p_DeltaTimeS)
 }
 void TestTankNode::moveRight(float p_DeltaTimeS)
 {
-	m_TargetOrientation = m_Turret->getOrientation()+90.0f;
+	m_TargetOrientation = m_Turret->getOrientation()-90.0f;
 	//perform a quick conversion to radians and calculate direction of acceleration
 	float v_OrientationRad = m_TargetOrientation*(PI/180.0f);
 	glm::vec3 v_AccelerationDir = glm::normalize(glm::vec3(glm::sin(v_OrientationRad),0.0f,glm::cos(v_OrientationRad)));
@@ -254,7 +254,7 @@ void TestTankNode::update(float p_DeltaTimeS)
 	m_LocalTransform->reset();
 	m_LocalTransform->translate(m_Position+glm::vec3(0.0,5.0f,0.0));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0f,0.0));
-	m_LocalTransform->scale(glm::vec3(1.0f));
+	m_LocalTransform->scale(glm::vec3(0.8f));
 	//then do default behaviour
 	SceneNode::update(p_DeltaTimeS);
 	//update light transforms

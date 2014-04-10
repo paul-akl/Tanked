@@ -4,7 +4,7 @@
 
 TurretNode::TurretNode(void)
 {
-	m_MuzzleOffset = glm::vec3(0.0f,3.0f,0.0f);
+	m_MuzzleOffset = glm::vec3(0.0f,60.0f,0.0f);
 	m_SearchLightOffset = glm::vec3(4.0f,3.0f,0.0f);
 	m_SearchLight = nullptr;
 }
@@ -37,9 +37,13 @@ void TurretNode::update(float p_DeltaTimeS)
 	}
 	//update local transform
 	m_LocalTransform->reset();
+	//m_LocalTransform->translate(-m_Position);
+
 	m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0,1.0,0.0));
 	m_LocalTransform->translate(m_Position);
+
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0,0.0));
+
 	m_LocalTransform->scale(glm::vec3(1.0));
 	//then perform default behaviour
 	SceneNode::update(p_DeltaTimeS);
@@ -80,7 +84,7 @@ ProjectileNode* TurretNode::getAutoGunProjectile()
 		//temp->setParent(m_Parent);
 		temp->setOrientation(m_OrientationDeg);
 		glm::vec3 offset(glm::normalize(temp->getVelocity()));
-		temp->setPosition(m_Parent->getLocation()+offset*10.0f);
+		temp->setPosition(m_Parent->getLocation()+offset*5.0f);
 		temp->setDamageMultiplier(1.0f);
 	}
 	return temp;
@@ -93,7 +97,7 @@ ProjectileNode* TurretNode::getMainGunProjectile()
 		ProjectileNode* temp = m_MainGunUpgrades.top()->getProjectile();
 		temp->setOrientation(m_OrientationDeg);
 		glm::vec3 offset(glm::normalize(temp->getVelocity()));
-		temp->setPosition(m_Parent->getLocation()+offset*10.0f);
+		temp->setPosition(m_Parent->getLocation()+offset*5.0f);
 
 		return temp;
 	}

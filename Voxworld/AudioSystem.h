@@ -1,55 +1,47 @@
 #pragma once
-#include <fmod.hpp>
-#include <fmod_errors.h>
+
 #include <iostream>
 #include <vector>
-enum MAX_CHANNELS {CHANNELS = 10};
+#include <map>
+#include <unordered_map>
+#include "I_Audio.h"
 
-enum GameSounds
-{
-	BackgroundMusic = 0,
-	PrimaryFire,
-	SecondaryFire,
-	TankMovement
+class Sound;
+class MusicTrack;
 
-};
-
-struct Sound
-{
-	FMOD::Sound* sound;
-	FMOD::Channel * channel;
-	bool isEffect;
-	bool looping;
-	bool isLooping;
-};
-class AudioSystem
+class AudioSystem : public I_Audio
 {
 public:
 	AudioSystem(void);
 	~AudioSystem(void);
 	int Init();
-	void PlaySound(Sound sound);
-	Sound GetSound(GameSounds i) { return m_SoundList[i];}
-	void setLooping(GameSounds sound, bool loop){m_SoundList[sound].looping = loop;}
-	void Update();
+	FMOD::System* getSystem(){return m_System;}
+	virtual void loadSound(FMOD::System* system, const char* filepath, GameSounds refName);
+	virtual void loadMusicTrack(FMOD::System* system, const char* filepath, GameSounds refName);
+	virtual void setMusicVolume(float volume);
+	virtual void setEffectsVolume(float volume);
+	virtual FMOD::ChannelGroup* effectChannel(){return m_EffectsChannel;}
+	virtual FMOD::ChannelGroup* musicChannel(){return m_MusicChannel;}
+	virtual Sound& Effect(GameSounds refName){return *effect[refName];}
+	virtual MusicTrack& Music(GameSounds refName){return *music[refName];}
+	
+	virtual void Update();
 
 private:
 	static bool m_Instantiated;
 	void SetupChannels();
 	void ErrorCheck(FMOD_RESULT result);
 	void InitializeSounds();
-	void LoadSound(const char fileName, FMOD::Sound * nsound);
 	bool playing;
-	//FMOD::Sound *sound;
 	FMOD::System * m_System;
 	FMOD_RESULT m_Result;
 	FMOD::Channel * m_BGMChannel;
 	FMOD::Channel * m_SoundChannel;
 	FMOD::ChannelGroup * m_MusicChannel;
 	FMOD::ChannelGroup * m_EffectsChannel;
-	FMOD::Channel* m_Channels[CHANNELS];
-	Sound m_Sound;
 	std::vector<Sound> m_SoundList;
+	std::vector<MusicTrack> m_MusicList;
+	std::unordered_map<GameSounds,Sound*> effect;
+	std::unordered_map<GameSounds,MusicTrack*> music;
+	
 };
-
-bool AudioSystem::m_Instantiated = false;

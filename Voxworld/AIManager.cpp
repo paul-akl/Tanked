@@ -121,7 +121,7 @@ void AIManager::doBehaviour(EnemyNode *p_Enemy)
 						//printf("next cell: %f:%f\n",pos.x,pos.y);
 						glm::vec3 moveTo = m_maze->getCellPosition(pos);
 						//printf("enemyUpdated\n ");
-
+						p_Enemy->setTargetPosition(moveTo);
 						p_Enemy->setMovementTarget(moveTo);
 						p_Enemy->setState(HostileStatus);
 				}
@@ -148,7 +148,7 @@ void AIManager::doBehaviour(EnemyNode *p_Enemy)
 				//printf("next cell: %f:%f\n",pos.x,pos.y);
 				glm::vec3 moveTo = m_maze->getCellPosition(pos);
 				//printf("enemyUpdated\n ");
-
+				p_Enemy->setTargetPosition(moveTo);
 				p_Enemy->setMovementTarget(moveTo);
 				p_Enemy->setState(HostileStatus);
 
@@ -186,20 +186,17 @@ bool AIManager::isPlayerVisible(EnemyNode *p_Enemy)
 	//set increment at player radius
 	//for each increment of player radius
 	glm::vec3 rayDir = ray / m_player->getBoundingRadius();
-	for (int i = 0; i < (int)p_Enemy->getDetectionRadius(); i++)
+	if(glm::length(ray)<=p_Enemy->getDetectionRadius())
 	{
-		glm::vec3 position = p_Enemy->getLocation()+rayDir*(float)i;
-		if(m_maze->isOk(m_maze->getGridCell(position)))
+		for (int i = 0; i < (int)p_Enemy->getDetectionRadius(); i++)
 		{
-			//if ray lead position intersects player, visibility is true
-			if (glm::length(m_player->getLocation()-position) < m_player->getBoundingRadius())
+			glm::vec3 position = p_Enemy->getLocation()+rayDir*(float)i;
+			if(!m_maze->isOk(m_maze->getGridCell(position)))
 			{
-				return true;
+				return false;
 			}
 		}
-		//if ray collides with a wall cell, then visibility is negative
-		else
-			return false;
+		return true;
 	}
 	return false;
 	//if loop concludes return false

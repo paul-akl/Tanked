@@ -14,49 +14,7 @@ RobotHead::RobotHead(void)
 
 void RobotHead::update(float p_DeltaTimeS)
 {
-	//normalize target orientation, if needed
-	if(m_TargetOrientation >= 360.0f)
-	{
-		m_TargetOrientation-=360.0f;
-	}
-	else if(m_TargetOrientation < 0.0f)
-	{
-		m_TargetOrientation=360.0f+m_TargetOrientation;
-	}
-	//normalize current orientation if needed
-	if(m_OrientationDeg >= 360.0f)
-	{
-		m_OrientationDeg-=360.0f;
-	}
-	else if(m_OrientationDeg < 0.0f)
-	{
-		m_OrientationDeg=360.0f+m_OrientationDeg;
-	}
-	if(m_TargetOrientation!=m_OrientationDeg)
-	{
-		if(abs(m_TargetOrientation-m_OrientationDeg)<5.5f)
-		{
-			m_OrientationDeg = m_TargetOrientation;
-			m_Turning = false;
-		}
-		else
-		{
-			m_Turning = true;
-			float deltaAngle = m_TargetOrientation-m_OrientationDeg;
-			//if theta is greater than 180 degrees, then make a small adjustment, to make deltaAngle relative to zero
-			//(make deltaAngle either positive or negative
-			if (abs(deltaAngle) > 180.0f)
-				deltaAngle += deltaAngle > 0? -360.0f:360.0f;
-			if(deltaAngle > 0)
-			{
-				turnLeft(p_DeltaTimeS);
-			}
-			else if(deltaAngle < 0)
-			{
-				turnRight(p_DeltaTimeS);
-			}
-		}
-	}
+
 
 	m_LocalTransform->reset();
 	m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0,1.0,0.0));
@@ -83,8 +41,11 @@ void RobotHead::turnRight(float p_DeltaTimeS)
 }
 void RobotHead::LookAt(const glm::vec3 p_Target)
 {
-	m_TargetOrientation = (atan2(p_Target.z,p_Target.x)*RAD_TO_DEG);
-	m_Turning = true;
+	m_OrientationDeg = (atan2(p_Target.z,p_Target.x));
+}
+void RobotHead::rotate(float p_Rotation)
+{
+	m_TargetOrientation += p_Rotation;
 }
 void RobotHead::render(Renderer* p_Renderer)
 {

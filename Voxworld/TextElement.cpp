@@ -22,6 +22,11 @@ void TextElement::init()
 
 }
 
+void TextElement::createStaticText()
+{
+	m_Diffuse->setTexture(Utils::GeneralUtils::textToTexture(m_Diffuse->getTexture(),m_CurrentText.c_str(), m_CurrentFont, m_Colour));
+}
+
 void TextElement::update(float p_DeltaTimeS)
 {
 	//if(needsUpdate)

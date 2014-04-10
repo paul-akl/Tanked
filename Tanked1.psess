@@ -36,7 +36,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <ProjBinary>
-      <Path>Debug\Tanked.exe</Path>
+      <Path>Release\Tanked.exe</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>true</Sample>
@@ -48,7 +48,7 @@
       <LaunchProject>true</LaunchProject>
       <OverrideProjectSettings>false</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
-      <ExecutablePath>Debug\Tanked.exe</ExecutablePath>
+      <ExecutablePath>Release\Tanked.exe</ExecutablePath>
       <StartupDirectory>Voxworld\</StartupDirectory>
       <Arguments>
       </Arguments>
@@ -67,6 +67,11 @@
       <ProjName>Tanked</ProjName>
     </ProjBinary>
   </Binaries>
+  <Reports>
+    <Report>
+      <Path>Tanked140408.vsp</Path>
+    </Report>
+  </Reports>
   <Launches>
     <ProjBinary>
       <Path>:PB:{26362F5F-E30D-418B-BCC7-885ECF0865B2}|Voxworld\Voxworld.vcxproj</Path>

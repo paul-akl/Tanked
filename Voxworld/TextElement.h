@@ -13,6 +13,7 @@ public:
 	void setText(std::string text){m_CurrentText = text;}
 	void setFont(TTF_Font * font){m_CurrentFont = font;}
 	TTF_Font* getFont(){return m_CurrentFont;}
+	void createStaticText();
 	void setTextColour(glm::vec4 colour){m_Colour = colour;}
 	virtual void init();
 	virtual void update(float p_DeltaTimeS);
