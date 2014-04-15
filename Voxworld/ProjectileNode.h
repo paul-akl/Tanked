@@ -1,5 +1,6 @@
 #pragma once
 #include "collidablenode.h"
+#include "LightNode.h"
 enum ProjectileType
 {
 	DEFAULT_MAIN,
@@ -24,6 +25,7 @@ public:
 	float getLifeTimeS(){return m_MaxLifeTime;}
 	float getTimeToLive(){return m_Timer;}
 	float getDamage(){return m_BaseDamage*m_DamageMultiplier;}
+	void addLight(LightNode* p_Light);
 	//used for when a projectile hits something.
 	//Effect* getCollisionEffect();
 	void setOrientation(const float p_OrientationDeg);
@@ -40,5 +42,6 @@ protected:
 	float m_DamageMultiplier;
 	float m_VelocityScalar;
 	ProjectileType m_ProjectileType;
+	LightNode* m_Light;
 };
 

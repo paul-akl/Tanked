@@ -28,11 +28,12 @@ public:
 	float getAttenConstant()	{ return m_BaseData.m_Attenuation.m_Constant;	}
 	float getAttenLinear()		{ return m_BaseData.m_Attenuation.m_Linear;		}
 	float getAttenQuadratic()	{ return m_BaseData.m_Attenuation.m_Quadratic;	}
-	float getAmbientIntensity()	{ return m_BaseData.m_AmbientI;	}
-	float getDiffuseIntensity()	{ return m_BaseData.m_DiffuseI;	}
-	float getSpecularIntensity(){ return m_BaseData.m_SpecI;	}
-	float getSpecularPower()	{ return m_BaseData.m_SpecP;	}
-	glm::vec3 getColour()		{ return m_BaseData.m_Colour;	}
+	float getAmbientIntensity()	{ return m_BaseData.m_AmbientI;		}
+	float getDiffuseIntensity()	{ return m_BaseData.m_DiffuseI;		}
+	float getSpecularIntensity(){ return m_BaseData.m_SpecI;		}
+	float getSpecularPower()	{ return m_BaseData.m_SpecP;		}
+	glm::mat4 getLightModel()	{ return m_BaseData.m_LightModel;	}
+	glm::vec3 getColour()		{ return m_BaseData.m_Colour;		}
 	glm::vec3 getAttenuation()	{ return glm::vec3(	m_BaseData.m_Attenuation.m_Constant,
 													m_BaseData.m_Attenuation.m_Linear,
 													m_BaseData.m_Attenuation.m_Quadratic ); }

@@ -13,13 +13,6 @@ DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Render
 		m_UI_Phase = false;
 		m_Frustum = new Frustum();
 		m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
-		m_CurrentMesh=0,
-		m_CurrentMeshVerts=0,
-		m_CurrentDiffuse=0,
-		m_CurrentEmissiveMap=0,
-		m_CurrentNormalMap=0,
-		m_CurrentHeightMap=0;
-		m_CurrentBRadius=0.0f;
 }
 
 void DeferredRenderer::begin(void)
@@ -35,8 +28,6 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 {
 	// bind the GBuffer to write to
 	m_GBuffer->enable();
-	//clear the buffer with specified colour
-	glClearColor(0.0f,0.0f,0.0f,1.0f);
 	//clear colour buffer and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_TRIANGLES);
@@ -91,7 +82,7 @@ void DeferredRenderer::end(void)
 	//calculating this within render to gbuffer
 	//glm::mat4 modelview = m_CurrentViewMatrix*m_CurrentModelMatrix;
 	int v_NumMatrices=0;
-	int v_NumTextures=-1;
+	int v_NumTextures=0;
 	//select shader based on v_NumTextures
 
 	for(size_t i = 0; i < 4; i++)
@@ -101,38 +92,35 @@ void DeferredRenderer::end(void)
 		case(true):
 			{
 				v_NumTextures++;
+				switch(i)
+				{
+				case(DIFFUSE):
+					{
+						m_CurrentShader = m_Shaders[DIFFUSE];
+						break;
+					}
+				case(NORMAL):
+					{
+						m_CurrentShader = m_Shaders[NORMAL];
+						break;
+					}
+				case(EMISSIVE):
+					{
+						m_CurrentShader = m_Shaders[EMISSIVE];
+						break;
+					}
+				case(HEIGHT):
+					{
+						m_CurrentShader = m_Shaders[HEIGHT];
+						break;
+					}
+				}
 			}
 		case(false):
 			{
-				continue;
 				break;
 			}
 		}
-	}
-	switch(v_NumTextures)
-	{
-		case(DIFFUSE):
-			{
-				m_CurrentShader = m_Shaders[DIFFUSE];
-				break;
-			}
-		case(EMISSIVE):
-			{
-				m_CurrentShader = m_Shaders[EMISSIVE];
-				break;
-			}
-		case(NORMAL):
-			{
-				m_CurrentShader = m_Shaders[NORMAL];
-				break;
-			}
-		case(HEIGHT):
-			{
-				m_CurrentShader = m_Shaders[HEIGHT];
-				break;
-			}
-		case -1:
-			return;
 	}
 
 	if(!m_UI_Phase)
@@ -148,8 +136,8 @@ void DeferredRenderer::end(void)
 		// may need to add flags
 		v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
 		v_DataSet.NormalMapLocation = m_CurrentNormalMap;
-		v_DataSet.EmissiveMapLocation = m_CurrentEmissiveMap;
-		v_DataSet.HeightMapLocation = m_CurrentHeightMap;
+		v_DataSet.EmissiveMapLocation = m_CurrentSpecMap;
+		v_DataSet.DepthMapLocation = m_CurrentDepthMap;
 		//material
 		//v_DataSet.Material = m_CurrentMaterial;
 		//shader
@@ -197,12 +185,6 @@ void DeferredRenderer::end(void)
 
 	m_Matrices[MODEL] = false;
 	m_Matrices[NORMALMATRIX] = false;
-	m_CurrentMesh=0,
-	m_CurrentMeshVerts=0,
-	m_CurrentDiffuse=0,
-	m_CurrentEmissiveMap=0,
-	m_CurrentNormalMap=0,
-	m_CurrentHeightMap=0;
 }
 //this is called only when every object to be rendered has called its own render function
 void DeferredRenderer::endRenderCycle(void)
@@ -213,11 +195,28 @@ void DeferredRenderer::endRenderCycle(void)
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
 	
+	glEnable(GL_STENCIL_TEST);
+
+	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
+	{
+		stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
+	glDisable(GL_STENCIL_TEST);
+		pointLightPass(m_PointLightList[i]);
+	}/*
+	for(std::vector<SpotLightDataSet>::size_type i = 0; i < m_SpotLightList.size(); i++)
+	{
+		stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
+		spotLightPass(m_SpotLightList[i]);
+	}*/
+	glDisable(GL_STENCIL_TEST);
+
 	finalPass();
 
 	m_DataList.clear();			// Clear current frame data sets, to get ready for the next frame
 	m_CulledList.clear();
 	m_UIDataList.clear();
+	m_PointLightList.clear();
+	m_SpotLightList.clear();
 
 	m_Matrices[VIEW] = false;
 	m_Matrices[PROJECTION] = false;
@@ -255,13 +254,13 @@ void DeferredRenderer::render(TextureNode* p_TextureNode)
 		}
 		case(EMISSIVE):
 		{
-			m_CurrentEmissiveMap = p_TextureNode->getTexture();
+			m_CurrentSpecMap = p_TextureNode->getTexture();
 			m_Textures[EMISSIVE] = true;
 			break;
 		}
 		case(HEIGHT):
 		{
-			m_CurrentHeightMap = p_TextureNode->getTexture();
+			m_CurrentDepthMap = p_TextureNode->getTexture();
 			m_Textures[HEIGHT] = true;
 			break;
 		}
@@ -287,14 +286,16 @@ void DeferredRenderer::render(MaterialNode* p_Material)
 void DeferredRenderer::render(CameraNode* p_CameraNode)
 {
 	p_CameraNode->getViewMatrix(m_CurrentViewMatrix,false);
+	//glm::mat4 view = p_CameraNode->getLocalTransform();
+	m_CameraPosition = p_CameraNode->getLocation();
 	m_Matrices[VIEW] = true;
 }
 void DeferredRenderer::render(LightNode* p_PointLightNode)
 {
-	m_PointLightList.push_back(PointLightDataSet(	
-		p_PointLightNode->getLocation(),		 p_PointLightNode->getColour(),				p_PointLightNode->getAttenuation(),	
-		p_PointLightNode->getAmbientIntensity(), p_PointLightNode->getDiffuseIntensity(),	p_PointLightNode->getSpecularIntensity(), 
-		p_PointLightNode->getSpecularPower() ));
+	m_PointLightList.push_back(PointLightDataSet(
+		p_PointLightNode->getLightModel(),			glm::vec3(p_PointLightNode->getWorldTransform()*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)),		p_PointLightNode->getColour(),				
+		p_PointLightNode->getAttenuation(),			p_PointLightNode->getAmbientIntensity(),	p_PointLightNode->getDiffuseIntensity(),	
+ 		p_PointLightNode->getSpecularIntensity(),	p_PointLightNode->getSpecularPower() ));
 }
 void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 {
@@ -339,12 +340,29 @@ void DeferredRenderer::init(void)
 	}
 	//output version
 	printf((const char*)glGetString(GL_VERSION));
+	
+	// Clear color needs to be black, for light blending
+	glClearColor(0.0f,0.0f,0.0f,1.0f);
 
 	//repeat next 4 lines for each additional shader
 	m_CurrentShader = new Shader();
 	m_CurrentShader->initShader("phong-tex.vert","phong-tex.frag");
 	m_Shaders.push_back(m_CurrentShader);
 	m_CurrentShader = nullptr;
+
+	m_StencilPassShader = new Shader();
+	m_StencilPassShader->initShader("Shaders\\stencilPass.vert", "Shaders\\stencilPass.frag");
+	m_PointLightShader = new PointLightShader();
+	m_PointLightShader->initShader("Shaders\\pointLightPass.vert", "Shaders\\pointLightPass.frag");
+	m_SpotLightShader = new SpotLightShader();
+	m_SpotLightShader->initShader("Shaders\\spotLightPass.vert", "Shaders\\spotLightPass.frag");
+
+	m_PointLightMesh = new MeshNode();
+	m_PointLightMesh->loadModel("Models\\sphere.obj");
+	m_PointLightMesh->setName("PointLight Sphere");
+	m_SpotLightMesh = new MeshNode();
+	m_SpotLightMesh->loadModel("Models\\sphere.obj");
+	m_SpotLightMesh->setName("SpotLight Cone");
 
 	//m_StencilPassShader = new Shader();
 	//m_StencilPassShader->initShader("shaders/stencilPass.vert", "shaders/stencilPass.frag");
@@ -404,7 +422,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		/*if(v_NumTextures > EMISSIVE)
 		{
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D,p_DataList[i].SpecularMapLocation);
+			glBindTexture(GL_TEXTURE_2D,p_DataList[i].EmissiveMapLocation);
 			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"emissiveMap");
 			glUniform1i(textureLocation,EMISSIVE);
 		}
@@ -415,12 +433,12 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"normalMap");
 			glUniform1i(textureLocation,NORMAL);
 		}
-		if(v_NumTextures > DEPTH)
+		if(v_NumTextures > HEIGHT)
 		{
 			glActiveTexture(GL_TEXTURE3);
 			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DepthMapLocation);
 			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"depthMap");
-			glUniform1i(textureLocation,DEPTH);
+			glUniform1i(textureLocation,HEIGHT);
 		}*/
 
 		glBindVertexArray(p_DataList[i].MeshLocation);
@@ -446,7 +464,7 @@ void DeferredRenderer::geometryPass(std::vector<UIDataSet> &p_DataList)
 	glDepthMask(GL_FALSE);			// turn off depth testing as the UI is drawn over everything else
 	glDisable(GL_DEPTH_TEST);		
 	//glDisable(GL_CULL_FACE);
-	//glClear(GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_HEIGHT_BUFFER_BIT);
 	
 	// Pick a shader, and render each data, looping through dataList vector
 	for(unsigned int i=0; i < p_DataList.size(); i++)
@@ -481,9 +499,11 @@ void DeferredRenderer::geometryPass(std::vector<UIDataSet> &p_DataList)
 	glEnable(GL_DEPTH_TEST);		// as this is much like a regular forward render pass
 }
 
-void DeferredRenderer::stencilPass()
+void DeferredRenderer::stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_lightMesh)
 {
 	m_GBuffer->initStencilPass();	// Unbind any buffers
+
+	m_StencilPassShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightModelMat);
 
 	glEnable(GL_DEPTH_TEST);		// Depth test is a primary operation of stencil pass
     glDisable(GL_CULL_FACE);		// We want both faces to be rendered, so it can test if a fragment is inside an object
@@ -496,7 +516,10 @@ void DeferredRenderer::stencilPass()
 																		// So, if a fragment is inside a model, it's stencil value is increased and then kept increased (stencil + 1 - 0 = stencil++)
 																		// If a fragment is in front of the model, increase it's stencil value and then decrease it		(stencil + 1 - 1 = stencil)
 																		// If a fragmant is behind the model, just keep it's stencil value								(stencil + 0 - 0 = stencil)
-
+	
+	glBindVertexArray(p_lightMesh.getMeshLocation());
+	glDrawElements(GL_TRIANGLES, p_lightMesh.getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
+	glBindVertexArray(0);
 	//TODO: set light's position, calculate it's radius and render a sphere using stencil shaders
 }
 void DeferredRenderer::dirLightPass()
@@ -522,14 +545,18 @@ void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 	glBlendFunc(GL_ONE, GL_ONE);
         
 	glEnable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
     glCullFace(GL_FRONT);	// Use face culling, so that a fragment doesn't receive light (and light calculations) for both faces
 							// Cull the front face (and not the back) so that the light will still be calculated even if the camera is inside the sphere
 
 	// TODO: set point light's uniform values, calculate sphere size (based on radius) and render a sphere using point light shader
 
-	m_PointLightShader->enable();
+	//p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
 
-	m_PointLightShader->setModelMatrix(p_lightData.lightModel);
+	m_PointLightShader->enable();
+	//glm::mat4 currentModel = p_lightData.lightModel * glm::vec4(p_lightData.worldPosition,1.0f);
+
+	m_PointLightShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightData.lightModel);
 	m_PointLightShader->setWorldPosition(p_lightData.worldPosition);
 	m_PointLightShader->setColour(p_lightData.colour);
 	m_PointLightShader->setAttenConstant(p_lightData.attenuation.x);
@@ -537,23 +564,22 @@ void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 	m_PointLightShader->setAttenQuadratic(p_lightData.attenuation.z);
 	m_PointLightShader->setAmbientIntensity(p_lightData.ambientI);
 	m_PointLightShader->setDiffuseIntensity(p_lightData.diffuseI);
-	m_PointLightShader->setSpecularIntensity(p_lightData.SpecI);
-	m_PointLightShader->setSpecularPower(p_lightData.SpecP);
-	m_PointLightShader->setCameraWorldPosition(glm::vec3(-m_CurrentViewMatrix[3].x, -m_CurrentViewMatrix[3].y, -m_CurrentViewMatrix[3].z));
+	m_PointLightShader->setSpecularIntensity(0.1f);//p_lightData.SpecI);
+	m_PointLightShader->setSpecularPower(8.0f);//p_lightData.SpecP);
+	m_PointLightShader->setCameraWorldPosition(m_CameraPosition);
+	//m_PointLightShader->setCameraWorldPosition(glm::vec3(m_CurrentViewMatrix[3].x, m_CurrentViewMatrix[3].y, m_CurrentViewMatrix[3].z));
+	//m_PointLightShader->setCameraWorldPosition(glm::vec3(m_CurrentViewMatrix*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
 	m_PointLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
 	
+	glm::vec3 view = glm::vec3(m_CurrentViewMatrix*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
 	m_PointLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
 	m_PointLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
 	m_PointLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
-	
-	//m_PointLightMesh
-	
-	//mesh->getNumverts(); 
-	//mesh->getMeshLocations(); gpu handle
-	//glDrawArrays(handle,numVerts,GL_TRIANGLES);
 
 	glBindVertexArray(m_PointLightMesh->getMeshLocation());
 	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
+	//glDrawElementsBaseVertex(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0, 0);
 	glBindVertexArray(0);
 
     glCullFace(GL_BACK);
@@ -572,9 +598,11 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
+	p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
+
 	m_SpotLightShader->enable();
 
-	m_SpotLightShader->setModelMatrix(p_lightData.lightModel);
+	m_SpotLightShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightData.lightModel);
 	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
 	m_SpotLightShader->setColour(p_lightData.colour);
 	m_SpotLightShader->setAttenConstant(p_lightData.attenuation.x);
@@ -586,7 +614,7 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	m_SpotLightShader->setSpecularPower(p_lightData.SpecP);
 	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
 	m_SpotLightShader->setCutoffAngle(p_lightData.cutoffAngle);
-	m_SpotLightShader->setCameraWorldPosition(glm::vec3(-m_CurrentViewMatrix[3].x, -m_CurrentViewMatrix[3].y, -m_CurrentViewMatrix[3].z));
+	m_SpotLightShader->setCameraWorldPosition(m_CameraPosition);
 	m_SpotLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
 	
 	m_SpotLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());

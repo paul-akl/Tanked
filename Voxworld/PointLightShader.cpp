@@ -3,7 +3,7 @@
 
 PointLightShader::PointLightShader(void)
 {
-
+	m_ShaderLocation = 0;
 }
 
 void PointLightShader::setModelMatrix(glm::mat4& p_ModelMatrix)

@@ -2,6 +2,7 @@
 #include "TransformNode.h"
 #include <sstream>
 #include "ProjectileNode.h"
+#include "LightNode.h"
 
 AutoGun::AutoGun(void)
 {
@@ -30,6 +31,15 @@ ProjectileNode* AutoGun::getProjectile()
 				v_Instance->setType(PROJECTILE);
 				v_Instance->setRadius(2.0f);
 				v_Instance->setBoundingRadius(2.0f);
+				LightNode* light = new LightNode();
+				light->setColour(glm::vec3(0.5f,1.0f,1.0f));
+				light->setAmbientIntensity(0.0f);
+				light->setDiffuseIntensity(1.0f);
+				light->setSpecularIntensity(1.0f);
+				light->setSpecularPower(1.0f);
+				light->setAttenuation(1.0f,0.0f,0.01f);
+				light->setName("BulletLight");
+				v_Instance->addLight(light);
 
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(10.0f);
@@ -112,7 +122,15 @@ void AutoGun::init()
 		temp->setType(PROJECTILE);
 		temp->setRadius(1.5f);
 		temp->setBoundingRadius(1.5f);
-
+		LightNode* light = new LightNode();
+		light->setColour(glm::vec3(1.0f,1.0f,0.5f));
+		light->setAmbientIntensity(0.0f);
+		light->setDiffuseIntensity(1.5f);
+		light->setSpecularIntensity(1.0f);
+		light->setSpecularPower(1.0f);
+		light->setAttenuation(1.0f,0.1f,0.2f);
+		light->setName("BulletLight");
+		temp->addLight(light);
 		temp->setLifeTime(3.0f);
 		temp->setBaseDamage(10.0f);
 		temp->deactivate();

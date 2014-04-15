@@ -38,7 +38,7 @@ vt " + numTiles + ".000000 " + numTiles + ".000000\n\
 vt 0.000000 " + numTiles + ".000000\n\
 vt 0.000000 0.000000\n\
 vt " + numTiles + ".000000 0.000000\n\
-vn -0.000000 1.000000 0.000001\n\
+vn 0.000000 1.000000 0.000000\n\
 s off\n\
 f 1/1/1 2/2/1 3/3/1\n\
 f 4/4/1 1/1/1 3/3/1\n\
@@ -120,8 +120,10 @@ void MeshNode::loadFromMesh(const aiMesh* p_assimpMesh)
 	{
 		m_Vertices.push_back(glm::vec3(p_assimpMesh->mVertices[i].x, p_assimpMesh->mVertices[i].y, p_assimpMesh->mVertices[i].z));
 		m_Normals.push_back(glm::vec3(p_assimpMesh->mNormals[i].x, p_assimpMesh->mNormals[i].y, p_assimpMesh->mNormals[i].z));
-		m_Tangents.push_back(glm::vec3(p_assimpMesh->mTangents[i].x, p_assimpMesh->mTangents[i].y, p_assimpMesh->mTangents[i].z));
-		m_Bitangents.push_back(glm::vec3(p_assimpMesh->mBitangents[i].x, p_assimpMesh->mBitangents[i].y, p_assimpMesh->mBitangents[i].z));
+		if(p_assimpMesh->mTangents != NULL)
+			m_Tangents.push_back(glm::vec3(p_assimpMesh->mTangents[i].x, p_assimpMesh->mTangents[i].y, p_assimpMesh->mTangents[i].z));
+		if(p_assimpMesh->mBitangents != NULL)
+			m_Bitangents.push_back(glm::vec3(p_assimpMesh->mBitangents[i].x, p_assimpMesh->mBitangents[i].y, p_assimpMesh->mBitangents[i].z));
 		if(v_textureCoordsExist)	// Proceed with texture coordinates only if they exsist
 			m_TextureCoordinates.push_back(glm::vec2(p_assimpMesh->mTextureCoords[0][i].x, p_assimpMesh->mTextureCoords[0][i].y));
 	}

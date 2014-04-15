@@ -110,7 +110,7 @@ void GBuffer::initFinalPass()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);				// Set default framebuffer to paste to
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FboHandle);	// Set GBuffer's framebuffer to copy from
-    glReadBuffer(GL_COLOR_ATTACHMENT1);						// Bind final buffer, to copy from
+    glReadBuffer(GL_COLOR_ATTACHMENT4);						// Bind final buffer, to copy from
 	// ^
 	// L <-- FOR DEBUG PURPOSES we are attaching a 1's buffer (diffuse buffer), instead of the 'GL_COLOR_ATTACHMENT4' (final buffer)
 }

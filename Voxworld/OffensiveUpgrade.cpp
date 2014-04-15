@@ -3,6 +3,7 @@
 #include "TextureNode.h"
 #include "TransformNode.h"
 #include <sstream>
+#include "LightNode.h"
 OffensiveUpgrade::OffensiveUpgrade(void)
 {
 	m_NumObjects = 0;
@@ -27,6 +28,15 @@ void OffensiveUpgrade::init()
 		v_Instance->setLifeTime(3.0f);
 		v_Instance->setBaseDamage(50.0f);
 		v_Instance->deactivate();
+		LightNode* light = new LightNode();
+		light->setColour(glm::vec3(1.0f,1.0f,1.0f));
+		light->setAmbientIntensity(0.0f);
+		light->setDiffuseIntensity(1.0f);
+		light->setSpecularIntensity(1.0f);
+		light->setSpecularPower(1.0f);
+		light->setAttenuation(1.0f,0.0f,0.01f);
+		light->setName("BulletLight");
+		v_Instance->addLight(light);
 		m_Projectiles.push_back(v_Instance);
 	}
 }
@@ -76,6 +86,15 @@ ProjectileNode* OffensiveUpgrade::getProjectile()
 				v_Instance->setBoundingRadius(3.0f);
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(50.0f);
+				LightNode* light = new LightNode();
+				light->setColour(glm::vec3(1.0f,1.0f,1.0f));
+				light->setAmbientIntensity(0.0f);
+				light->setDiffuseIntensity(0.5f);
+				light->setSpecularIntensity(1.0f);
+				light->setSpecularPower(1.0f);
+				light->setAttenuation(1.0f,0.0f,0.01f);
+				light->setName("BulletLight");
+				v_Instance->addLight(light);
 			}
 			else
 			{

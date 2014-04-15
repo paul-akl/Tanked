@@ -28,7 +28,7 @@ void UpgradableTank::update(float p_DeltaTimeS)
 	float v_ShieldMaxHitPointsMod=0.0f;
 	float v_MassMod=0.0f;
 	float v_ThrustMod=0.0f;
-
+	
 	//set modifiers
 	std::list<MobilityUpgrade*>::iterator it = m_MobilityUpgrades.begin();
 	std::list<DefensiveUpgrade*>::iterator jt = m_DefensiveUpgrades.begin();

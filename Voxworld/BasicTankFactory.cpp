@@ -4,6 +4,7 @@
 #include "TransformNode.h"
 #include "TestTankNode.h"
 #include "TurretNode.h"
+#include "UpgradableTank.h"
 BasicTankFactory::BasicTankFactory(void)
 {
 	m_NumInstances=0;
@@ -32,16 +33,23 @@ TestTankNode* BasicTankFactory::getTank(void)
 	{
 		//make a tank trannsform node
 		TransformNode* tankTransform = new TransformNode();
+		LightNode* light = new LightNode();
+		light->setColour(glm::vec3(0.5f,0.5f,1.0f));
+		light->setAmbientIntensity(0.0f);
+		light->setDiffuseIntensity(0.5f);
+		light->setSpecularIntensity(1.0f);
+		light->setSpecularPower(1.0f);
+		light->setAttenuation(1.0f,0.0f,0.01f);
+		light->setName("tank Hoverlight");
+		
 		//set it's name
 		tankTransform->setName("tank0transform0");
 		//and set it to identity matrix
 		tankTransform->reset();
 		//instantiate a tank node
-		m_Instance =new TestTankNode();
+		m_Instance =new TestTankNode;
 		//set collidability parameters
 		m_Instance->setRadius(10.0f);
-		m_Instance->setBoundingRadius(10.0f);
-
 		m_Instance->setType(PLAYER);
 		//no heirarchical collision boundaries
 		m_Instance->setRecursive(false);
@@ -57,17 +65,19 @@ TestTankNode* BasicTankFactory::getTank(void)
 		m_Instance->setOrientation(0.0f);
 		m_Instance->setBoundaryType(CIRCLE);
 		m_Instance->setType(PLAYER);
+		m_Instance->setHoverLight(light);
 		//turret factory code
 		TurretNode* turret = new TurretNode();
 		TransformNode* turtrans = new TransformNode();
 		turtrans->reset();
 		turret->addMesh(m_TurretMesh1);
-		turret->setBoundingRadius(10.0f);
 		turret->addTexture(m_BodyDiffuse1);
 		turret->addTransform(turtrans);
 		//turret->setOrientation(180.0f);
+		turret->setBoundingRadius(10.0f);
+		m_Instance->setBoundingRadius(10.0f);
 		turret->setName("turret0");
-		turret->setPosition(glm::vec3(0.0f,0.0f,0.0f));
+		turret->setPosition(glm::vec3(0.0f,1.5f,0.0f));
 		m_Instance->addTurretNode(turret);
 		//end turret factory code
 		m_Instance->setPosition(glm::vec3(1.0,1.0f,1.0f));
@@ -98,8 +108,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 			//instantiate a tank node
 			m_Instance =new TestTankNode();
 			//set collidability parameters
-			m_Instance->setRadius(30.0f);
-			m_Instance->setBoundingRadius(30.0f);
+			m_Instance->setRadius(10.0f);
 			m_Instance->setType(PLAYER);
 			//no heirarchical collision boundaries
 			m_Instance->setRecursive(false);
@@ -118,11 +127,11 @@ TestTankNode* BasicTankFactory::getTank(void)
 			TransformNode* turtrans = new TransformNode();
 			turtrans->reset();
 			turret->addMesh(m_TurretMesh1);
-			turret->addTexture(m_TurretDiffuse1);
+			turret->addTexture(m_BodyDiffuse1);
 			turret->addTransform(turtrans);
-			turret->setOrientation(180.0f);
+			//turret->setOrientation(180.0f);
 			turret->setName("turret0");
-			turret->setPosition(glm::vec3(0.0f,1.5f,-10.0f));
+			turret->setPosition(glm::vec3(0.0f,1.5f,0.0f));
 			m_Instance->addTurretNode(turret);
 			//end turret factory code
 			m_Instance->setPosition(glm::vec3(1.0,1.0f,1.0f));
@@ -139,5 +148,5 @@ BasicTankFactory::~BasicTankFactory(void)
 	}
 	delete m_BodyDiffuse1;
 	delete m_BodyMesh1;
-	delete m_TurretMesh1;
+
 }

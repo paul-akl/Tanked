@@ -48,7 +48,7 @@ public:
 	// Write all the geometry data to different buffers (similar to forward rendering), take the vector of dataSets as a parameter
 	virtual void geometryPass(std::vector<StandardDataSet> &p_DataList);
 	virtual void geometryPass(std::vector<UIDataSet> &p_DataList);
-	virtual void stencilPass();		// Use depth testing to generate stencil buffer
+	virtual void stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_lightMesh);	// Use depth testing to generate stencil buffer
 	virtual void dirLightPass();	// Render a quad (so all the fragments on screen gets affected) for direction light calculations
 	virtual void pointLightPass(PointLightDataSet &p_lightData);	// Render a sphere for each point light
 	virtual void spotLightPass(SpotLightDataSet &p_lightData);		// Render a cone for each spot light
@@ -82,7 +82,8 @@ private:
 			m_UI_Phase;
 	float	m_CurrentBRadius;
 
-	glm::vec3	m_ModelPosition;
+	glm::vec3	m_ModelPosition,
+				m_CameraPosition;
 	glm::mat3	m_NormalMatrix;
 	glm::mat4	m_CurrentViewMatrix,
 				m_CurrentModelMatrix,
@@ -93,9 +94,9 @@ private:
 	GLuint	m_CurrentMesh,
 			m_CurrentMeshVerts,
 			m_CurrentDiffuse,
-			m_CurrentEmissiveMap,
+			m_CurrentSpecMap,
 			m_CurrentNormalMap,
-			m_CurrentHeightMap;
+			m_CurrentDepthMap;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;

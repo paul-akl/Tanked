@@ -37,7 +37,7 @@ struct StandardDataSet
 	GLuint DiffuseMapLocation;
 	GLuint NormalMapLocation;
 	GLuint EmissiveMapLocation;
-	GLuint HeightMapLocation;
+	GLuint DepthMapLocation;
 	Material* Material;
 	Shader* SelectedShader;
 	//non camera related transform matrices
@@ -98,17 +98,19 @@ struct PointLightDataSet
 	float diffuseI;
 	float SpecI;
 	float SpecP;
-	PointLightDataSet(	glm::vec3 p_worldPosition,	glm::vec3 p_colour, 
-						glm::vec3 p_attenuation,	float p_ambientI,	
-						float p_diffuseI,			float p_SpecI,			
-						float p_SpecP):
-						worldPosition(p_worldPosition), colour(p_colour),	ambientI(p_ambientI), 
-						diffuseI(p_diffuseI),			SpecI(p_SpecI),		SpecP(p_SpecP),
-						attenuation(p_attenuation){;}
-	float lightScale()
+	PointLightDataSet(	glm::mat4 p_lightModel,	glm::vec3 p_worldPosition,	
+						glm::vec3 p_colour,		glm::vec3 p_attenuation,	
+						float p_ambientI,		float p_diffuseI,			
+						float p_SpecI,			float p_SpecP):
+						lightModel(p_lightModel),	worldPosition(p_worldPosition), colour(p_colour),	
+						ambientI(p_ambientI),		diffuseI(p_diffuseI),			SpecI(p_SpecI),		
+						SpecP(p_SpecP),				attenuation(p_attenuation){;}
+	glm::vec3 calcLightScale()
 	{
-		float maxChannel = (Utils::GeneralUtils::max(Utils::GeneralUtils::max(colour.r, colour.g), colour.b) * diffuseI);
-		return (3.0f * sqrtf(maxChannel) / attenuation.z);
+		float scale = (Utils::GeneralUtils::max(Utils::GeneralUtils::max(colour.r, colour.g), colour.b) * diffuseI);
+		scale = (3.0f * sqrtf(scale) / attenuation.z);
+		//return glm::vec3(scale, scale, scale);
+		return glm::vec3(5000.0f);
 	}
 };
 struct SpotLightDataSet
@@ -129,10 +131,10 @@ struct SpotLightDataSet
 						worldPosition(p_worldPosition), colour(p_colour),		worldDirection(p_worldDirection),
 						cutoffAngle(p_cutoffAngle),		ambientI(p_ambientI),	diffuseI(p_diffuseI),
 						SpecI(p_SpecI),					SpecP(p_SpecP),			attenuation(p_attenuation){;}
-	float lightScale()
+	glm::vec3 calcLightScale()
 	{
 		//magic number: check later
-		return 4000.0f;
+		return glm::vec3(4000.0f, 4000.0f, 4000.0f);
 	}
 };
 class Renderer

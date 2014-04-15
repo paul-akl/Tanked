@@ -9,6 +9,7 @@ ProjectileNode::ProjectileNode(void)
 	m_ProjectileType = DEFAULT_MAIN;
 	m_VelocityScalar = 75.0f;
 	m_DamageMultiplier = 1.0f;
+	m_Light = nullptr;
 }
 void ProjectileNode::update(float p_DeltaTimeS)
 {
@@ -32,10 +33,20 @@ void ProjectileNode::update(float p_DeltaTimeS)
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(m_Radius));
 	SceneNode::update(p_DeltaTimeS);
+	if(m_Light!=nullptr)
+		m_Light->update(p_DeltaTimeS);
+}
+void ProjectileNode::addLight(LightNode* p_Light)
+{
+	m_Light = p_Light;
+	m_Light->setParent(this);
+	m_Light->setPosition(glm::vec3(0.0f));
 }
 void ProjectileNode::render(Renderer* p_Renderer)
 {
 	SceneNode::render(p_Renderer);
+	if(m_Light!=nullptr)
+		m_Light->render(p_Renderer);
 }
 void ProjectileNode::Bounce(const glm::vec3& p_Normal)
 {

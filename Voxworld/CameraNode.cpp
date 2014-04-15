@@ -37,6 +37,7 @@ void CameraNode::rotateRoll(const float& p_Angle)
 void CameraNode::MoveTo(glm::vec3 p_NewPosition)
 {
 	m_Orientation.m_Position = p_NewPosition;
+
 }
 void CameraNode::moveForward(const float& p_Amount)
 {
@@ -57,6 +58,7 @@ void CameraNode::LookAt(const glm::vec3& p_Point, const float& p_Distance)
 {
 	MoveTo(p_Point);
 	moveForward(p_Distance);
+	m_Position = m_Orientation.m_Position;
 }
 void CameraNode::moveX(const float& p_Amount)
 {
@@ -83,6 +85,7 @@ void CameraNode::update(float p_DeltaTimeMS)
 	m_Right = glm::normalize(	glm::vec3(	sin(m_Orientation.m_YawAngle - 3.141592/2.0f),
 											0.0f,
 											cos(m_Orientation.m_YawAngle - 3.141592/2.0f)));
+	m_Position = m_Orientation.m_Position;
 	//Up direction is only needed for view matrix generation, so no need to calculate it here.
 }
 void CameraNode::render(Renderer* p_Renderer)

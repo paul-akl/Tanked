@@ -21,6 +21,7 @@ TestTankNode::TestTankNode(void)
 	m_ShieldHitPoints = 100.0f;
 	m_ShieldMaxHitPoints = 200.0f;
 	m_ShieldChargeRate = 1.0f;
+	m_HoverLampOffset = glm::vec3(0.0f, 3.0f, 0.0f);
 	m_RHeadLight = nullptr;
 	m_LHeadlight = nullptr;
 	m_HoverLight = nullptr;
@@ -78,7 +79,7 @@ void TestTankNode::addTurretNode(TurretNode* p_Turret)
 }
 void TestTankNode::setHoverLight(LightNode* p_Light)
 {
-	m_HoverLampOffset = glm::vec3(0.0,3.0f,0.0f);
+	m_HoverLampOffset = glm::vec3(0.0,5.0f,0.0f);
 	m_HoverLight = p_Light;
 	m_HoverLight->setParent(this);
 	m_HoverLight->setPosition(m_HoverLampOffset);
@@ -252,9 +253,9 @@ void TestTankNode::update(float p_DeltaTimeS)
 
 	//update local transformation
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position+glm::vec3(0.0,5.0f,0.0));
+	m_LocalTransform->translate(m_Position+glm::vec3(0.0,3.0f,0.0));
 	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0,1.0f,0.0));
-	m_LocalTransform->scale(glm::vec3(0.8f));
+	m_LocalTransform->scale(glm::vec3(1.0f));
 	//then do default behaviour
 	SceneNode::update(p_DeltaTimeS);
 	//update light transforms

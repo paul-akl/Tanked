@@ -6,6 +6,7 @@ uniform mat3 normalMatrix;
 uniform mat4 projection;
 
 layout(location = 0) in vec3 VertexPosition;
+layout(location = 2) in vec3 VertexNormal;
 layout(location = 3) in vec2 TextureCoordinates;
 
 out vec3 worldPos;
