@@ -12,11 +12,27 @@ void WallFactory::init()
 {
 	//sets up uniform data, such as textures and meshes
 	m_WallDiffuse1 =  new TextureNode();
-	m_WallMesh1 = new MeshNode();
 	m_WallDiffuse1->setTextureType(DIFFUSE);
 	m_WallDiffuse1->setName("WallDiffuse0");
-	m_WallMesh1->setName("WallMesh0");
 	m_WallDiffuse1->loadTexture("images/openWallWrap_D.png");
+
+	m_WallNormal1 =  new TextureNode();
+	m_WallNormal1->setTextureType(NORMAL);
+	m_WallNormal1->setName("WallNormal0");
+	m_WallNormal1->loadTexture("images/openWallWrap_N.png");
+
+	m_WallEmissive1 =  new TextureNode();
+	m_WallEmissive1->setTextureType(EMISSIVE);
+	m_WallEmissive1->setName("WallEmissive0");
+	m_WallEmissive1->loadTexture("images/openWallWrap_E.png");
+
+	m_WallHeight1 =  new TextureNode();
+	m_WallHeight1->setTextureType(HEIGHT);
+	m_WallHeight1->setName("WallHeight0");
+	m_WallHeight1->loadTexture("images/openWallWrap_H.png");
+
+	m_WallMesh1 = new MeshNode();
+	m_WallMesh1->setName("WallMesh0");
 	m_WallMesh1->loadModel("models/cube.obj");
 	m_ReusingObject = false;
 }
@@ -71,6 +87,9 @@ WallNode* WallFactory::getInstance()
 		m_NumObjects++;
 		v_WallInstance->addMesh(m_WallMesh1);
 		v_WallInstance->addTexture(m_WallDiffuse1);
+		v_WallInstance->addTexture(m_WallNormal1);
+		v_WallInstance->addTexture(m_WallEmissive1);
+		v_WallInstance->addTexture(m_WallHeight1);
 		v_WallInstance->setType(SCENERY);
 		v_WallInstance->setBoundaryType(AAB);
 		v_WallInstance->activate();

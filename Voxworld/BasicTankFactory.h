@@ -14,10 +14,10 @@ private:
 	static const int m_MaxNumInstances = 1;
 	int m_NumInstances;
 	TestTankNode* m_Instance;
-	TextureNode* m_BodyDiffuse1;
-	TextureNode* m_TurretDiffuse1;
 	MeshNode* m_BodyMesh1;
 	MeshNode* m_TurretMesh1;
-
+	TextureNode		*m_BodyDiffuse1,
+					*m_BodyEmissive1,
+					*m_BodyNormal1;
 };
 

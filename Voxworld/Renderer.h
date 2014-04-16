@@ -11,6 +11,7 @@ class TransformNode;
 class TextureNode;
 class CameraNode;
 class LightNode;
+class SpotLight;
 class MaterialNode;
 class Frustum;
 
@@ -37,7 +38,7 @@ struct StandardDataSet
 	GLuint DiffuseMapLocation;
 	GLuint NormalMapLocation;
 	GLuint EmissiveMapLocation;
-	GLuint DepthMapLocation;
+	GLuint HeightLocation;
 	Material* Material;
 	Shader* SelectedShader;
 	//non camera related transform matrices
@@ -127,10 +128,12 @@ struct SpotLightDataSet
 	float SpecP;
 	SpotLightDataSet(	glm::vec3 p_worldPosition,		glm::vec3 p_colour,		glm::vec3 p_attenuation,
 						glm::vec3 p_worldDirection,		float p_cutoffAngle,	float p_ambientI,	
-						float p_diffuseI,				float p_SpecI,			float p_SpecP):
+						float p_diffuseI,				float p_SpecI,			float p_SpecP,
+						glm::mat4 &p_lightModel):
 						worldPosition(p_worldPosition), colour(p_colour),		worldDirection(p_worldDirection),
 						cutoffAngle(p_cutoffAngle),		ambientI(p_ambientI),	diffuseI(p_diffuseI),
-						SpecI(p_SpecI),					SpecP(p_SpecP),			attenuation(p_attenuation){;}
+						SpecI(p_SpecI),					SpecP(p_SpecP),			attenuation(p_attenuation),
+						lightModel(p_lightModel){;}
 	glm::vec3 calcLightScale()
 	{
 		//magic number: check later
@@ -153,6 +156,7 @@ public:
 	virtual void render(TextureNode* p_TextureNode)=0;
 	virtual void render(CameraNode* p_CameraNode)=0;
 	virtual void render(LightNode* p_LightNode)=0;
+	virtual void render(SpotLight* p_LightNode)=0;
 	virtual void render(MaterialNode* p_Material)=0;
 	virtual void setTransparencyMode(const bool p_Transparency)=0;
 	virtual void updateViewFrustum() = 0;

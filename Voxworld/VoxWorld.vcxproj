@@ -184,6 +184,8 @@
     <None Include="shaders\geometryPass.vert" />
     <None Include="shaders\pointLightPass.frag" />
     <None Include="shaders\pointLightPass.vert" />
+    <None Include="shaders\spotLightPass.frag" />
+    <None Include="shaders\spotLightPass.vert" />
     <None Include="shaders\stencilPass.frag" />
     <None Include="shaders\stencilPass.vert" />
   </ItemGroup>

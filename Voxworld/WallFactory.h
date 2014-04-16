@@ -19,7 +19,10 @@ protected:
 	static const int m_MaxWallSegments = 512;
 	WallNode* getInstanceFromPool();
 	std::vector<WallNode*> m_WallSegments;
-	TextureNode* m_WallDiffuse1;
+	TextureNode	*m_WallDiffuse1,
+				*m_WallNormal1,
+				*m_WallEmissive1,
+				*m_WallHeight1;
 	MeshNode* m_WallMesh1;
 	bool m_ReusingObject;
 	int m_NumObjects;

@@ -7,6 +7,7 @@
 #include "GeneralUtils.h"
 #include "Shader.h"
 #include "Frustum.h"
+#include "SpotLight.h"
 
 DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Renderer(p_WindowWidth, p_WindowHeight)
 {
@@ -85,44 +86,6 @@ void DeferredRenderer::end(void)
 	int v_NumTextures=0;
 	//select shader based on v_NumTextures
 
-	for(size_t i = 0; i < 4; i++)
-	{
-		switch(m_Textures[i])
-		{
-		case(true):
-			{
-				v_NumTextures++;
-				switch(i)
-				{
-				case(DIFFUSE):
-					{
-						m_CurrentShader = m_Shaders[DIFFUSE];
-						break;
-					}
-				case(NORMAL):
-					{
-						m_CurrentShader = m_Shaders[NORMAL];
-						break;
-					}
-				case(EMISSIVE):
-					{
-						m_CurrentShader = m_Shaders[EMISSIVE];
-						break;
-					}
-				case(HEIGHT):
-					{
-						m_CurrentShader = m_Shaders[HEIGHT];
-						break;
-					}
-				}
-			}
-		case(false):
-			{
-				break;
-			}
-		}
-	}
-
 	if(!m_UI_Phase)
 	{
 		//Create Standard data set
@@ -134,10 +97,26 @@ void DeferredRenderer::end(void)
 		v_DataSet.MeshVertCount = m_CurrentMeshVerts;
 		//texture locations
 		// may need to add flags
-		v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
-		v_DataSet.NormalMapLocation = m_CurrentNormalMap;
-		v_DataSet.EmissiveMapLocation = m_CurrentSpecMap;
-		v_DataSet.DepthMapLocation = m_CurrentDepthMap;
+		if(m_CurrentDiffuse != 0)
+			v_DataSet.DiffuseMapLocation = m_CurrentDiffuse;
+		else
+			v_DataSet.DiffuseMapLocation = m_DiffuseTexture->getTexture();
+
+		if(m_CurrentNormalMap != 0)
+			v_DataSet.NormalMapLocation = m_CurrentNormalMap;
+		else
+			v_DataSet.NormalMapLocation = m_NormalTexture->getTexture();
+
+		if(m_CurrentEmissiveMap != 0)
+			v_DataSet.EmissiveMapLocation = m_CurrentEmissiveMap;
+		else
+			v_DataSet.EmissiveMapLocation = m_BlackTexture->getTexture();
+
+		if(m_CurrentHeightMap != 0)
+			v_DataSet.HeightLocation = m_CurrentHeightMap;
+		else
+			v_DataSet.HeightLocation = m_WhiteTexture->getTexture();
+
 		//material
 		//v_DataSet.Material = m_CurrentMaterial;
 		//shader
@@ -185,6 +164,10 @@ void DeferredRenderer::end(void)
 
 	m_Matrices[MODEL] = false;
 	m_Matrices[NORMALMATRIX] = false;
+	m_CurrentDiffuse	 = 0;
+	m_CurrentNormalMap	 = 0;
+	m_CurrentEmissiveMap = 0;
+	m_CurrentHeightMap	 = 0;
 }
 //this is called only when every object to be rendered has called its own render function
 void DeferredRenderer::endRenderCycle(void)
@@ -200,14 +183,15 @@ void DeferredRenderer::endRenderCycle(void)
 	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
 	{
 		stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
-	glDisable(GL_STENCIL_TEST);
+		glDisable(GL_STENCIL_TEST);
 		pointLightPass(m_PointLightList[i]);
-	}/*
+	}
 	for(std::vector<SpotLightDataSet>::size_type i = 0; i < m_SpotLightList.size(); i++)
 	{
 		stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
+		glDisable(GL_STENCIL_TEST);
 		spotLightPass(m_SpotLightList[i]);
-	}*/
+	}
 	glDisable(GL_STENCIL_TEST);
 
 	finalPass();
@@ -254,13 +238,13 @@ void DeferredRenderer::render(TextureNode* p_TextureNode)
 		}
 		case(EMISSIVE):
 		{
-			m_CurrentSpecMap = p_TextureNode->getTexture();
+			m_CurrentEmissiveMap = p_TextureNode->getTexture();
 			m_Textures[EMISSIVE] = true;
 			break;
 		}
 		case(HEIGHT):
 		{
-			m_CurrentDepthMap = p_TextureNode->getTexture();
+			m_CurrentHeightMap = p_TextureNode->getTexture();
 			m_Textures[HEIGHT] = true;
 			break;
 		}
@@ -302,7 +286,8 @@ void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 	m_SpotLightList.push_back(SpotLightDataSet(
 		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),			 p_SpotLightNode->getAttenuation(),
 		p_SpotLightNode->getTransformedDirection(),	p_SpotLightNode->getCutoffAngle(),		 p_SpotLightNode->getAmbientIntensity(),
-		p_SpotLightNode->getDiffuseIntensity(),		p_SpotLightNode->getSpecularIntensity(), p_SpotLightNode->getSpecularPower() ));
+		p_SpotLightNode->getDiffuseIntensity(),		p_SpotLightNode->getSpecularIntensity(), p_SpotLightNode->getSpecularPower(),
+		p_SpotLightNode->getLightModel()	));
 }
 
 SDL_Window* DeferredRenderer::getWindow(void)
@@ -345,9 +330,8 @@ void DeferredRenderer::init(void)
 	glClearColor(0.0f,0.0f,0.0f,1.0f);
 
 	//repeat next 4 lines for each additional shader
-	m_CurrentShader = new Shader();
-	m_CurrentShader->initShader("phong-tex.vert","phong-tex.frag");
-	m_Shaders.push_back(m_CurrentShader);
+	m_GeometryShader = new Shader();
+	m_GeometryShader->initShader("Shaders\\geometryPass.vert","Shaders\\geometryPass.frag");
 	m_CurrentShader = nullptr;
 
 	m_StencilPassShader = new Shader();
@@ -363,6 +347,15 @@ void DeferredRenderer::init(void)
 	m_SpotLightMesh = new MeshNode();
 	m_SpotLightMesh->loadModel("Models\\sphere.obj");
 	m_SpotLightMesh->setName("SpotLight Cone");
+
+	m_DiffuseTexture = new TextureNode();
+	m_DiffuseTexture->loadTexture("images/default.png");
+	m_WhiteTexture = new TextureNode();
+	m_WhiteTexture->loadTexture("images/white.png");
+	m_BlackTexture = new TextureNode();
+	m_BlackTexture->loadTexture("images/black.png");
+	m_NormalTexture = new TextureNode();
+	m_NormalTexture->loadTexture("images/defaultNormal.png");
 
 	//m_StencilPassShader = new Shader();
 	//m_StencilPassShader->initShader("shaders/stencilPass.vert", "shaders/stencilPass.frag");
@@ -386,17 +379,22 @@ void DeferredRenderer::init(void)
 	//initialize the geometry buffer
 	m_GBuffer = new GBuffer(m_ScreenWidth, m_ScreenHeight);
 	m_GBuffer->init();
+
+	m_CurrentShader = m_GeometryShader;
 }
 void DeferredRenderer::shutDown(void)
 {
     SDL_GL_DeleteContext(m_Context);
     SDL_DestroyWindow(m_Window);
-	m_Shaders.clear();
 	m_Lights.clear();
 	m_DataList.clear();
 	m_CulledList.clear();
 	delete m_Frustum;
 	m_Frustum = nullptr;
+	delete m_DiffuseTexture;
+	delete m_WhiteTexture;
+	delete m_BlackTexture;
+	delete m_NormalTexture;
 }
 
 void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
@@ -415,29 +413,20 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		p_DataList[i].SelectedShader->enable();
 
 		//bind any textures, if they are present
-		if(v_NumTextures >= DIFFUSE)
-		{
-			p_DataList[i].SelectedShader->bindTexture(DIFFUSE, p_DataList[i].DiffuseMapLocation);
-		}
-		/*if(v_NumTextures > EMISSIVE)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D,p_DataList[i].EmissiveMapLocation);
-			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"emissiveMap");
-			glUniform1i(textureLocation,EMISSIVE);
-		}
-		if(v_NumTextures > NORMAL)
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D,p_DataList[i].NormalMapLocation);
-			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"normalMap");
-			glUniform1i(textureLocation,NORMAL);
-		}
-		if(v_NumTextures > HEIGHT)
+		glActiveTexture(GL_TEXTURE0 + DIFFUSE);
+		p_DataList[i].SelectedShader->bindTexture(DIFFUSE, p_DataList[i].DiffuseMapLocation);
+
+		glActiveTexture(GL_TEXTURE0 + EMISSIVE);
+		p_DataList[i].SelectedShader->bindTexture(EMISSIVE, p_DataList[i].EmissiveMapLocation);
+
+		glActiveTexture(GL_TEXTURE0 + NORMAL);
+		p_DataList[i].SelectedShader->bindTexture(NORMAL, p_DataList[i].NormalMapLocation);
+
+		/*if(v_NumTextures > HEIGHT)
 		{
 			glActiveTexture(GL_TEXTURE3);
 			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DepthMapLocation);
-			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"depthMap");
+			int textureLocation = glGetUniformLocation(p_DataList[i].SelectedShader->getShaderLocation(),"heightMap");
 			glUniform1i(textureLocation,HEIGHT);
 		}*/
 
@@ -598,12 +587,14 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-	p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
+	//p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
 
 	m_SpotLightShader->enable();
 
 	m_SpotLightShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightData.lightModel);
 	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
+	m_SpotLightShader->setWorldDirection(glm::normalize(p_lightData.worldDirection));
+	//m_SpotLightShader->setWorldDirection(glm::vec3(1.0f, 1.0f, 1.0f));
 	m_SpotLightShader->setColour(p_lightData.colour);
 	m_SpotLightShader->setAttenConstant(p_lightData.attenuation.x);
 	m_SpotLightShader->setAttenLinear(p_lightData.attenuation.y);
@@ -612,8 +603,7 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	m_SpotLightShader->setDiffuseIntensity(p_lightData.diffuseI);
 	m_SpotLightShader->setSpecularIntensity(p_lightData.SpecI);
 	m_SpotLightShader->setSpecularPower(p_lightData.SpecP);
-	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
-	m_SpotLightShader->setCutoffAngle(p_lightData.cutoffAngle);
+	m_SpotLightShader->setCutoffAngle(p_lightData.cutoffAngle * (float)PI / 180.0f);
 	m_SpotLightShader->setCameraWorldPosition(m_CameraPosition);
 	m_SpotLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
 	
@@ -621,8 +611,8 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	m_SpotLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
 	m_SpotLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
 
-	glBindVertexArray(m_SpotLightMesh->getMeshLocation());
-	glDrawElements(GL_TRIANGLES, m_SpotLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
+	glBindVertexArray(m_PointLightMesh->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
 	glBindVertexArray(0);
 
     glCullFace(GL_BACK);

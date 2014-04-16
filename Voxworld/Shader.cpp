@@ -57,6 +57,9 @@ void Shader::getDataHandles(GLuint p_programHandle)
 	m_normalLocation	 = glGetUniformLocation(p_programHandle, "normalMatrix");
 	m_projectionLocation = glGetUniformLocation(p_programHandle, "projection");
 	m_diffuseLocation	 = glGetUniformLocation(p_programHandle, "diffuseMap");
+	m_normalMapLocation	 = glGetUniformLocation(p_programHandle, "normalMap");
+	m_emissiveLocation	 = glGetUniformLocation(p_programHandle, "emissiveMap");
+	m_heightLocation	 = glGetUniformLocation(p_programHandle, "heightMap");
 }
 char* Shader::loadFile(const char* p_FileName, int &p_FileSize)
 {
@@ -149,11 +152,25 @@ void Shader::setNormalMatrix(glm::mat3& p_InvTransposeModelViewMatrix)
 }
 void Shader::bindTexture(TextureType p_type, GLuint p_textureHandle)
 {
-	if(p_type == DIFFUSE)
+	glActiveTexture(GL_TEXTURE0 + p_type);
+	glBindTexture(GL_TEXTURE_2D, p_textureHandle);
+	switch(p_type)
 	{
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, p_textureHandle);
-		glUniform1i(m_diffuseLocation, DIFFUSE);
+		case(DIFFUSE):
+		glUniform1i(m_diffuseLocation, p_type);
+		break;
+
+		case(NORMAL):
+		glUniform1i(m_normalMapLocation, p_type);
+		break;
+
+		case(EMISSIVE):
+		glUniform1i(m_emissiveLocation, p_type);
+		break;
+
+		case(HEIGHT):
+		glUniform1i(m_heightLocation, p_type);
+		break;
 	}
 }
 Shader::~Shader(void)

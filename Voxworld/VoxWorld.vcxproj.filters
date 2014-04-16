@@ -715,6 +715,12 @@
     <None Include="shaders\stencilPass.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
+    <None Include="shaders\spotLightPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\spotLightPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc">

@@ -20,6 +20,10 @@ protected:
 	std::vector<MobilityUpgrade*> m_MobilityUpgrades;
 	static const int MAX_UPGRADES = 10;
 	TextureNode* m_DefaultUpgradeTexture;
+	TextureNode* m_OffensiveEmissive;
+	TextureNode* m_MobilityEmissive;
+	TextureNode* m_DefensiveEmissive;
+	TextureNode* m_UpgradeNormalMap;
 	MeshNode* m_DefaultUpgradeMesh;
 	TextureNode* m_DefensiveDiffuse;
 	TextureNode* m_MobilityDiffuse;

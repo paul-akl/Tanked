@@ -34,7 +34,7 @@ ProjectileNode* AutoGun::getProjectile()
 				LightNode* light = new LightNode();
 				light->setColour(glm::vec3(0.5f,1.0f,1.0f));
 				light->setAmbientIntensity(0.0f);
-				light->setDiffuseIntensity(1.0f);
+				light->setDiffuseIntensity(1.5f);
 				light->setSpecularIntensity(1.0f);
 				light->setSpecularPower(1.0f);
 				light->setAttenuation(1.0f,0.0f,0.01f);

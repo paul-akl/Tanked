@@ -33,10 +33,13 @@ protected:
 	char* loadFile(const char* p_FileName, int &p_FileSize);
 	GLuint m_ShaderLocation;
 
-	GLuint m_modelViewLocation;
-	GLuint m_modelLocation;
-	GLuint m_normalLocation;
-	GLuint m_projectionLocation;
-	GLuint m_diffuseLocation;
+	GLuint	m_modelViewLocation,
+			m_modelLocation,
+			m_normalLocation,
+			m_projectionLocation,
+			m_diffuseLocation,
+			m_normalMapLocation,
+			m_emissiveLocation,
+			m_heightLocation;
 };
 

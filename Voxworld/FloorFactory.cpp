@@ -51,11 +51,22 @@ FloorNode* FloorFactory::getFloorFromPool()
 void FloorFactory::init()
 {
 	//set up our non unique data, such as uniform textures and meshes
-	m_FloorMesh1 = new MeshNode();
 	m_FloorTexture1 = new TextureNode();
 	m_FloorTexture1->setTextureType(DIFFUSE);
-	m_FloorTexture1->loadTexture("images/diamond.jpg");
+	m_FloorTexture1->loadTexture("images/Metal_SciFiDiamondPlate_1k_d.tga");
 	m_FloorTexture1->setName("floor0diffuse0");
+
+	m_FloorNormal = new TextureNode();
+	m_FloorNormal->setTextureType(NORMAL);
+	m_FloorNormal->loadTexture("images/Metal_SciFiDiamondPlate_1k_n.tga");
+	m_FloorNormal->setName("floor0normal0");
+
+	m_FloorHeight = new TextureNode();
+	m_FloorHeight->setTextureType(HEIGHT);
+	m_FloorHeight->loadTexture("images/Metal_SciFiDiamondPlate_1k_h.tga");
+	m_FloorHeight->setName("floor0height0");
+
+	m_FloorMesh1 = new MeshNode();
 	m_FloorMesh1->setName("floor0mesh0");
 	m_FloorMesh1->loadModel("plane.obj");
 }
@@ -84,6 +95,8 @@ FloorNode* FloorFactory::getFloor(int p_numTiles, float p_tileSize)
 		//this might be better to add to the mesh instead of the tank itself.
 			//This way, multiple meshes can be added to a tank.
 		floorInstance->addTexture(m_FloorTexture1);
+		floorInstance->addTexture(m_FloorNormal);
+		floorInstance->addTexture(m_FloorHeight);
 		floorInstance->addMesh(m_FloorMesh1);
 		floorInstance->addTransform(floorTransform);
 		floorInstance->setSize(p_numTiles / 2.0f);

@@ -5,7 +5,7 @@
 TurretNode::TurretNode(void)
 {
 	m_MuzzleOffset = glm::vec3(0.0f,3.0f,0.0f);
-	m_SearchLightOffset = glm::vec3(4.0f,3.0f,0.0f);
+	m_SearchLightOffset = glm::vec3(0.0f,0.0f,0.0f);
 	m_SearchLight = nullptr;
 }
 void TurretNode::render(Renderer *p_Renderer)
@@ -57,7 +57,10 @@ void TurretNode::setSearchLight(SpotLight* p_Light)
 	m_SearchLight = p_Light;
 	m_SearchLight->setPosition(m_SearchLightOffset);
 	m_SearchLight->setParent(this);
-	//m_SearchLight->setOrientation(m_OrientationDeg);
+	float angleRad = PI_OVER180*m_OrientationDeg;
+	glm::vec3 direction = glm::normalize(glm::vec3(std::sin(angleRad),0.0f,std::cos(angleRad)));
+	
+	m_SearchLight->setDirection(direction);
 }
 void TurretNode::rotateTurret(float p_Rotation)
 {

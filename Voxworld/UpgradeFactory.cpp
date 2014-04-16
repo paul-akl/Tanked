@@ -4,6 +4,7 @@
 #include "TransformNode.h"
 #include "AutoGun.h"
 #include <sstream>
+#include "LightNode.h"
 UpgradeFactory::UpgradeFactory(void)
 {
 	m_NumObjects = false;
@@ -21,13 +22,69 @@ void UpgradeFactory::init()
 	m_DefaultProjectileTexture->setName("bulletDefaultTexture");
 	//assets for the upgrade itself
 	m_DefaultUpgradeMesh = new MeshNode();
-	m_DefaultUpgradeMesh->loadModel("models/crate.obj");
+	m_DefaultUpgradeMesh->loadModel("models/LP_crate.obj");
 	m_DefaultUpgradeMesh->setName("defaultupgrademesh");
 
 	m_DefaultUpgradeTexture = new TextureNode();
-	m_DefaultUpgradeTexture->loadTexture("images/ammo.png");
+	m_DefaultUpgradeTexture->loadTexture("images/crate_D.tga");
 	m_DefaultUpgradeTexture->setTextureType(DIFFUSE);
 	m_DefaultUpgradeTexture->setName("defaultupgradetexture");
+	for (int i = 0; i < MAX_UPGRADES; i++)
+	{
+		DefensiveUpgrade* def = new DefensiveUpgrade();
+		TransformNode* trans1 = new TransformNode();
+		trans1->reset();
+		def->addTransform(trans1);
+		def->addMesh(m_DefaultUpgradeMesh);
+		def->addTexture(m_DefaultUpgradeTexture);
+		//def->addTexture(m_DefensiveEmissive);
+		//def->addTexture(m_UpgradeNormalMap);
+		def->setHPBoost(0.25f);
+		def->setMaxHPModifier(0.1f);
+		def->setShieldRechargeRate(0.1f);
+		MobilityUpgrade* mob = new MobilityUpgrade();
+		TransformNode* trans2 = new TransformNode();
+		trans2->reset();
+		mob->addTransform(trans2);
+		mob->addMesh(m_DefaultUpgradeMesh);
+		mob->addTexture(m_DefaultUpgradeTexture);
+		mob->setAeroModifier(0.99f);
+		mob->setMassModifier(0.99f);
+		mob->setThrustModifier(0.1f);
+		//mob->addTexture(m_MobilityEmissive);
+		//mob->addTexture(m_UpgradeNormalMap);
+		m_MobilityUpgrades.push_back(mob);
+		m_DefensiveUpgrades.push_back(def);
+		///////////////////////////////////
+		//create, init and add offensive upgrade types to list
+		//FIRE, ICE, CONCUSSIVE
+	}
+}
+DefensiveUpgrade* UpgradeFactory::getDefensiveUpgrade()
+{
+	for(size_t i = 0; i < m_DefensiveUpgrades.size();i++)
+	{
+		if(!m_DefensiveUpgrades[i]->isActive())
+		{
+			m_DefensiveUpgrades[i]->activate();
+			m_DefensiveUpgrades[i]->setLifeTimeS(10.0f);
+			m_DefensiveUpgrades[i]->activate();
+			return m_DefensiveUpgrades[i];
+		}
+	}
+}
+MobilityUpgrade* UpgradeFactory::getMobilityUpgrade()
+{
+	for(size_t i = 0; i < m_MobilityUpgrades.size();i++)
+	{
+		if(!m_DefensiveUpgrades[i]->isActive())
+		{
+			m_MobilityUpgrades[i]->activate();
+			m_MobilityUpgrades[i]->setLifeTimeS(10.0f);
+			m_MobilityUpgrades[i]->activate();
+			return m_MobilityUpgrades[i];
+		}
+	}
 }
 OffensiveUpgrade* UpgradeFactory::getInstanceFromPool(OffensiveUpgradeType p_Type)
 {
@@ -49,6 +106,10 @@ OffensiveUpgrade* UpgradeFactory::getInstanceFromPool(OffensiveUpgradeType p_Typ
 		{
 			temp = new AutoGun();
 			m_OffensiveUpgrades.push_back(temp);
+		}
+		if(p_Type == FIRE)
+		{
+			
 		}
 		return temp;
 	}

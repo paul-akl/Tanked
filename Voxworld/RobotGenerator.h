@@ -32,7 +32,7 @@ protected:
 	Robot* getRobotFromPool();
 	bool m_Reusing;
 	float m_BaseTimer;
-	static const int MAX_ROBOTS = 1;
+	static const int MAX_ROBOTS = 3;
 	TextureNode* m_DefaultRobotDiffuseTexture;
 	TextureNode* m_DamagedRobotDiffuseTexture;
 	TextureNode* m_DamagedDiffuseTexture;

@@ -16,8 +16,18 @@ void BasicTankFactory::init()
 	m_BodyDiffuse1 = new TextureNode();
 	m_BodyDiffuse1->setTextureType(DIFFUSE);
 	m_BodyDiffuse1->setName("tank0diffuse0");
-	std::string v_FileName = "images/Tank_D.tga";
-	m_BodyDiffuse1->loadTexture(v_FileName);
+	m_BodyDiffuse1->loadTexture("images/Tank_D.tga");
+	
+	m_BodyEmissive1 = new TextureNode();
+	m_BodyEmissive1->setTextureType(EMISSIVE);
+	m_BodyEmissive1->setName("tank0emissive0");
+	m_BodyEmissive1->loadTexture("images/Tank_Glow.tga");
+
+	m_BodyNormal1 = new TextureNode();
+	m_BodyNormal1->setTextureType(NORMAL);
+	m_BodyNormal1->setName("tank0normal0");
+	m_BodyNormal1->loadTexture("images/Tank_N.tga");
+
 	m_BodyMesh1 = new MeshNode();
 	m_BodyMesh1->loadModel("models/Tank_base.obj");
 	//now set up uniform tank mesh and texture
@@ -36,12 +46,19 @@ TestTankNode* BasicTankFactory::getTank(void)
 		LightNode* light = new LightNode();
 		light->setColour(glm::vec3(0.5f,0.5f,1.0f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(0.5f);
-		light->setSpecularIntensity(1.0f);
+		light->setDiffuseIntensity(0.9f);
+		light->setSpecularIntensity(0.75f);
 		light->setSpecularPower(1.0f);
-		light->setAttenuation(1.0f,0.0f,0.01f);
+		light->setAttenuation(1.0f,0.0f,0.1f);
 		light->setName("tank Hoverlight");
-		
+		SpotLight* spot = new SpotLight();
+		spot->setColour(glm::vec3(1.0f));
+		spot->setAmbientIntensity(0.0f);
+		spot->setDiffuseIntensity(1.5f);
+		spot->setSpecularIntensity(0.75f);
+		spot->setSpecularPower(1.0f);
+		spot->setAttenuation(1.0f,0.0f,0.01f);
+		spot->setCutoffAngle(45.0f);
 		//set it's name
 		tankTransform->setName("tank0transform0");
 		//and set it to identity matrix
@@ -61,6 +78,8 @@ TestTankNode* BasicTankFactory::getTank(void)
 		//this might be better to add to the mesh instead of the tank itself.
 		//This way, multiple meshes can be added to a tank.
 		m_Instance->addTexture(m_BodyDiffuse1);
+		m_Instance->addTexture(m_BodyEmissive1);
+		m_Instance->addTexture(m_BodyNormal1);
 		m_Instance->addMesh(m_BodyMesh1);
 		m_Instance->setOrientation(0.0f);
 		m_Instance->setBoundaryType(CIRCLE);
@@ -72,6 +91,9 @@ TestTankNode* BasicTankFactory::getTank(void)
 		turtrans->reset();
 		turret->addMesh(m_TurretMesh1);
 		turret->addTexture(m_BodyDiffuse1);
+		turret->addTexture(m_BodyEmissive1);
+		turret->addTexture(m_BodyNormal1);
+		turret->setSearchLight(spot);
 		turret->addTransform(turtrans);
 		//turret->setOrientation(180.0f);
 		turret->setBoundingRadius(10.0f);

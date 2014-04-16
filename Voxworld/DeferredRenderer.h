@@ -67,13 +67,17 @@ private:
 	RenderMode	 m_CurrentMode;
 
 	std::vector<LightStruct> m_Lights;
-	std::vector<Shader*>	 m_Shaders;
+	Shader					*m_GeometryShader;
 	PointLightShader		*m_PointLightShader;
 	SpotLightShader			*m_SpotLightShader;
 	Shader					*m_CurrentShader,
 							*m_StencilPassShader;
 	MeshNode				*m_PointLightMesh,
 							*m_SpotLightMesh;
+	TextureNode				*m_DiffuseTexture,
+							*m_WhiteTexture,
+							*m_BlackTexture,
+							*m_NormalTexture;
 
 	//status flags, used for shader selection and error checking
 	bool	m_Textures[4],
@@ -94,9 +98,9 @@ private:
 	GLuint	m_CurrentMesh,
 			m_CurrentMeshVerts,
 			m_CurrentDiffuse,
-			m_CurrentSpecMap,
+			m_CurrentEmissiveMap,
 			m_CurrentNormalMap,
-			m_CurrentDepthMap;
+			m_CurrentHeightMap;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;

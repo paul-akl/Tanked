@@ -12,13 +12,16 @@ public:
 	void setMaxHPModifier(float p_MaxHPModifier)				{m_MaxHPModifier=p_MaxHPModifier;}
 	void setShieldRechargeRate(float p_ShieldRechargeRate)		{m_ShieldRechargeRate=p_ShieldRechargeRate;}
 	void setHPBoost(float p_HPBoost)							{m_HPBoost=p_HPBoost;}
+	void setBoostDuration(float p_DurationS)					{m_BoostDurationS = p_DurationS;}
 	float getMaxHPModifier()									{return m_MaxHPModifier;}
 	float getShieldRechargeRate()								{return m_ShieldRechargeRate;}
 	float getHPBoost()											{return m_HPBoost;}
+	float getBoostDuration()									{return m_BoostDurationS;}
 	virtual ~DefensiveUpgrade(void);
 protected:
 	float m_HPBoost;
 	float m_ShieldRechargeRate;
 	float m_MaxHPModifier;
+	float m_BoostDurationS;
 };
 

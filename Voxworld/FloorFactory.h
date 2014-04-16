@@ -16,8 +16,10 @@ protected:
 	static const int m_MaxFloorSegments = 512;
 	FloorNode* getFloorFromPool();
 	std::vector<FloorNode*> m_FloorPool;
-	TextureNode* m_FloorTexture1;
 	MeshNode* m_FloorMesh1;
 	bool m_Reusing;
+	TextureNode		*m_FloorTexture1,
+					*m_FloorNormal,
+					*m_FloorHeight;
 };
 
