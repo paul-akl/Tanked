@@ -24,7 +24,7 @@ uniform sampler2D heightMap;
 void main(void)
 {
 	float height = texture(heightMap, texCoord.st).r;
-	float v = height*0.03-0.015;
+	float v = height*0.04-0.02;
 	vec2 newCoords = texCoord+(eyeDir.xy*v);
 	vec4 emissiveTexture = texture(emissiveMap, newCoords).rgba;
 	if(emissiveTexture.a<0.8)

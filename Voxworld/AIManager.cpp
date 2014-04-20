@@ -182,16 +182,20 @@ bool AIManager::isPlayerVisible(EnemyNode *p_Enemy)
 {
 	//get player & enemy positions
 	glm::vec3 ray = m_player->getLocation() - p_Enemy->getLocation();
+	int range =  (int)p_Enemy->getDetectionRadius();
 	//create ray direction from resulting vector
 	//set increment at player radius
 	//for each increment of player radius
 	glm::vec3 rayDir = ray / m_player->getBoundingRadius();
-	if(glm::length(ray)<=p_Enemy->getDetectionRadius())
+	float distToTarget = glm::length(ray);
+	if(distToTarget<=p_Enemy->getDetectionRadius())
 	{
-		for (int i = 0; i < (int)p_Enemy->getDetectionRadius(); i++)
+
+		for (int i = 0; i <range; i++)
 		{
 			glm::vec3 position = p_Enemy->getLocation()+rayDir*(float)i;
-			if(!m_maze->isOk(m_maze->getGridCell(position)))
+			glm::ivec2 pos = m_maze->getGridCell(position);
+			if(!m_maze->isOk(pos))
 			{
 				return false;
 			}
@@ -275,7 +279,7 @@ void AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPos
 	m_openCoordX[1] = start.x;
 	m_openCoordY[1] = start.y;
 
-	while(NotVisitedListSize!=0)
+	while(NotVisitedListSize>0)
 	{
 		//make the parent = the top of the min heap Not-visited list
 		parentXcoord = m_openCoordX[m_openList[1]];

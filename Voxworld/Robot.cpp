@@ -115,13 +115,22 @@ void Robot::update(float p_DeltaTimeS)
 			// calculate vector from current position to target position
 			// convert vector to angle in degrees
 			// set angle to head
-			if(m_PathChanged)
-			{
-				m_OrientationDeg = acos(m_lookDirection.x)*RAD_TO_DEG;
-				m_OrientationDeg+=180.0f;
+				//m_TargetOrientation = acos(m_lookDirection.x)*RAD_TO_DEG;
+				m_TargetOrientation = atan2(m_lookDirection.x,m_lookDirection.z)*RAD_TO_DEG;
+				m_TargetOrientation+=180.0f;
 				m_Head->setOrientation(m_OrientationDeg);
-
-			}
+				if(abs(m_TargetOrientation-m_OrientationDeg)>5.0f)
+				{
+					//printf("target: %f, current: %f\n", m_TargetOrientation,m_OrientationDeg);
+					if(m_TargetOrientation-m_OrientationDeg < 0.0f)
+					{
+						m_OrientationDeg-=10.0*p_DeltaTimeS;
+					}
+					else
+					{
+						m_OrientationDeg+=10.0*p_DeltaTimeS;
+					}
+				}
 			//m_Head->LookAt(m_movementTarget);
 			glm::vec3 v_AccelerationDir = m_lookDirection;
 			//then calculate acceleration scalar, multiply that by acceleration direction, 
@@ -223,6 +232,10 @@ void Robot::render(Renderer* p_Renderer)
 	{
 		SceneNode::render(p_Renderer);
 	}
+}
+void Robot::reset()
+{
+	update(0.0f);
 }
 Robot::~Robot(void)
 {

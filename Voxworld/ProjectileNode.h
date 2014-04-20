@@ -34,6 +34,7 @@ public:
 	virtual void Bounce(const glm::vec3& p_Normal);
 	const ProjectileType getProjectileType(){return m_ProjectileType;}
 	void setProjectileType(const ProjectileType p_Type){m_ProjectileType=p_Type;}
+	void reset();
 	virtual ~ProjectileNode(void);
 protected:
 	float m_MaxLifeTime;

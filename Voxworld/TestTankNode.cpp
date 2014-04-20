@@ -44,6 +44,7 @@ ProjectileNode* TestTankNode::getMainGunProjectile()
 		}
 
 		m_WeaponChargeLevel = 0.0f;
+		tmp->reset();
 		return tmp;
 	}
 	else
@@ -55,6 +56,10 @@ ProjectileNode* TestTankNode::getMainGunProjectile()
 ProjectileNode* TestTankNode::getAutoGunProjectile()
 {
 	ProjectileNode* tmp = m_Turret->getAutoGunProjectile();
+	if(tmp!=nullptr)
+	{
+		tmp->reset();
+	}
 	return tmp;
 }
 void TestTankNode::AddOffensiveUpgrade(OffensiveUpgrade* p_Upgrade)

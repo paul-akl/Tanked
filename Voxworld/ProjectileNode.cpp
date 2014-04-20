@@ -60,6 +60,10 @@ void ProjectileNode::setOrientation(const float p_OrientationDeg)
 	m_Velocity = glm::vec3(glm::sin((p_OrientationDeg)*(PI_OVER180)),0.0f,glm::cos((p_OrientationDeg)*(PI_OVER180)))*m_VelocityScalar;
 	SceneNode::setOrientation(p_OrientationDeg);
 }
+void ProjectileNode::reset()
+{
+	update(0.0f);
+}
 ProjectileNode::~ProjectileNode(void)
 {
 }

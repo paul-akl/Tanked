@@ -57,11 +57,12 @@ void UpgradeFactory::init()
 		m_DefensiveUpgrades.push_back(def);
 		///////////////////////////////////
 		//create, init and add offensive upgrade types to list
-		//FIRE, ICE, CONCUSSIVE
+		//FIRE
 	}
 }
 DefensiveUpgrade* UpgradeFactory::getDefensiveUpgrade()
 {
+	//TODO: Finish this method
 	for(size_t i = 0; i < m_DefensiveUpgrades.size();i++)
 	{
 		if(!m_DefensiveUpgrades[i]->isActive())
@@ -75,6 +76,7 @@ DefensiveUpgrade* UpgradeFactory::getDefensiveUpgrade()
 }
 MobilityUpgrade* UpgradeFactory::getMobilityUpgrade()
 {
+	//TODO: Finish this method
 	for(size_t i = 0; i < m_MobilityUpgrades.size();i++)
 	{
 		if(!m_DefensiveUpgrades[i]->isActive())
@@ -212,6 +214,8 @@ OffensiveUpgrade* UpgradeFactory::getInstanceFromPool(OffensiveUpgradeType p_Typ
 }
 OffensiveUpgrade* UpgradeFactory::getOffensiveUpgrade(OffensiveUpgradeType p_Type)
 {
+	//TODO: COMPLETE FIRE UPGRADE
+	//UPDATE THIS METHOD TO CREATE FIRE UPGRADES
 	OffensiveUpgrade* v_Upgrade = getInstanceFromPool(p_Type);
 	if(v_Upgrade!=nullptr)
 	{

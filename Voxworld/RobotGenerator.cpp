@@ -109,6 +109,7 @@ Robot* RobotGenerator::getRobot()
 		ss<<getName()<<"Robot"<<m_NumRobots;
 		temp->setName(ss.str());
 		ss.str(std::string());
+		temp->reset();
 	}
 	return temp;
 }

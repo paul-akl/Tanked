@@ -114,7 +114,11 @@ void CollisionSolver::CollideObject(QTNode* p_Node,CollidableNode* p_Collidable,
 					//calculate point of contact and move circle outside collision zone.
 					float ratio = pair->m_Penetration;
 					ratio/=glm::dot(p_Collidable->getVelocity(),pair->m_CollisionNormal);
-					p_Collidable->setPosition(p_Collidable->getLocation()+p_Collidable->getVelocity()*ratio*5.0f);
+					glm::vec3 position = p_Collidable->getLocation();
+					glm::vec3 v = p_Collidable->getVelocity();
+					float x = position.x+v.x*ratio*5.0f;
+					float z = position.z+v.z*ratio*5.0f;
+					p_Collidable->setPosition(glm::vec3(x,0.0f,z));
 					pair->m_CollisionPoint = p_Collidable->getLocation()-pair->m_CollisionNormal*p_Collidable->getRadius();
 					switch(p_Collidable->getType())
 					{

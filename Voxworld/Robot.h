@@ -23,6 +23,7 @@ public:
 	float getDamageMultipler(){return m_DamageMultiplier;}
 	float getMass(){return m_Mass;}
 	int getDamage(){return (int)(m_BaseDamage*(1.0f+m_DamageMultiplier));}
+	void reset();
 	virtual ~Robot(void);
 protected:
 	void turnLeft(float p_DeptaTimeS);
