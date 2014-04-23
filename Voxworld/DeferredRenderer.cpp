@@ -178,6 +178,7 @@ void DeferredRenderer::endRenderCycle(void)
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
 	
+	//blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 1, 0.5f, 0.0f);
 	glEnable(GL_STENCIL_TEST);
 
 	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
@@ -193,6 +194,11 @@ void DeferredRenderer::endRenderCycle(void)
 		spotLightPass(m_SpotLightList[i]);
 	}
 	glDisable(GL_STENCIL_TEST);
+	
+	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 0.6f, -0.1f);
+
+    glCullFace(GL_BACK);
+	glDisable(GL_BLEND);
 
 	finalPass();
 
@@ -334,6 +340,10 @@ void DeferredRenderer::init(void)
 	m_GeometryShader->initShader("Shaders\\geometryPass.vert","Shaders\\geometryPass.frag");
 	m_CurrentShader = nullptr;
 
+	m_BlurVerticalShader = new GaussianBlurShader();
+	m_BlurVerticalShader->initShader("Shaders\\gaussianBlurVertical.vert", "Shaders\\gaussianBlurVertical.frag");
+	m_BlurHorizontalShader = new GaussianBlurShader();
+	m_BlurHorizontalShader->initShader("Shaders\\gaussianBlurHorizontal.vert", "Shaders\\gaussianBlurHorizontal.frag");
 	m_StencilPassShader = new Shader();
 	m_StencilPassShader->initShader("Shaders\\stencilPass.vert", "Shaders\\stencilPass.frag");
 	m_PointLightShader = new PointLightShader();
@@ -341,6 +351,9 @@ void DeferredRenderer::init(void)
 	m_SpotLightShader = new SpotLightShader();
 	m_SpotLightShader->initShader("Shaders\\spotLightPass.vert", "Shaders\\spotLightPass.frag");
 
+	m_FullscrenQuad = new MeshNode();
+	m_FullscrenQuad->loadModel("Models\\quad.obj");
+	m_FullscrenQuad->setName("Fullscreen Quad");
 	m_PointLightMesh = new MeshNode();
 	m_PointLightMesh->loadModel("Models\\sphere.obj");
 	m_PointLightMesh->setName("PointLight Sphere");
@@ -614,9 +627,6 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 	glBindVertexArray(m_PointLightMesh->getMeshLocation());
 	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
 	glBindVertexArray(0);
-
-    glCullFace(GL_BACK);
-	glDisable(GL_BLEND);
 }
 void DeferredRenderer::skyboxPass()
 {
@@ -631,6 +641,52 @@ void DeferredRenderer::finalPass()
 	glBlitFramebuffer(	0, 0, m_ScreenWidth, m_ScreenHeight,									// Copy an area from origini to screen size (full screen area)
 						0, 0, m_ScreenWidth, m_ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);	// and paste it to the same sized full screen area, using 'NEAREST' filter,
 }																								// to avoid any artifacts, since the buffers are same size (pixels are 1 to 1)
+void DeferredRenderer::blurPass(GBuffer::GBufferTextureType p_sourceBuffer, GBuffer::GBufferTextureType p_destinationBuffer, int p_numPasses, float p_initialBlurOffset, float p_progressiveBlurOffset)
+{
+	glDisable(GL_CULL_FACE);
+	glBlendFunc(GL_ONE, GL_ZERO);
+	//glBlendFunc(GL_ONE, GL_ONE);
+	float currentBlurOffset = p_initialBlurOffset;
+	m_BlurHorizontalShader->enable();
+	m_BlurHorizontalShader->setBlurOffset(currentBlurOffset);
+	m_GBuffer->bindForReading(p_sourceBuffer);
+	m_GBuffer->bindForWriting(GBuffer::GBufferBlur);
+
+	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	
+	for(int i = 1; i < p_numPasses; i++)
+	{
+		m_GBuffer->bindForReading(GBuffer::GBufferBlur);
+		m_GBuffer->bindForWriting(p_sourceBuffer);
+		m_BlurVerticalShader->enable();
+		m_BlurVerticalShader->setBlurOffset(currentBlurOffset);
+
+		glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+		glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		
+		currentBlurOffset += p_progressiveBlurOffset;
+		m_GBuffer->bindForReading(p_sourceBuffer);
+		m_GBuffer->bindForWriting(GBuffer::GBufferBlur);
+		m_BlurHorizontalShader->enable();
+		m_BlurHorizontalShader->setBlurOffset(currentBlurOffset);
+
+		glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+		glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+	glBlendFunc(GL_ONE, GL_ONE);
+	m_BlurVerticalShader->enable();
+	m_BlurVerticalShader->setBlurOffset(currentBlurOffset);
+	m_GBuffer->bindForReading(GBuffer::GBufferBlur);
+	m_GBuffer->bindForWriting(p_destinationBuffer);
+
+	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
 
 DeferredRenderer::~DeferredRenderer(void)
 {

@@ -61,7 +61,7 @@ f 4/4/1 1/1/1 3/3/1\n\
 	Assimp::Importer v_assimpImporter;	// Handle for importing the model
 
 	const aiScene* v_assimpScene = v_assimpImporter.ReadFileFromMemory(quadString.c_str(), quadString.size(),
-		aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_SortByPType);
+		aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_GenUVCoords);
 
 	if(!v_assimpScene)	// Check if loading was successful
 	{
@@ -119,7 +119,8 @@ void MeshNode::loadFromMesh(const aiMesh* p_assimpMesh)
 	for(unsigned int i=0; i < p_assimpMesh->mNumVertices; i++)
 	{
 		m_Vertices.push_back(glm::vec3(p_assimpMesh->mVertices[i].x, p_assimpMesh->mVertices[i].y, p_assimpMesh->mVertices[i].z));
-		m_Normals.push_back(glm::vec3(p_assimpMesh->mNormals[i].x, p_assimpMesh->mNormals[i].y, p_assimpMesh->mNormals[i].z));
+		if(p_assimpMesh->mNormals != NULL)
+			m_Normals.push_back(glm::vec3(p_assimpMesh->mNormals[i].x, p_assimpMesh->mNormals[i].y, p_assimpMesh->mNormals[i].z));
 		if(p_assimpMesh->mTangents != NULL)
 			m_Tangents.push_back(glm::vec3(p_assimpMesh->mTangents[i].x, p_assimpMesh->mTangents[i].y, p_assimpMesh->mTangents[i].z));
 		if(p_assimpMesh->mBitangents != NULL)
