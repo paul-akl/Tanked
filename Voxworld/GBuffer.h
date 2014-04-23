@@ -18,7 +18,10 @@ public:
 		GBufferDiffuse,
 		GBufferNormal,
 		GBufferTexCoord,
-		GBufferNumTextures
+		GBufferEmissive,
+		GBufferNumTextures,
+		GBufferFinal = GBufferNumTextures,
+		GBufferBlur
 	};
 
 	GBuffer(int p_WindowWidth, int p_WindowHeight);
@@ -37,14 +40,18 @@ public:
 	virtual void initLightPass();		// Bind buffers from geometry pass so they can be accessed when rendering lights
 	virtual void initFinalPass();		// Bind the final buffer to 'read from' and the default screen buffer to 'write to'
 
-	virtual GLuint getPositionBufferHandle(){		return GBufferPosition;	}
-	virtual GLuint getDiffuseBufferHandle(){		return GBufferDiffuse;	}
-	virtual GLuint getNormalBufferHandle(){			return GBufferNormal;		}
+	virtual GLuint getPositionBufferHandle()	{	return GBufferPosition;	}
+	virtual GLuint getDiffuseBufferHandle()		{	return GBufferDiffuse;	}
+	virtual GLuint getNormalBufferHandle()		{	return GBufferNormal;	}
 	virtual GLuint getTextureCoordBufferHandle(){	return GBufferTexCoord;	}
+
+	virtual void bindForReading(GBufferTextureType p_buffer);
+	virtual void bindForWriting(GBufferTextureType p_buffer);
 
 protected:
 
 GLuint  m_GBTextures[GBufferNumTextures],	// Geometry pass textures
+		m_BlurBuffer,						// Intermediate buffer between vertical and horizontal blur passes
 		m_FinalBuffer;						// Final buffer that gets copied to the screen
 GLenum  m_TexBuffers[GBufferNumTextures];	// Handles for binding geometry buffers
 
