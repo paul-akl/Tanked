@@ -144,7 +144,7 @@ void DeferredRenderer::end(void)
 		//material
 		//v_UIDataSet.Material = m_CurrentMaterial;
 		//shader
-		v_UIDataSet.SelectedShader = m_CurrentShader;
+		v_UIDataSet.SelectedShader = m_UIShader;
 		//non camera related transform matrices
 		v_UIDataSet.ModelMatrix = m_CurrentModelMatrix;
 		v_UIDataSet.viewMatrix = glm::mat4(1.0f);
@@ -176,7 +176,6 @@ void DeferredRenderer::endRenderCycle(void)
 	//somewhere here will be a frustum check
 	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix); 
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
-	geometryPass(m_UIDataList);	// Render geometry of UI objects, pass vector of UI dataSets for current frame
 	
 	//blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 1, 0.5f, 0.0f);
 	glEnable(GL_STENCIL_TEST);
@@ -199,6 +198,8 @@ void DeferredRenderer::endRenderCycle(void)
 
     glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
+
+	UIPass(m_UIDataList);	// Render UI objects, pass vector of UI dataSets for current frame
 
 	finalPass();
 
@@ -336,9 +337,11 @@ void DeferredRenderer::init(void)
 	glClearColor(0.0f,0.0f,0.0f,1.0f);
 
 	//repeat next 4 lines for each additional shader
+	m_CurrentShader = nullptr;
 	m_GeometryShader = new Shader();
 	m_GeometryShader->initShader("Shaders\\geometryPass.vert","Shaders\\geometryPass.frag");
-	m_CurrentShader = nullptr;
+	m_UIShader = new Shader();
+	m_UIShader->initShader("Shaders\\UIPass.vert","Shaders\\UIPass.frag");
 
 	m_BlurVerticalShader = new GaussianBlurShader();
 	m_BlurVerticalShader->initShader("Shaders\\gaussianBlurVertical.vert", "Shaders\\gaussianBlurVertical.frag");
@@ -402,8 +405,22 @@ void DeferredRenderer::shutDown(void)
 	m_Lights.clear();
 	m_DataList.clear();
 	m_CulledList.clear();
+	m_PointLightList.clear();
+	m_SpotLightList.clear();
 	delete m_Frustum;
 	m_Frustum = nullptr;
+	delete m_DiffuseTexture;
+	delete m_WhiteTexture;
+	delete m_BlackTexture;
+	delete m_NormalTexture;
+	delete m_GeometryShader;
+	delete m_UIShader;
+	delete m_PointLightShader;
+	delete m_SpotLightShader;
+	delete m_CurrentShader;
+	delete m_StencilPassShader;
+	delete m_PointLightMesh;
+	delete m_SpotLightMesh;
 	delete m_DiffuseTexture;
 	delete m_WhiteTexture;
 	delete m_BlackTexture;
@@ -458,47 +475,30 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 
 	//glDepthMask(GL_FALSE);
 }
-void DeferredRenderer::geometryPass(std::vector<UIDataSet> &p_DataList)
+void DeferredRenderer::UIPass(std::vector<UIDataSet> &p_DataList)
 {
-	m_GBuffer->initGeometryPass();	// Bind buffers
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_CULL_FACE);
+	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask(GL_FALSE);			// turn off depth testing as the UI is drawn over everything else
-	glDisable(GL_DEPTH_TEST);		
-	//glDisable(GL_CULL_FACE);
-	//glClear(GL_HEIGHT_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 	
 	// Pick a shader, and render each data, looping through dataList vector
-	for(unsigned int i=0; i < p_DataList.size(); i++)
+	for(std::vector<UIDataSet>::size_type i = 0; i < p_DataList.size(); i++)
 	{
-		int v_NumTextures = 0;
 		p_DataList[i].SelectedShader->enable();
 
-		//bind any textures, if they are present
-		if(v_NumTextures >= DIFFUSE)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D,p_DataList[i].DiffuseMapLocation);
-			GLint shaderLocation = p_DataList[i].SelectedShader->getShaderLocation();
-			GLint textureLocation = glGetUniformLocation(shaderLocation,"diffuseMap");
-			glUniform1i(textureLocation,DIFFUSE);
-		}
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D,p_DataList[i].DiffuseMapLocation);
 		
 		glBindVertexArray(p_DataList[i].MeshLocation);
-
 		p_DataList[i].SelectedShader->setModelMatrix(p_DataList[i].ModelMatrix);
 		p_DataList[i].SelectedShader->setProjectionMatrix(p_DataList[i].projectionMatrix);
 		p_DataList[i].SelectedShader->setModelView(p_DataList[i].viewMatrix * p_DataList[i].ModelMatrix);
-
 		glDrawElements(GL_TRIANGLES, p_DataList[i].MeshVertCount, GL_UNSIGNED_INT, 0);	// draw VAO 
-
-		glBindVertexArray(0);
-		//disable shader
-		p_DataList[i].SelectedShader->disable();
 	}
-
-	glDepthMask(GL_TRUE);			// Make sure to turn on depth testing
-	glEnable(GL_DEPTH_TEST);		// as this is much like a regular forward render pass
+	glBindVertexArray(0);
+	glDisable(GL_BLEND);
 }
 
 void DeferredRenderer::stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_lightMesh)
