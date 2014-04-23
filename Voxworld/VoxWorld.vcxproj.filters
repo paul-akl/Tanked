@@ -441,6 +441,9 @@
     <ClCompile Include="Notification.cpp">
       <Filter>Core Engine\UI System</Filter>
     </ClCompile>
+    <ClCompile Include="GaussianBlurShader.cpp">
+      <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -682,6 +685,9 @@
     <ClInclude Include="Notification.h">
       <Filter>Core Engine\UI System</Filter>
     </ClInclude>
+    <ClInclude Include="GaussianBlurShader.h">
+      <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">
@@ -719,6 +725,18 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
     <None Include="shaders\spotLightPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\gaussianBlurHorizontal.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\gaussianBlurHorizontal.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\gaussianBlurVertical.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\gaussianBlurVertical.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
   </ItemGroup>

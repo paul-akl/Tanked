@@ -36,6 +36,7 @@
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMode.cpp" />
+    <ClCompile Include="GaussianBlurShader.cpp" />
     <ClCompile Include="GBuffer.cpp" />
     <ClCompile Include="GeneralUtils.cpp" />
     <ClCompile Include="GeneratorDisplay.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="Frustum.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMode.h" />
+    <ClInclude Include="GaussianBlurShader.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GeneralUtils.h" />
     <ClInclude Include="GeneratorDisplay.h" />
@@ -180,6 +182,10 @@
     <None Include="phong-tex.vert" />
     <None Include="shaders\dirLightPass.frag" />
     <None Include="shaders\dirLightPass.vert" />
+    <None Include="shaders\gaussianBlurHorizontal.frag" />
+    <None Include="shaders\gaussianBlurHorizontal.vert" />
+    <None Include="shaders\gaussianBlurVertical.frag" />
+    <None Include="shaders\gaussianBlurVertical.vert" />
     <None Include="shaders\geometryPass.frag" />
     <None Include="shaders\geometryPass.vert" />
     <None Include="shaders\pointLightPass.frag" />

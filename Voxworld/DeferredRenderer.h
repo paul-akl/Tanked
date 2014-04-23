@@ -9,6 +9,7 @@
 #pragma once
 #include "renderer.h"
 #include "Shader.h"
+#include "GaussianBlurShader.h"
 #include "PointLightShader.h"
 #include "SpotLightShader.h"
 #include "SpotLight.h"
@@ -55,6 +56,7 @@ public:
 	virtual void skyboxPass();		// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
 	virtual void finalPass();		// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
 	virtual void updateViewFrustum(); //update the frustum based on the view and projection matrices
+	virtual void blurPass(GBuffer::GBufferTextureType p_sourceBuffer, GBuffer::GBufferTextureType p_destinationBuffer, int p_numPasses, float p_initialBlurOffset, float p_progressiveBlurOffset);
 
 	virtual Frustum* getFrustum(){return m_Frustum;}
 
@@ -68,11 +70,14 @@ private:
 
 	std::vector<LightStruct> m_Lights;
 	Shader					*m_GeometryShader;
+	GaussianBlurShader		*m_BlurVerticalShader,
+							*m_BlurHorizontalShader;
 	PointLightShader		*m_PointLightShader;
 	SpotLightShader			*m_SpotLightShader;
 	Shader					*m_CurrentShader,
 							*m_StencilPassShader;
-	MeshNode				*m_PointLightMesh,
+	MeshNode				*m_FullscrenQuad,
+							*m_PointLightMesh,
 							*m_SpotLightMesh;
 	TextureNode				*m_DiffuseTexture,
 							*m_WhiteTexture,
