@@ -17,6 +17,7 @@ void OffensiveUpgrade::init()
 		ProjectileNode* v_Instance = new ProjectileNode();
 		v_Instance->addMesh(m_DefaultProjectileMesh);
 		v_Instance->addTexture(m_DefaultProjectileTexture);
+		v_Instance->addTexture(m_DefaultProjEmissiveTexture);
 		TransformNode* tmp = new TransformNode;
 		tmp->setName("ProjectileTransform");
 		v_Instance->addTransform(tmp);

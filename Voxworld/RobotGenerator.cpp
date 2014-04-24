@@ -52,7 +52,8 @@ void RobotGenerator::init()
 		tmp->addLeftArm(getArm(true));
 		tmp->addRightArm(getArm(false));
 		tmp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
-		tmp->setDetectionRadius(200.0f);
+		tmp->setDetectionRadius(400.0f);
+		tmp->setStateTimer(0.1f);
 		m_Robots.push_front(tmp);
 		tmp->deactivate();
 	}

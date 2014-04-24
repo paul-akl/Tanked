@@ -22,6 +22,7 @@ ProjectileNode* AutoGun::getProjectile()
 			{
 				v_Instance->addMesh(m_DefaultProjectileMesh);
 				v_Instance->addTexture(m_DefaultProjectileTexture);
+				v_Instance->addTexture(m_DefaultProjEmissiveTexture);
 				TransformNode* tmp = new TransformNode;
 				tmp->reset();
 				tmp->setName("ProjectileTransform");
@@ -113,6 +114,7 @@ void AutoGun::init()
 		ProjectileNode* temp = new ProjectileNode();
 		temp->addMesh(m_DefaultProjectileMesh);
 		temp->addTexture(m_DefaultProjectileTexture);
+		temp->addTexture(m_DefaultProjEmissiveTexture);
 		TransformNode* tmp = new TransformNode;
 		tmp->reset();
 		tmp->setName("ProjectileTransform");

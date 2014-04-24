@@ -55,6 +55,7 @@ public:
 	void addUpgradeFactory(UpgradeFactory* p_Factory);
 	void addCollisionSolver(CollisionSolver* p_Solver);
 	void addController(Controller* p_Controller);
+	void addRenderer(Renderer* p_Renderer);
 	void addUI(HUD* p_Hud);
 	void nextLevel();
 
@@ -116,6 +117,7 @@ protected:
 	//std::List<DefensiveUpgrade*> m_ShieldBoosts;
 	//std::list<MobilityUpgrade*> m_SpeedBoosts;
 	Controller* m_Controller;
+	Renderer* m_Renderer;
 	CameraNode* m_Camera;	
 	float m_MouseTurnSpeed;
 	float m_MouseAcceleration;

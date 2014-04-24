@@ -13,7 +13,7 @@
   <ItemGroup>
     <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="AStarIterator.cpp" />
+    <ClCompile Include="AStarPool.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="AutoGun.cpp" />
     <ClCompile Include="BasicTankFactory.cpp" />
@@ -95,7 +95,7 @@
   <ItemGroup>
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="AssetManager.h" />
-    <ClInclude Include="AStarIterator.h" />
+    <ClInclude Include="AStarPool.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="AutoGun.h" />
     <ClInclude Include="BasicTankFactory.h" />

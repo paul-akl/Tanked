@@ -18,11 +18,27 @@ int EnemyNode::getState()
 void EnemyNode::setState(int p_EnemyStatus)
 {
 	m_behaviourState = p_EnemyStatus;
-	m_StateTimer = 5.0f;
+}
+void EnemyNode::setStateTimer(float p_TimerS)
+{
+	m_StateTimer = p_TimerS;
+	m_CurrentTimer = p_TimerS;
 }
 float EnemyNode::getDetectionRadius()
 {
 	return m_detectionRadius;
+}
+float EnemyNode::getCurrentTimer()
+{
+	return m_CurrentTimer;
+}
+void EnemyNode::resetTimer()
+{
+	m_CurrentTimer = m_StateTimer;
+}
+std::list<glm::vec3>& EnemyNode::getWayPointList()
+{
+	return m_WayPoints;
 }
 void EnemyNode::setDetectionRadius(float p_Radius)
 {

@@ -26,7 +26,9 @@ void MainGameMode::init(Game& iGame,Renderer* p_Renderer)
 	scene->addWallFactory(new WallFactory());
 	scene->addUpgradeFactory(new UpgradeFactory());
 	scene->addTankFactory(new BasicTankFactory());
+	scene->addRenderer(p_Renderer);
 	scene->init();
+
 	//change controller to game mode
 	m_Controller->setGameMode(true);
 	/*hud = new HUD();
@@ -76,7 +78,7 @@ void MainGameMode::draw(Renderer* p_Renderer)
 	//ideally this will be abstracted away behind p_Renderer->renderScene(SceneNode* p_Scene);
 	//p_Scene will be a root node for the entire level
 	scene->render(p_Renderer);
-	p_Renderer->endRenderCycle();
+	//p_Renderer->endRenderCycle();
 }
 MainGameMode::~MainGameMode(void)
 {
