@@ -17,9 +17,14 @@ void UpgradeFactory::init()
 	m_DefaultProjectileMesh->loadModel("models/capsule.obj");
 	m_DefaultProjectileMesh->setName("bulletDefaultMesh");
 	m_DefaultProjectileTexture =  new TextureNode();
-	m_DefaultProjectileTexture->loadTexture("images/RoboGenDamaged.png");
+	m_DefaultProjectileTexture->loadTexture("images/bullet_D.jpg");
 	m_DefaultProjectileTexture->setTextureType(DIFFUSE);
 	m_DefaultProjectileTexture->setName("bulletDefaultTexture");
+	m_AutoGunProjectileEmissive =  new TextureNode();
+	m_AutoGunProjectileEmissive->loadTexture("images/AutoBullet_E.jpg");
+	m_AutoGunProjectileEmissive->setTextureType(EMISSIVE);
+	m_AutoGunProjectileEmissive->setName("bulletEmissiveTexture");
+
 	//assets for the upgrade itself
 	m_DefaultUpgradeMesh = new MeshNode();
 	m_DefaultUpgradeMesh->loadModel("models/LP_crate.obj");
@@ -232,6 +237,7 @@ OffensiveUpgrade* UpgradeFactory::getOffensiveUpgrade(OffensiveUpgradeType p_Typ
 			tmp->reset();
 			v_Upgrade->addTransform(tmp);
 			v_Upgrade->setProjectileDiffuse(m_DefaultProjectileTexture);
+			v_Upgrade->setDefaultProjEmissiveTexture(m_AutoGunProjectileEmissive);
 			v_Upgrade->setProjectileMesh(m_DefaultProjectileMesh);
 			v_Upgrade->activate();
 			v_Upgrade->setType(COLLECTABLE);
@@ -239,6 +245,7 @@ OffensiveUpgrade* UpgradeFactory::getOffensiveUpgrade(OffensiveUpgradeType p_Typ
 			v_Upgrade->addMesh(m_DefaultUpgradeMesh);
 			v_Upgrade->addTexture(m_DefaultUpgradeTexture);
 			v_Upgrade->setLifeTimeS(30.0f);
+			v_Upgrade->init();
 		}
 		//increment object creation count and set it's unique id, strings are slow, but functional. possible optimisation here.
 		m_NumObjects++;

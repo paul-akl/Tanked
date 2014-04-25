@@ -404,9 +404,6 @@
     <ClCompile Include="SpotLightShader.cpp">
       <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="AStarIterator.cpp">
-      <Filter>Core Engine\AI Manager\Support classes</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Core Engine\Particle System</Filter>
     </ClCompile>
@@ -443,6 +440,9 @@
     </ClCompile>
     <ClCompile Include="GaussianBlurShader.cpp">
       <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="AStarPool.cpp">
+      <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -639,9 +639,6 @@
     <ClInclude Include="SpotLightShader.h">
       <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="AStarIterator.h">
-      <Filter>Core Engine\AI Manager\Support classes</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleSystemFactory.h">
       <Filter>Core Engine\Particle System</Filter>
     </ClInclude>
@@ -687,6 +684,9 @@
     </ClInclude>
     <ClInclude Include="GaussianBlurShader.h">
       <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="AStarPool.h">
+      <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,10 @@
 #include "AIManager.h"
 #include <math.h> 
-#include "AStarIterator.h"
+#include "AStarPool.h"
 #include <list>
+#include <set>
 #include <queue>
+#include <algorithm>
 AIManager::AIManager(void)
 {
 	m_maze = NULL;
@@ -78,87 +80,50 @@ void AIManager::doBehaviour(EnemyNode *p_Enemy)
 	glm::vec3 tPos = m_player->getLocation();
 	p_Enemy->setTargetPosition(tPos);
 	glm::ivec2 pLoc = (glm::ivec2)m_maze->getGridCell(m_player->getLocation());
-
-	if(isPlayerVisible(p_Enemy))
+	if(p_Enemy->getCurrentTimer()<=0.0f)
 	{
-		p_Enemy->setMovementTarget(tPos);
-		p_Enemy->setState(HostileStatus);
-		//printf("target:\n %f:%f\n",tPos.x,tPos.z);
-		//aprintf("Robo pos: %d:%d\n",enemLoc.x,enemLoc.y);
-
-	}
-	else
-	{
-
-		//if enemy has reached movement target
-		if((enemLoc.x == enemMoveLoc.x)&&(enemLoc.y == enemMoveLoc.y))
+		if(isPlayerVisible(p_Enemy))
 		{
-			//if enemy loc matches player loc
-			if(abs((int)enemLoc.x - pLoc.x)<2 && abs((int)enemLoc.y - pLoc.y)<2)
-			{
-				//set direct course for player
-				p_Enemy->setMovementTarget(m_player->getLocation());
-				p_Enemy->setState(HostileStatus);
-				//printf("enemy close: %s\n",p_Enemy->getName().c_str());
-				//printf("Robo pos: %f:%f\n",enemLoc.x,enemLoc.y);
+			p_Enemy->setMovementTarget(tPos);
+			p_Enemy->setState(HostileStatus);
+			p_Enemy->getWayPointList().clear();
+			p_Enemy->getWayPointList().push_front(tPos);
+			//printf("target:\n %f:%f\n",tPos.x,tPos.z);
+			//aprintf("Robo pos: %d:%d\n",enemLoc.x,enemLoc.y);
 
-			}
-			//player not nearby, plot path and take first waypoint
-			else
-			{
-				getNextPathCell(p_Enemy->getLocation(), tPos,m_Path);
-				if(m_Path.size()>0)
-				{
-						//this IF statement is just for testing & should be removed once working
-						//printf("%s\n",p_Enemy->getName().c_str());
-						//printf("target: %f:%f\n",tPos.x,tPos.z);
-						//printf("position: %f:%f\n",p_Enemy->getLocation().x,p_Enemy->getLocation().z);
-						//printf("player : %f:%f\n",p_Enemy->getLocation().x,p_Enemy->getLocation().y);
-						//path contains start position, so pop last element to get next cell
-						glm::vec2 pos = glm::vec2((float)m_Path.back().x,(float)m_Path.back().y);
-						m_Path.clear();
-
-						//printf("next cell: %f:%f\n",pos.x,pos.y);
-						glm::vec3 moveTo = m_maze->getCellPosition(pos);
-						//printf("enemyUpdated\n ");
-						p_Enemy->setTargetPosition(moveTo);
-						p_Enemy->setMovementTarget(moveTo);
-						p_Enemy->setState(HostileStatus);
-				}
-				else
-				{
-					p_Enemy->setState(PassiveStatus);
-					//printf("no path found: %s\n",p_Enemy->getName().c_str());
-				}
-			}
 		}
 		else
 		{
-			//enemy has not reached target location plot new path
-			getNextPathCell(p_Enemy->getLocation(), tPos,m_Path);
-			if(m_Path.size()>0)
-			{
-				//printf("%s\n",p_Enemy->getName().c_str());
-				//printf("target: %f:%f\n",tPos.x,tPos.z);
-				//printf("position: %f:%f\n",p_Enemy->getLocation().x,p_Enemy->getLocation().z);
-				//printf("player : %f:%f\n",p_Enemy->getLocation().x,p_Enemy->getLocation().y);
-				//path contains start position, so pop last element to get next cell
-				glm::vec2 pos = glm::vec2((float)m_Path.back().x,(float)m_Path.back().y);
-				m_Path.clear();
-				//printf("next cell: %f:%f\n",pos.x,pos.y);
-				glm::vec3 moveTo = m_maze->getCellPosition(pos);
-				//printf("enemyUpdated\n ");
-				p_Enemy->setTargetPosition(moveTo);
-				p_Enemy->setMovementTarget(moveTo);
-				p_Enemy->setState(HostileStatus);
 
+			//if enemy has reached movement target
+			if((enemLoc.x == enemMoveLoc.x)&&(enemLoc.y == enemMoveLoc.y))
+			{
+				//if enemy loc matches player loc
+				if(abs((int)enemLoc.x - pLoc.x)<2 && abs((int)enemLoc.y - pLoc.y)<2)
+				{
+					//set direct course for player
+					p_Enemy->setMovementTarget(m_player->getLocation());
+					p_Enemy->setState(HostileStatus);
+					//printf("enemy close: %s\n",p_Enemy->getName().c_str());
+					//printf("Robo pos: %f:%f\n",enemLoc.x,enemLoc.y);
+
+				}
+				//player not nearby, plot path and take first waypoint
+				else
+				{
+					getNextPathCell(p_Enemy->getLocation(), tPos,p_Enemy->getWayPointList());
+				}
 			}
 			else
 			{
-				p_Enemy->setState(PassiveStatus);
+				//enemy has not reached target location plot new path
+				getNextPathCell(p_Enemy->getLocation(), tPos,p_Enemy->getWayPointList());
 			}
 		}
+		p_Enemy->resetTimer();
 	}
+	
+	m_LastPlayerLocation = pLoc;
 }
 void AIManager::doHostileBehaviour(EnemyNode *p_Enemy)
 {
@@ -182,22 +147,29 @@ bool AIManager::isPlayerVisible(EnemyNode *p_Enemy)
 {
 	//get player & enemy positions
 	glm::vec3 ray = m_player->getLocation() - p_Enemy->getLocation();
+	float rad = m_player->getBoundingRadius();
+	glm::ivec2 pPos = m_maze->getGridCell(m_player->getLocation());
 	int range =  (int)p_Enemy->getDetectionRadius();
 	//create ray direction from resulting vector
 	//set increment at player radius
 	//for each increment of player radius
-	glm::vec3 rayDir = ray / m_player->getBoundingRadius();
+	glm::vec3 rayDir = glm::normalize(ray);
 	float distToTarget = glm::length(ray);
 	if(distToTarget<=p_Enemy->getDetectionRadius())
 	{
-
-		for (int i = 0; i <range; i++)
+		glm::vec3 position = p_Enemy->getLocation();
+		int steps = range/rad;
+		for (int i = 0; i <steps; i++)
 		{
-			glm::vec3 position = p_Enemy->getLocation()+rayDir*(float)i;
+			position+=rayDir*(rad*i);
 			glm::ivec2 pos = m_maze->getGridCell(position);
 			if(!m_maze->isOk(pos))
 			{
 				return false;
+			}
+			else if(pos==pPos)
+			{
+				return true;
 			}
 		}
 		return true;
@@ -205,284 +177,169 @@ bool AIManager::isPlayerVisible(EnemyNode *p_Enemy)
 	return false;
 	//if loop concludes return false
 }
-bool comp(AIPosition& a, AIPosition& b)
+
+void AIManager::init()
 {
-	return a.F>b.F; 
+	m_Pool = new AStarPool();
+	m_Pool->init(512);
 }
-int distance(AIPosition& a, AIPosition& b)
+bool equal(AStarPosition* lhs, AStarPosition* rhs)
 {
-	return (abs(b.x-a.x)+abs(b.y-a.y));
+	return lhs->x==rhs->x && lhs->y==rhs->y;
 }
-int findPosition(AIPosition& a, std::vector<AIPosition>& v)
+int find(std::vector<AStarPosition*>& p_Vec,AStarPosition* p_SearchParam)
 {
-	for(size_t i = 0; i < v.size();i++)
+	for (size_t i = 0; i < p_Vec.size();i++)
 	{
-		if(v[i].x==a.x && v[i].y==a.y)
+		if(p_Vec[i]->equals(p_SearchParam))
 			return i;
 	}
 	return -1;
 }
-void constructPath(std::vector<AIPosition*>& path, AIPosition& foundGoal)
+bool less(AStarPosition* a, AStarPosition* b)
 {
-	AIPosition *current = new AIPosition(foundGoal);
-	while(current->m_Parent!=nullptr)
-	{
-		path.push_back(current);
-		current = current->m_Parent;
-	}
+	return (a->F > b->F); 
 }
-
-void AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition,std::vector<glm::ivec2>& path)
+void AIManager::getNextPathCell(glm::vec3 p_startPosition, glm::vec3 p_targetPosition,std::list<glm::vec3>& path)
 {
-	//set up basic data.
-	bool foundPath = false;
-	glm::ivec2 start = m_maze->getGridCell(p_startPosition);
-	glm::ivec2 end = m_maze->getGridCell(p_targetPosition);
-	if(!m_maze->isOk(start))
-		return;
-	//set up temporary data used in pathfinding
-	int gridX = 0, gridY = 0, m = 0, u = 0, v = 0, temp = 0, corner = 0, 
-		currentOpen = 0, NotVisitedListSize = 0, gTemp = 0, gAdded = 0,
-		parentXcoord = 0, parentYcoord = 0, openListID = 0, newOpenListID = 0,
-		xTemp = 0, /*xPath = 0, yPath = 0,*/ cellPosition = 0, closedListOffset = 0;
-
-	m_pathLength = 0;		
-	m_pathLocation = 0;
-	int numSucessors = 4;
-	int sucessorsX[4];
-	int sucessorsY[4];
-	std::fill(m_openList.begin(), m_openList.end(), 0);
-	std::fill(m_openCoordX.begin(), m_openCoordX.end(), 0);
-	std::fill(m_openCoordY.begin(), m_openCoordY.end(), 0);
-	std::fill(m_fCost.begin(), m_fCost.end(), 0);
-	std::fill(m_hCost.begin(), m_hCost.end(), 0);
-
-	for(unsigned int i=0; i < m_parentCoordX.size(); i++)
+	glm::ivec2 startPos = m_maze->getGridCell(p_startPosition);
+	glm::ivec2 goalPos = m_maze->getGridCell(p_targetPosition);
+	path.clear();
+	AStarPosition* start = m_Pool->getPosition(nullptr,startPos.x,startPos.y);
+	AStarPosition* goal = m_Pool->getPosition(nullptr,goalPos.x,goalPos.y);
+	start->G=0;
+	start->estimateCost(goal);
+	bool pathFound = false;
+	//printf("%d\n",sizeof(AStarPosition));
+	//used to hold positions representing visited grid positions 
+	std::vector<AStarPosition*> usedList;
+	//create a min heap to hold positions
+	std::vector<AStarPosition*> openList;
+	//add the start to the min heap
+	openList.push_back(start);
+	std::make_heap(openList.begin(),openList.end(),less);
+	//set all closed list values to zero (false)
+	//for (size_t i = 0; i < m_closedList.size();i++)
+	//{
+	//	std::fill(m_closedList[i].begin(),m_closedList[i].end(),0);
+	//}
+	//main algorithm:
+	int a = 0;
+	while(openList.size() > 0 && pathFound==false)
 	{
-		std::fill(m_parentCoordX[i].begin(), m_parentCoordX[i].end(), 0);
-		std::fill(m_parentCoordY[i].begin(), m_parentCoordY[i].end(), 0);
-		std::fill(m_closedList[i].begin(), m_closedList[i].end(),0);
-		std::fill(m_gCost[i].begin(), m_gCost[i].end(), 0);
-	}
+		//remove root from openList (position with lowest F cost)
+		//std::sort_heap(openList.begin(),openList.end(),less);
 
-	if(start.x == end.x && start.y == end.y)			// Check if start point is at the same cell as target point
-	{
-		return;
-	}
+		std::pop_heap(openList.begin(),openList.end(),less);
 
-	currentOpen--;
-	m_pathLength = unstartedPath;
-	m_pathLocation = unstartedPath;
-	m_gCost[start.x][start.y] = 0;
-	NotVisitedListSize = 1;
-	m_openList[1] = 1;
-	m_openCoordX[1] = start.x;
-	m_openCoordY[1] = start.y;
-
-	while(NotVisitedListSize>0)
-	{
-		//make the parent = the top of the min heap Not-visited list
-		parentXcoord = m_openCoordX[m_openList[1]];
-		parentYcoord = m_openCoordY[m_openList[1]];
-
-		m_closedList[parentXcoord][parentYcoord] = true;
-		NotVisitedListSize--;
-		m_openList[1] = m_openList[NotVisitedListSize + 1];
-		int offset1 = 0;
-		int offset2 = 1;
-		//check if current position == end
-		if(m_closedList[end.x][end.y] == true)
+		AStarPosition* parent = openList.back();
+		openList.pop_back();
+		//openList.erase(openList.begin());
+		//if current position == goal
+		if(parent->equals(goal))
 		{
-			//if so, then no need to proceed further, only path reconstruction is necessary now.
-			foundPath = true;
-			break;
+			pathFound = true;
 		}
-		//if(m_openCoordX[m_openList[1]] == end.x && m_openCoordY[m_openList[1]] == end.y)
-		//{
-		//	//if so, then no need to proceed further, only path reconstruction is necessary now.
-		//	foundPath = true;
-		//	break;
-		//}
-		//re-sort the min heap, so that the lowest F value is at the top
-		while(true)
+		else
 		{
-			offset1 = offset2;
-			//if both children are in list, check both.
-			if(offset1 * 2 + 1 <= NotVisitedListSize)
+			//get successor positions (4)
+			std::vector<AStarPosition*> successors;
+			//NORTH
+			successors.push_back(m_Pool->getPosition(parent,0,1));
+			//EAST						
+			successors.push_back(m_Pool->getPosition(parent,1,0));
+			//SOUTH
+			successors.push_back(m_Pool->getPosition(parent,0,-1));
+			//WEST
+			successors.push_back(m_Pool->getPosition(parent,-1,0));
+			//for each successor loop
+			for (int i = 0; i < 4;i++)
 			{
-				//if one of the children has a lower F cost, change offset for swapping
-				if (m_fCost[m_openList[offset1]] >= m_fCost[m_openList[2*offset1]]) 
-					offset2 = 2*offset1;
-				if (m_fCost[m_openList[offset2]] >= m_fCost[m_openList[2*offset1 + 1]]) 
-					offset2 = 2*offset1 + 1;
-			}
-			else
-			{
-				// If only one child is present,
-				// check if it's value is lower than it's parent. if so a swap is required
-				if (2*offset1 <= NotVisitedListSize)
-					if (m_fCost[m_openList[offset1]] >= m_fCost[m_openList[2*offset1]]) 
-						offset2 = 2*offset1;
-			}
-			//if offsets dont match then we have a swap to perform
-			if(offset1 != offset2)
-			{
-				temp = m_openList[offset1];
-				m_openList[offset1] = m_openList[offset2];
-				m_openList[offset2] = temp;
-			}
-			//at this stage, we have no swaps left to make, so list is sorted
-			else
-			{
-				break;
-			}
-		}
-
-		//process list of possible successor moves
-		//only 4 here for E/S/W/N
-
-		//north
-		sucessorsX[0] = 0+parentXcoord;
-		sucessorsY[0] = 1+parentYcoord;
-		//south
-		sucessorsX[1] = 0+parentXcoord;
-		sucessorsY[1] = -1+parentYcoord;
-		//east
-		sucessorsX[2] = -1+parentXcoord;
-		sucessorsY[2] = 0+parentYcoord;
-		//west
-		sucessorsX[3] = 1+parentXcoord;
-		sucessorsY[3] = 0+parentYcoord;
-		for (int i = 0; i < numSucessors; i++)
-		{
-
-			//check if the successor is either outside of the grid or a wall
-			if(!m_maze->isOk(glm::ivec2(sucessorsX[i],sucessorsY[i])))
-			{
-				//if so, skip to next successor
-				continue;
-			}
-			else
-			{
-				//if it is a valid move, check if it is already visited (in the closedList)
-				//this line is weird: what is closedListOffset? How is this used?
-				//closedListOffset is never altered
-				if(m_closedList[sucessorsX[i]][sucessorsY[i]] == true)
+				//calculate G,H,F costs
+				successors[i]->G = parent->G+10;
+				int heuristic = (abs(goal->x-successors[i]->x)+abs(goal->y-successors[i]->y))*10;
+				successors[i]->H = heuristic;
+				successors[i]->F = successors[i]->G+successors[i]->H;
+				if(heuristic < 0)
+							printf("weird heuristic\n");
+				//if position is a wall or outside maze maze
+				if(!m_maze->isOk(glm::ivec2(successors[i]->x,successors[i]->y)))
 				{
-					//if so, skip to next successor
+					//continue
+					m_Pool->release(successors[i]);
+					successors[i]=nullptr;
 					continue;
 				}
 				else
 				{
-					//if not visited yet, a final check is needed to see if the successor is already in the Not-visited(open) list
-					bool onOpenList = false;
-					for (int j = 1; j < NotVisitedListSize; j++)
+					int posO = find(openList,successors[i]);
+					int posC = find(usedList,successors[i]);
+					//if successor is in closed list
+					if(posC>-1)
 					{
-						//this seems to be the actual open list check for current position
-						if(m_openCoordX[m_openList[j]] == sucessorsX[i] && m_openCoordY[m_openList[j]] == sucessorsY[i])
-						{
-							int successorG = m_gCost[parentXcoord][parentYcoord] + 10;
-							
-							
-							//if successor is in open list, if its G score is less than open list entry
-							if(successorG < m_gCost[sucessorsX[i]][sucessorsY[i]])
-							{
-								//recalculate open list entry G Score and set open list entry parent = successor parent
-								//add values to the parent grid, which we will use to reconstruct the path later
-								m_parentCoordX[sucessorsX[i]][sucessorsY[i]] = parentXcoord;
-								m_parentCoordY[sucessorsX[i]][sucessorsY[i]] = parentYcoord;
-								m_gCost[sucessorsX[i]][sucessorsY[i]] = successorG;
-								//recalculate F cost
-								m_fCost[m_openList[j]] = m_gCost[sucessorsX[i]][sucessorsY[i]]+m_hCost[m_openList[j]];
-								onOpenList=true;
-								int position = j;
-								//while position is not root of the min heap
-								while(position != 1)
-								{
-									//if f cost at position is less than parent, swap them
-									if(m_fCost[m_openList[position]] < m_fCost[m_openList[position/2]])
-									{
-										temp = m_openList[position/2];
-										m_openList[position/2] = m_openList[position];
-										m_openList[position] = temp;
-										position /=2;
-									}
-									else
-										break;
-								}
-								break;
-							}
-							else
-							{
-								//if successor G score >= open list entry G, skip to next successor
-								continue;
-							}
-		
-							//and re-sort min heap
-
-						}
-
+						//skip this successor
+						m_Pool->release(successors[i]);
+						successors[i]=nullptr;
+						continue;
 					}
-					if(!onOpenList)
+
+					//else if current exists within openlist
+					else if(posO!=-1)
 					{
-						if(newOpenListID > 676)
-						{
-							return;
-						}
-						newOpenListID++;
-						int position = NotVisitedListSize+1;
-						m_openList[position] = newOpenListID;
-						m_openCoordX[newOpenListID] = sucessorsX[i];
-						m_openCoordY[newOpenListID] = sucessorsY[i];
-						//calculate G cost for new entry
-						int successorG = m_gCost[parentXcoord][parentYcoord] + 10;
-						// Calculate cell's H and F cost
-						m_hCost[m_openList[position]] = 10*(abs(sucessorsX[i] - end.x) + abs(sucessorsY[i] - end.y));
-						m_fCost[m_openList[position]] = m_gCost[sucessorsX[i]][sucessorsY[i]] + m_hCost[m_openList[position]];
-						//add an entry into parent list for reconstructing path later
-						m_parentCoordX[sucessorsX[i]][sucessorsY[i]] = parentXcoord; 
-						m_parentCoordY[sucessorsX[i]][sucessorsY[i]] = parentYcoord;
-						//and re-sort min heap
-						//while position is not root of the min heap
-						while(position != 0)
-						{
-							//if f cost at position is less than parent, swap them
-							if(m_fCost[m_openList[position]] < m_fCost[m_openList[position/2]])
-							{
-								temp = m_openList[position/2];
-								m_openList[position/2] = m_openList[position];
-								m_openList[position] = temp;
-								position /=2;
-							}
-							else
-								break;
-						}
-						//pretty sure ethis needs to be here, as the open list has had an entry added
-						NotVisitedListSize++;
+						//skip this successor
+						m_Pool->release(successors[i]);
+						successors[i]=nullptr;
+						continue;
+					}
+					//else not in open list
+					else
+					{
+						//insert successor into open list
+
+						openList.push_back(successors[i]);
+
+						////////////////////////////////////////////////////
+						//line below crashes program
+						std::push_heap(openList.begin(),openList.end(),less);
+						successors[i]=nullptr;
+
 					}
 				}
 			}
+			successors.clear();
+		}
+		usedList.push_back(parent);
+	}
+	if(pathFound)
+	{
+		//reconstruct path
+		int num = 0;
+		int numPos = usedList.size();
+		AStarPosition* current = usedList.back();
+		//printf("new path\n");
+		while(current!=nullptr && !start->equals(current))
+		{
+			path.push_front(m_maze->getCellPosition(glm::vec2(current->x,current->y)));
+			//printf("X:%i,Y:%i\n",current->x,current->y);
+
+			current=current->m_Parent;
+			num++;
 		}
 	}
-	//loop ends, if path found, reconstruct it
+	//usedList.back()->toConsole();
+	//and clean up
+	for (std::vector<AStarPosition*>::iterator it = openList.begin();it!=openList.end();)
+	{
+		m_Pool->release((*it));
+		it = openList.erase(it);
+	}
 
-	if(foundPath)
+	for (std::vector<AStarPosition*>::iterator it = usedList.begin();it!=usedList.end();)
 	{
-		//printf("path found\n");
-		//printf("%i operations\n",newOpenListID);	
-		int pathX = end.x, pathY = end.y;
-		while(m_parentCoordX[pathX][pathY] != start.x || m_parentCoordY[pathX][pathY] != start.y)
-		{
-			//place an entry into path list
-			path.push_back(glm::ivec2(pathX,pathY));
-			int X = m_parentCoordX[pathX][pathY];
-			int Y = m_parentCoordY[pathX][pathY];
-			pathX = X;
-			pathY = Y;
-		};
+		m_Pool->release((*it));
+		it = usedList.erase(it);
 	}
-	else
-	{
-		//printf("no path found\n");
-	}
+	m_Pool->release(start);
+	m_Pool->release(goal);
+
 }

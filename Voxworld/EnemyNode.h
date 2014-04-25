@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CollidableNode.h"
+#include <list>
 
 enum EnemyStatus
 {
@@ -29,6 +30,10 @@ public:
 	void setMovementTarget(glm::vec3 p_Target);		// Sets 'm_movementTarget' takes in position in world space
 	glm::vec3 getTargetPosition();					// Returns 'm_targetPosition'
 	void setTargetPosition(glm::vec3 p_Target);		// Sets 'm_targetPosition' takes in position in world space
+	void setStateTimer(float p_TimerS);
+	float getCurrentTimer();
+	void resetTimer();
+	std::list<glm::vec3>& getWayPointList();
 
 protected:
 	glm::vec3	m_targetPosition,
@@ -42,5 +47,7 @@ protected:
 
 	int m_behaviourState;
 	float m_StateTimer;
+	float m_CurrentTimer;
 	bool m_PathChanged;
+	std::list<glm::vec3> m_WayPoints;
 };
