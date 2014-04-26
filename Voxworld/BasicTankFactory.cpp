@@ -44,20 +44,20 @@ TestTankNode* BasicTankFactory::getTank(void)
 		//make a tank trannsform node
 		TransformNode* tankTransform = new TransformNode();
 		LightNode* light = new LightNode();
-		light->setColour(glm::vec3(0.5f,0.5f,1.0f));
+		light->setColour(glm::vec3(1.0f,0.2f,0.2f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(0.9f);
+		light->setDiffuseIntensity(10.0f);
 		light->setSpecularIntensity(0.75f);
 		light->setSpecularPower(1.0f);
-		light->setAttenuation(1.0f,0.0f,0.1f);
+		light->setAttenuation(2.0f,2.0f,0.2f);
 		light->setName("tank Hoverlight");
 		SpotLight* spot = new SpotLight();
-		spot->setColour(glm::vec3(1.0f));
+		spot->setColour(glm::vec3(0.8f,0.8f,1.0f));
 		spot->setAmbientIntensity(0.0f);
-		spot->setDiffuseIntensity(1.5f);
+		spot->setDiffuseIntensity(10.0f);
 		spot->setSpecularIntensity(0.75f);
 		spot->setSpecularPower(1.0f);
-		spot->setAttenuation(1.0f,0.0f,0.01f);
+		spot->setAttenuation(1.0f,0.0f,0.004f);
 		spot->setCutoffAngle(45.0f);
 		//set it's name
 		tankTransform->setName("tank0transform0");

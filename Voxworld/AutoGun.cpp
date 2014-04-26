@@ -35,10 +35,10 @@ ProjectileNode* AutoGun::getProjectile()
 				LightNode* light = new LightNode();
 				light->setColour(glm::vec3(0.5f,1.0f,1.0f));
 				light->setAmbientIntensity(0.0f);
-				light->setDiffuseIntensity(1.5f);
+				light->setDiffuseIntensity(10.0f);
 				light->setSpecularIntensity(1.0f);
 				light->setSpecularPower(1.0f);
-				light->setAttenuation(1.0f,0.0f,0.01f);
+				light->setAttenuation(1.0f,0.0f,0.001f);
 				light->setName("BulletLight");
 				v_Instance->addLight(light);
 
@@ -127,10 +127,10 @@ void AutoGun::init()
 		LightNode* light = new LightNode();
 		light->setColour(glm::vec3(1.0f,1.0f,0.5f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(1.5f);
+		light->setDiffuseIntensity(4.0f);
 		light->setSpecularIntensity(1.0f);
 		light->setSpecularPower(1.0f);
-		light->setAttenuation(1.0f,0.1f,0.2f);
+		light->setAttenuation(1.0f,0.1f,0.02f);
 		light->setName("BulletLight");
 		temp->addLight(light);
 		temp->setLifeTime(3.0f);
