@@ -17,6 +17,7 @@ void OffensiveUpgrade::init()
 		ProjectileNode* v_Instance = new ProjectileNode();
 		v_Instance->addMesh(m_DefaultProjectileMesh);
 		v_Instance->addTexture(m_DefaultProjectileTexture);
+		//v_Instance->addTexture(m_DefaultProjEmissiveTexture);
 		TransformNode* tmp = new TransformNode;
 		tmp->setName("ProjectileTransform");
 		v_Instance->addTransform(tmp);
@@ -29,12 +30,12 @@ void OffensiveUpgrade::init()
 		v_Instance->setBaseDamage(50.0f);
 		v_Instance->deactivate();
 		LightNode* light = new LightNode();
-		light->setColour(glm::vec3(1.0f,1.0f,1.0f));
+		light->setColour(glm::vec3(0.4f,0.4f,1.0f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(1.0f);
+		light->setDiffuseIntensity(6.0f);
 		light->setSpecularIntensity(1.0f);
 		light->setSpecularPower(1.0f);
-		light->setAttenuation(1.0f,0.0f,0.01f);
+		light->setAttenuation(1.0f,0.1f,0.02f);
 		light->setName("BulletLight");
 		v_Instance->addLight(light);
 		m_Projectiles.push_back(v_Instance);
@@ -87,12 +88,12 @@ ProjectileNode* OffensiveUpgrade::getProjectile()
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(50.0f);
 				LightNode* light = new LightNode();
-				light->setColour(glm::vec3(1.0f,1.0f,1.0f));
+				light->setColour(glm::vec3(0.4f,0.4f,1.0f));
 				light->setAmbientIntensity(0.0f);
-				light->setDiffuseIntensity(0.5f);
+				light->setDiffuseIntensity(6.0f);
 				light->setSpecularIntensity(1.0f);
 				light->setSpecularPower(1.0f);
-				light->setAttenuation(1.0f,0.0f,0.01f);
+				light->setAttenuation(1.0f,0.1f,0.02f);
 				light->setName("BulletLight");
 				v_Instance->addLight(light);
 			}
@@ -140,7 +141,7 @@ ProjectileNode* OffensiveUpgrade::createProjectileFromPool()
 			if (m_Projectiles[i] != nullptr)
 			{
 				//check if it's active
-				if(m_Projectiles[i]->isActive())
+				if(!m_Projectiles[i]->isActive())
 				{
 					m_Reusing = true;
 					return m_Projectiles[i];

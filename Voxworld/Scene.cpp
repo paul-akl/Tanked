@@ -77,16 +77,18 @@ void Scene::init()
 	m_Camera->moveUp(3.0f);
 	m_GameDifficulty = 1;
 	m_PlayerScore = 0;
-	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30);
+	m_TestMaze->generateMaze(20, 20, 30);
 	m_TestMaze->toConsole();
 	//m_TestMaze->toConsole();
 	m_AISolver->setMaze(m_TestMaze);
+	m_AISolver->init();
 	m_Solver->init((float)m_TestMaze->getGridWidth(),glm::vec3(m_TestMaze->getGridWidth()*0.5f,0.0f,m_TestMaze->getGridHeight()*0.5f));
 	MazeIterator *v_mazeIterator = m_TestMaze->getIterator();
+	int num = 0;
 	while(v_mazeIterator->hasNext())
 	{
 		Position cell = v_mazeIterator->getNext();
-		int num = 0;
+
 		//std::cout<<cell.x<<" "<<cell.y<<std::endl;
 
 		switch(m_TestMaze->getGridCellType(cell))
@@ -100,6 +102,7 @@ void Scene::init()
 				if (num < 1)
 				{
 					addRobotGenerator(m_TestMaze->getCellPosition(cell));
+					num++;
 				}
 			}break;
 		case START:
@@ -221,7 +224,7 @@ void Scene::addTank(glm::vec3 p_Location)
 		upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 		upgrade = m_UpgradeFactory->getOffensiveUpgrade(DEFAULT);
-		upgrade->init();
+		//upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 	}
 	m_Tank->setPosition(p_Location);
@@ -287,10 +290,15 @@ void Scene::addUI(HUD* p_Hud)
 {
 	m_Hud = p_Hud;
 }
+void Scene::addRenderer(Renderer* p_Renderer)
+{
+	m_Renderer = p_Renderer;
+}
 void Scene::updateGameObjects()
 {
 	//multi-threading candidates
 	int num;
+	bool hasEnemies = false;
 	//create thread data blocks for new threads
 	ThreadDBlock projblock, enemBlock,enemyGenBlock;
 	ThreadEnemyBlock enemyBlock;
@@ -306,9 +314,16 @@ void Scene::updateGameObjects()
 	wallBlock.deltaTimeS = m_DeltaTimeSeconds;
 	SceneryThread = SDL_CreateThread(updateScenery,"wall thread", &wallBlock);
 
-	enemBlock.deltaTimeS = m_DeltaTimeSeconds;
-	enemBlock.list = (std::list<SceneNode*>*)&m_Robots;
-	enemyThread = SDL_CreateThread(updateObjects,"enemy thread",&enemBlock);
+	if(!m_Robots.empty())
+	{
+		hasEnemies = true;
+		enemyBlock.deltaTimeS = m_DeltaTimeSeconds;
+		enemyBlock.list = (std::list<EnemyNode*>*)&m_Robots;
+		enemyBlock.maze=m_TestMaze;
+		enemyBlock.player = m_Tank;
+		enemyBlock.solver=m_AISolver;
+		enemyThread = SDL_CreateThread(updateEnemies,"enemy thread",&enemyBlock);
+	}
 	
 	enemyGenBlock.deltaTimeS = m_DeltaTimeSeconds;
 	enemyGenBlock.list = (std::list<SceneNode*>*)&m_RoboGens;
@@ -321,9 +336,12 @@ void Scene::updateGameObjects()
 	floorBlock.deltaTimeS = m_DeltaTimeSeconds;
 	floorBlock.vector = (std::vector<SceneNode*>*)&m_Floors;
 	floorThread = SDL_CreateThread(updateScenery,"floor Thread", &floorBlock);
+	m_Renderer->endRenderCycle();
+
 	//signal OS to wait until threads are complete before moving on.
+	if(hasEnemies)
+		SDL_WaitThread(enemyThread, &num);
 	SDL_WaitThread(projThread, &num);
-	SDL_WaitThread(enemyThread, &num);
 	SDL_WaitThread(SceneryThread, &num);
 	SDL_WaitThread(floorThread, &num);
 	SDL_WaitThread(enemyGenThread, &num);
@@ -352,30 +370,15 @@ void Scene::updateWalls()
 //NOT NEEDED
 int Scene::updateEnemies(void* p_EnemBlock)
 {
-	////nested multi-threading?
-	//if(!m_Robots.empty())
-	//{
-	//	for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
-	//	{
-	//		if((*it)->isActive())
-	//		{
-	//			m_AISolver->doBehaviour((*it));
-	//			(*it)->update(m_DeltaTimeSeconds);
-	//		}
-	//	}
-	//}
-	////update robo generators
-	//if(!m_RoboGens.empty())
-	//{
-	//	for (std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it!= m_RoboGens.end();it++)
-	//	{
-	//		if((*it)->isActive())
-	//		{
-	//			m_AISolver->doBehaviour((*it));
-	//			(*it)->update(m_DeltaTimeSeconds);
-	//		}
-	//	}
-	//}
+	ThreadEnemyBlock* block = static_cast<ThreadEnemyBlock*>(p_EnemBlock);
+	std::list<EnemyNode*>::iterator it = block->list->begin();	
+	std::list<EnemyNode*>::iterator jt = block->list->end();
+	for(;it!=jt; it++)
+	{
+		(*it)->update(block->deltaTimeS);
+		block->solver->doBehaviour((*it));
+	}
+
 	return 0;
 }
 //NOT NEEDED
@@ -900,70 +903,72 @@ void Scene::addWallFactory(WallFactory* p_Factory)
 }
 void Scene::render(Renderer* p_Renderer)
 {
-
-	m_Camera->render(p_Renderer);
-	p_Renderer->updateViewFrustum();
-	p_Renderer->beginRenderCycle(m_CurrentRenderMode);
+	if(!m_Paused)
+	{
+		m_Camera->render(p_Renderer);
+		p_Renderer->updateViewFrustum();
+		p_Renderer->beginRenderCycle(m_CurrentRenderMode);
 	
-	//draw static objects
+		//draw static objects
 
-	m_Tank->render(p_Renderer);
-	//draw robot generators
-	for(std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
-	{
-		if((*it)->isActive()) //isActive returns a bool
+		m_Tank->render(p_Renderer);
+		//draw robot generators
+		for(std::list<RobotGenerator*>::iterator it = m_RoboGens.begin(); it != m_RoboGens.end(); it++)
 		{
-			(*it)->render(p_Renderer);
+			if((*it)->isActive()) //isActive returns a bool
+			{
+				(*it)->render(p_Renderer);
+			}
 		}
-	}
-	//draw ammo boxes
-	for(std::list<OffensiveUpgrade*>::iterator it = m_AmmoBoxes.begin(); it != m_AmmoBoxes.end(); it++)
-	{
-		if((*it)->isActive() && !(*it)->isCollected()) //isActive & isCollected returns a bool
+		//draw ammo boxes
+		for(std::list<OffensiveUpgrade*>::iterator it = m_AmmoBoxes.begin(); it != m_AmmoBoxes.end(); it++)
 		{
-			(*it)->render(p_Renderer);
+			if((*it)->isActive() && !(*it)->isCollected()) //isActive & isCollected returns a bool
+			{
+				(*it)->render(p_Renderer);
+			}
 		}
-	}
-	//draw robots
-	for(std::list<Robot*>::iterator it = m_Robots.begin(); it != m_Robots.end(); it++)
-	{
-		if((*it)->isActive()) //isActive returns a bool
+		//draw robots
+		for(std::list<Robot*>::iterator it = m_Robots.begin(); it != m_Robots.end(); it++)
 		{
-			(*it)->render(p_Renderer);
+			if((*it)->isActive()) //isActive returns a bool
+			{
+				(*it)->render(p_Renderer);
+			}
 		}
-	}
-	//draw robots
-	for(std::list<ProjectileNode*>::iterator it = m_Projectiles.begin(); it != m_Projectiles.end(); it++)
-	{
-		if((*it)->isActive()) //isActive returns a bool
+		//draw robots
+		for(std::list<ProjectileNode*>::iterator it = m_Projectiles.begin(); it != m_Projectiles.end(); it++)
 		{
-			(*it)->render(p_Renderer);
+			if((*it)->isActive()) //isActive returns a bool
+			{
+				(*it)->render(p_Renderer);
+			}
 		}
-	}
-	//draw walls
-	for (size_t i = 0; i <m_Walls.size();i++)
-	{
-		if(m_Walls[i]->isActive())
+		//draw walls
+		for (size_t i = 0; i <m_Walls.size();i++)
 		{
-			m_Walls[i]->render(p_Renderer);
-		}
-	} 
-	//draw floors
-	for (size_t i = 0; i <m_Floors.size();i++)
-	{
-		if(m_Floors[i]->isActive())
+			if(m_Walls[i]->isActive())
+			{
+				m_Walls[i]->render(p_Renderer);
+			}
+		} 
+		//draw floors
+		for (size_t i = 0; i <m_Floors.size();i++)
 		{
-			m_Floors[i]->render(p_Renderer);
-		}
-	} 
+			if(m_Floors[i]->isActive())
+			{
+				m_Floors[i]->render(p_Renderer);
+			}
+		} 
 
-	//draw ui
-	m_Hud->render(p_Renderer);
-	//p_Renderer->endRenderCycle();
+		//draw ui
+		m_Hud->render(p_Renderer);
+		//p_Renderer->endRenderCycle();
 
-	if(!NotificationFactory::m_NotificationList.empty())
-	for(std::list<Notification*>::iterator it = NotificationFactory::m_NotificationList.begin(); it != NotificationFactory::m_NotificationList.end(); it++)
-		(*it)->render(p_Renderer);
+		if(!NotificationFactory::m_NotificationList.empty())
+		for(std::list<Notification*>::iterator it = NotificationFactory::m_NotificationList.begin(); it != NotificationFactory::m_NotificationList.end(); it++)
+			(*it)->render(p_Renderer);
+	}
 }
 
 void Scene::update(float p_DeltaTimeS)
@@ -979,16 +984,16 @@ void Scene::update(float p_DeltaTimeS)
 		{
 			detectCollisions();
 			m_Tank->update(m_DeltaTimeSeconds);	
-			if(!m_Robots.empty())
-			{
-				for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
-				{
-					if((*it)->isActive())
-					{
-						m_AISolver->doBehaviour((*it));
-					}
-				}
-			}
+			//if(!m_Robots.empty())
+			//{
+			//	for (std::list<Robot*>::iterator it = m_Robots.begin(); it!= m_Robots.end();it++)
+			//	{
+			//		if((*it)->isActive())
+			//		{
+			//			m_AISolver->doBehaviour((*it));
+			//		}
+			//	}
+			//}
 
 			if( m_Controller->getButtonState(FORWARD) || 
 				m_Controller->getButtonState(BACKPEDAL) || 

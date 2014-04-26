@@ -16,6 +16,7 @@ public:
 	ProjectileType getProjectileType(){return m_ProjectileType;}
 	void setProjectileMesh(MeshNode* p_DefaultProjectileMesh){m_DefaultProjectileMesh = p_DefaultProjectileMesh;}
 	void setProjectileDiffuse(TextureNode* p_DefaultProjectileTexture){m_DefaultProjectileTexture = p_DefaultProjectileTexture;}
+	void setDefaultProjEmissiveTexture(TextureNode* p_DefaultProjEmissiveTexture){m_DefaultProjEmissiveTexture=p_DefaultProjEmissiveTexture;}
 	virtual int getNumShots(){return -1;}
 	void activate();
 	virtual ~OffensiveUpgrade(void);
@@ -28,6 +29,7 @@ protected:
 	int m_MaxProjectiles;
 	MeshNode* m_DefaultProjectileMesh;
 	TextureNode* m_DefaultProjectileTexture;
+	TextureNode* m_DefaultProjEmissiveTexture;
 	ProjectileType m_ProjectileType;
 	int m_NumShots;
 	int m_NumObjects;
