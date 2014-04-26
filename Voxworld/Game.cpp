@@ -19,7 +19,7 @@ void Game::init()
 	
 	Utils::GeneralUtils * util = new Utils::GeneralUtils();
 	util->initialiseTTF();
-	m_Renderer = new DeferredRenderer(1024,768);
+	m_Renderer = new DeferredRenderer(1600,900);
 	m_Renderer->init();
 	m_Window = m_Renderer->getWindow();
 	//initialise asset system

@@ -13,7 +13,7 @@ struct Attenuation
 {
     float constant;
     float linear;
-    float exp;
+    float quad;
 };
 struct SpotLight
 {
@@ -77,20 +77,21 @@ vec4 calcSpotLight(vec3 worldPos, vec3 normal)
 		
 		float attenuation =  light.atten.constant	+
 			                 light.atten.linear	* distance +
-				             light.atten.exp	* distance * distance;
+				             light.atten.quad	* distance * distance;
 
 		vec4 spotLightColor = (lightColor / attenuation) * (1.0 - (1.0 - spotLightFactor) * 1.0 / (1.0 - light.cutoff));
 
-		vec4 shade1 = 	smoothstep(vec4(0.1),vec4(0.11),spotLightColor);
-		vec4 shade2 = 	smoothstep(vec4(0.2),vec4(0.41),spotLightColor);
-		vec4 shade3 = 	smoothstep(vec4(0.9),vec4(0.95),spotLightColor);
+		//vec4 shade1 = 	smoothstep(vec4(0.1),vec4(0.11),spotLightColor);
+		//vec4 shade2 = 	smoothstep(vec4(0.2),vec4(0.41),spotLightColor);
+		//vec4 shade3 = 	smoothstep(vec4(0.9),vec4(0.95),spotLightColor);
 
 			
 		//vec4 shade1 = 	step(vec4(0.1),spotLightColor);
 		//vec4 shade2 = 	step(vec4(0.45),spotLightColor);
 		//vec4 shade3 = 	step(vec4(0.8),spotLightColor);
-		vec4 colour = 	max( max(0.3*shade1,0.4*shade2), shade3  );
-		return colour;
+		//vec4 colour = 	max( max(0.3*shade1,0.4*shade2), shade3  );
+		//return colour;
+		return spotLightColor;
 
 	}
 	else

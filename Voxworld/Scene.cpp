@@ -224,7 +224,7 @@ void Scene::addTank(glm::vec3 p_Location)
 		upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 		upgrade = m_UpgradeFactory->getOffensiveUpgrade(DEFAULT);
-		upgrade->init();
+		//upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 	}
 	m_Tank->setPosition(p_Location);

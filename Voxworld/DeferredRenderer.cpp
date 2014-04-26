@@ -177,22 +177,20 @@ void DeferredRenderer::endRenderCycle(void)
 	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix); 
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	
-	//blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 1, 0.5f, 0.0f);
 	glEnable(GL_STENCIL_TEST);
-
 	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
 	{
 		stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
-		glDisable(GL_STENCIL_TEST);
 		pointLightPass(m_PointLightList[i]);
 	}
+	glDisable(GL_STENCIL_TEST);
 	for(std::vector<SpotLightDataSet>::size_type i = 0; i < m_SpotLightList.size(); i++)
 	{
-		stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
-		glDisable(GL_STENCIL_TEST);
+		//stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
+		//glDisable(GL_STENCIL_TEST);
 		spotLightPass(m_SpotLightList[i]);
 	}
-	glDisable(GL_STENCIL_TEST);
+	glBindVertexArray(0);
 	
 	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 0.6f, -0.1f);
 
@@ -203,7 +201,8 @@ void DeferredRenderer::endRenderCycle(void)
 
 	finalPass();
 
-	m_DataList.clear();			// Clear current frame data sets, to get ready for the next frame
+	// Clear current frame data sets, to get ready for the next frame
+	m_DataList.clear();			
 	m_CulledList.clear();
 	m_UIDataList.clear();
 	m_PointLightList.clear();
@@ -505,6 +504,7 @@ void DeferredRenderer::stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_light
 {
 	m_GBuffer->initStencilPass();	// Unbind any buffers
 
+	m_StencilPassShader->enable();
 	m_StencilPassShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightModelMat);
 
 	glEnable(GL_DEPTH_TEST);		// Depth test is a primary operation of stencil pass
@@ -521,8 +521,7 @@ void DeferredRenderer::stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_light
 	
 	glBindVertexArray(p_lightMesh.getMeshLocation());
 	glDrawElements(GL_TRIANGLES, p_lightMesh.getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
-	glBindVertexArray(0);
-	//TODO: set light's position, calculate it's radius and render a sphere using stencil shaders
+	//glBindVertexArray(0);
 }
 void DeferredRenderer::dirLightPass()
 {
@@ -582,7 +581,7 @@ void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 	glBindVertexArray(m_PointLightMesh->getMeshLocation());
 	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
 	//glDrawElementsBaseVertex(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0, 0);
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
     glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
@@ -626,7 +625,7 @@ void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
 
 	glBindVertexArray(m_PointLightMesh->getMeshLocation());
 	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 }
 void DeferredRenderer::skyboxPass()
 {
