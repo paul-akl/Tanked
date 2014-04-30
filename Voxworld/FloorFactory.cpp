@@ -58,12 +58,12 @@ void FloorFactory::init()
 
 	m_FloorNormal = new TextureNode();
 	m_FloorNormal->setTextureType(NORMAL);
-	m_FloorNormal->loadTexture("images/Metal_SciFiDiamondPlate_1k_n.tga");
+	m_FloorNormal->loadTexture("images/Metal_SciFiDiamondPlate_1k_n.png");
 	m_FloorNormal->setName("floor0normal0");
 
 	m_FloorHeight = new TextureNode();
 	m_FloorHeight->setTextureType(HEIGHT);
-	m_FloorHeight->loadTexture("images/Metal_SciFiDiamondPlate_1k_h.tga");
+	m_FloorHeight->loadTexture("images/Metal_SciFiDiamondPlate_1k_h.png");
 	m_FloorHeight->setName("floor0height0");
 
 	m_FloorMesh1 = new MeshNode();

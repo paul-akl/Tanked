@@ -11,6 +11,7 @@ public:
 	void setDamaged(bool p_Switch){m_Damaged = p_Switch;}
 	void LookAt(const glm::vec3 p_Target);
 	float getTargetOrientation(){return m_TargetOrientation;}
+	void setTargetOrientation(float p_TargetOrientation){m_TargetOrientation=p_TargetOrientation;}
 	void rotate(float p_Rotation);
 	void turnLeft(float p_DeptaTimeS);
 	void turnRight(float p_DeltaTimeS);

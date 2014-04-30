@@ -1,4 +1,5 @@
 #version 330 core
+precision highp float;
 
 //layout(location = 0) out vec4 fragColor;
 out vec4 fragColor;
@@ -49,13 +50,11 @@ vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, 
         vec3 vertexToEye = normalize(cameraPos - worldPos);
         vec3 lightReflect = normalize(reflect(lightDirection, normal));
         float specularFactor = dot(vertexToEye, lightReflect);
-        specularFactor = pow(specularFactor, specularPower);
+        specularFactor = pow(specularFactor, 1000.0);
         if (specularFactor > 0) 
 		{
-            specularColor = vec4(baseLight.color, 1.0) * specularIntensity * specularFactor;
+            specularColor = vec4(baseLight.color, 1.0) * 25.0 * specularFactor;
         }
-		//return vec4(cameraPos, 1.0);
-		//return vec4(specularFactor, specularFactor, specularFactor, 1.0);
     }
 
     return (ambientColor + diffuseColor + specularColor);
@@ -88,7 +87,8 @@ void main()
 	vec3 normal = texture(normalMap, texCoord).xyz;
 	normal = normalize(normal);
 	
-   fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal);
+	fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal);
+	//fragColor = vec4(normal, 1.0);
 	//fragColor = calcPointLight(worldPos, normal);
 	//fragColor = vec4(normal, 1.0);
 }

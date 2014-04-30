@@ -16,6 +16,8 @@ void ParticleSystemFactory::init()
 		ts->activate();
 		ts->reset();
 		PSys->addTransform(ts);
+		PSys->setBoundingRadius(15.0f);
+		PSys->setScale(glm::vec3(15.0f));
 		PSys->setMaxParticles(MAX_PARTICLES_PER_SYSTEM);
 		m_ParticleSystems.push_front(PSys);
 	}
@@ -174,21 +176,87 @@ ParticleSystem* ParticleSystemFactory::getInstanceFromPool()
 void ParticleSystemFactory::initSparkEffect(ParticleSystem* p_ParticleSystem)
 {
 	//copy per type data into instance
+	if(p_ParticleSystem->m_ParticleType != SPARK)
+	{
+		p_ParticleSystem->m_BaseVelocities.clear();
+		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
+		{
+			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[SPARK][i]);
+		}
+		p_ParticleSystem->m_ParticleType = SPARK;
+		// start at yellowish white and proceed to red.
+		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,1.0f,0.8f,1.0f),glm::vec4(1.0f,0.0f,0.0f,0.0f));
+	}
+	else
+	{
+		p_ParticleSystem->reset();
+		p_ParticleSystem->resetForces();
+	}
+	p_ParticleSystem->setRepeatingMode(false);
 }
 void ParticleSystemFactory::initExplosionEffect(ParticleSystem* p_ParticleSystem)
 {
 	//copy per type data into instance
-
+	if(p_ParticleSystem->m_ParticleType != EXPLOSION)
+	{
+		p_ParticleSystem->m_BaseVelocities.clear();
+		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
+		{
+			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[EXPLOSION][i]);
+		}
+		p_ParticleSystem->m_ParticleType = EXPLOSION;
+		// start at yellowish white and proceed to red.
+		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,0.85f,0.0f,1.0f),glm::vec4(0.58f,0.35f,0.0f,0.0f));
+	}
+	else
+	{
+		p_ParticleSystem->reset();
+		p_ParticleSystem->resetForces();
+	}
+	p_ParticleSystem->setRepeatingMode(false);
 }
 void ParticleSystemFactory::initBoxExplosionEffect(ParticleSystem* p_ParticleSystem)
 {
 	//copy per type data into instance
-
+	if(p_ParticleSystem->m_ParticleType != BOX_EXPLOSION)
+	{
+		p_ParticleSystem->m_BaseVelocities.clear();
+		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
+		{
+			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[BOX_EXPLOSION][i]);
+		}
+		p_ParticleSystem->m_ParticleType = BOX_EXPLOSION;
+		// start at yellowish white and proceed to red.
+		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,0.85f,0.0f,1.0f),glm::vec4(0.58f,0.35f,0.0f,0.0f));
+	}
+	else
+	{
+		p_ParticleSystem->reset();
+		p_ParticleSystem->resetForces();
+	}
+	p_ParticleSystem->setRepeatingMode(false);
 }
 void ParticleSystemFactory::initWaveEffect(ParticleSystem* p_ParticleSystem)
 {
 	//copy per type data into instance
-
+	if(p_ParticleSystem->m_ParticleType != WAVE)
+	{
+		p_ParticleSystem->m_BaseVelocities.clear();
+		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
+		{
+			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[WAVE][i]);
+		}
+		p_ParticleSystem->m_ParticleType = WAVE;
+		// start at yellowish white and proceed to red.
+		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,0.85f,0.0f,1.0f),glm::vec4(0.58f,0.35f,0.0f,0.0f));
+	}
+	else
+	{
+		p_ParticleSystem->reset();
+		p_ParticleSystem->resetForces();
+	}
+	p_ParticleSystem->setRepeatingMode(true);
+	
 }
 ParticleSystemFactory::~ParticleSystemFactory(void)
 {

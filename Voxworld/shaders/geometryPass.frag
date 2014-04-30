@@ -36,5 +36,5 @@ void main(void)
 	diffuseBuffer	= texture(diffuseMap, newCoords).rgba;	// Write the color from model's texture
 	texCoordBuffer	= vec4(texCoord, 0.0, 0.0);				// Write texture coordinates (and an aditional value for specular)
 	positionBuffer	= vec4(worldPos, 0.0);					// Write fragment's position in world space
-	normalBuffer = vec4(TBN * normalize(2.0 * (texture(normalMap, newCoords).rgb) - 1.0), 0.0);
+	normalBuffer = vec4(TBN * normalize((2.0 * (texture(normalMap, newCoords).rgb) - 1.0)), 0.0);
 }

@@ -444,6 +444,9 @@
     <ClCompile Include="AStarPool.cpp">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleShader.cpp">
+      <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -687,6 +690,9 @@
     </ClInclude>
     <ClInclude Include="AStarPool.h">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleShader.h">
+      <Filter>Core Engine\Renderer\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
