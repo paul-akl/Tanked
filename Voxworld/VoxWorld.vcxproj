@@ -56,6 +56,7 @@
     <ClCompile Include="Notification.cpp" />
     <ClCompile Include="NotificationFactory.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
+    <ClCompile Include="ParticleShader.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemFactory.cpp" />
     <ClCompile Include="Plane.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Notification.h" />
     <ClInclude Include="NotificationFactory.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
+    <ClInclude Include="ParticleShader.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemFactory.h" />
     <ClInclude Include="Plane.h" />

@@ -44,19 +44,42 @@ void GBuffer::init()
 	glGenTextures(1, &m_DepthBufferHandle);
 	glGenTextures(1, &m_BlurBuffer);
 	glGenTextures(1, &m_FinalBuffer);
+	
+	GLint internalFormats[GBufferNumTextures];
+	GLenum textureFormats[GBufferNumTextures];
+	GLenum textureTypes[GBufferNumTextures];
+
+	internalFormats[GBufferPosition] = GL_RGBA32F;
+	textureFormats[GBufferPosition] = GL_RGBA;
+	textureTypes[GBufferPosition] = GL_FLOAT;
+
+	internalFormats[GBufferDiffuse] = GL_RGBA16F;
+	textureFormats[GBufferDiffuse] = GL_RGBA;
+	textureTypes[GBufferDiffuse] = GL_FLOAT;
+
+	internalFormats[GBufferNormal] = GL_RGBA16F;
+	textureFormats[GBufferNormal] = GL_RGBA;
+	textureTypes[GBufferNormal] = GL_FLOAT;
+
+	internalFormats[GBufferTexCoord] = GL_RGBA16F;
+	textureFormats[GBufferTexCoord] = GL_RGBA;
+	textureTypes[GBufferTexCoord] = GL_FLOAT;
+
+	internalFormats[GBufferEmissive] = GL_RGBA16F;
+	textureFormats[GBufferEmissive] = GL_RGBA;
+	textureTypes[GBufferEmissive] = GL_FLOAT;
 
 	// Create textures
 	for(int i=0; i < GBufferNumTextures; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_GBTextures[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[i], m_WindowWidth, m_WindowHeight, 0, textureFormats[i], textureTypes[i], NULL);
 
-		// Using nearest filtering instead of linear, to avoid any distortions
-		// and unnecessary interpolation (since the sampling is 1 to 1)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_GBTextures[i], 0);
 	}
 	
@@ -67,7 +90,7 @@ void GBuffer::init()
 
 	// Create the blur buffer, that acts as an intermediate buffer between vertical and horizontal blur passes
 	glBindTexture(GL_TEXTURE_2D, m_BlurBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -76,7 +99,7 @@ void GBuffer::init()
 
 	// Create the final buffer, that gets renderred to the screen
 	glBindTexture(GL_TEXTURE_2D, m_FinalBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_WindowWidth, m_WindowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + GBufferFinal, GL_TEXTURE_2D, m_FinalBuffer, 0);
@@ -133,13 +156,31 @@ void GBuffer::initStencilPass()
 }
 void GBuffer::initLightPass()
 {
-	glDrawBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);			// Bind final buffer to draw to
+	//glDrawBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);			// Bind final buffer to draw to
 	
-	for(int i=0; i < GBufferNumTextures; i++)							 // For each geometry buffer
+	/*for(int i=0; i < GBufferNumTextures; i++)							 // For each geometry buffer
 	{
 		glActiveTexture(GL_TEXTURE0 + i);								 // Make it active
 		glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferPosition + i]); // and bind it so it can be accessed in the shaders
-	}
+	}*/
+
+	glDrawBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);
+	
+	glActiveTexture(GL_TEXTURE0 + GBufferPosition);
+	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferPosition]);
+	
+	glActiveTexture(GL_TEXTURE0 + GBufferDiffuse);
+	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferDiffuse]);
+	
+	glActiveTexture(GL_TEXTURE0 + GBufferNormal);
+	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferNormal]);
+	
+	glActiveTexture(GL_TEXTURE0 + GBufferTexCoord);
+	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferTexCoord]);
+}
+void GBuffer::initParticlePass()
+{
+
 }
 void GBuffer::initFinalPass()
 {

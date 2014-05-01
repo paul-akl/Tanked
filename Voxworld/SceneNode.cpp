@@ -46,7 +46,7 @@ void SceneNode::addTransform(TransformNode* p_LocalTransform)
 void SceneNode::addMesh(MeshNode* p_Mesh)
 {
 	m_Mesh = p_Mesh;
-	addNode(p_Mesh);
+	//addNode(p_Mesh);
 }
 void SceneNode::addTexture(TextureNode* p_Texture)
 {
@@ -74,7 +74,7 @@ void SceneNode::addTexture(TextureNode* p_Texture)
 		break;
 	}
 
-	addNode(p_Texture);
+	//addNode(p_Texture);
 }
 const glm::mat4& SceneNode::getWorldTransform(void)
 {
@@ -170,12 +170,12 @@ void SceneNode::render(Renderer* p_Renderer)
 			if(m_Children[i]!= nullptr)
 			{
 				if(m_Children[i]->isActive())
-					if(m_Children[i]->getName()!=m_Mesh->getName())
+					/*if(m_Children[i]->getName()!=m_Mesh->getName())
 						if(m_Children[i]->getName()!=m_Diffuse->getName())
 							if(m_Children[i]->getName()!=m_LocalTransform->getName())
 								if(m_EmissiveMap==nullptr || m_Children[i]->getName()!=m_EmissiveMap->getName())
 									if(m_NormalMap==nullptr ||	m_Children[i]->getName()!=m_NormalMap->getName())
-										if(m_HeightMap==nullptr ||	m_Children[i]->getName()!=m_HeightMap->getName())
+										if(m_HeightMap==nullptr ||	m_Children[i]->getName()!=m_HeightMap->getName())*/
 											m_Children[i]->render(p_Renderer);
 			}
 		}

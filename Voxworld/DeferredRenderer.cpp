@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Frustum.h"
 #include "SpotLight.h"
+#include "ParticleSystem.h"
 
 DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Renderer(p_WindowWidth, p_WindowHeight)
 {
@@ -177,13 +178,13 @@ void DeferredRenderer::endRenderCycle(void)
 	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix); 
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	
-	glEnable(GL_STENCIL_TEST);
+	//glEnable(GL_STENCIL_TEST);
 	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
 	{
-		stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
+		//stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
 		pointLightPass(m_PointLightList[i]);
 	}
-	glDisable(GL_STENCIL_TEST);
+	//glDisable(GL_STENCIL_TEST);
 	for(std::vector<SpotLightDataSet>::size_type i = 0; i < m_SpotLightList.size(); i++)
 	{
 		//stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
@@ -295,6 +296,11 @@ void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 		p_SpotLightNode->getDiffuseIntensity(),		p_SpotLightNode->getSpecularIntensity(), p_SpotLightNode->getSpecularPower(),
 		p_SpotLightNode->getLightModel()	));
 }
+void DeferredRenderer::render(ParticleSystem* p_Particle)
+{
+	//m_ParticlesList.push_back(ParticleDataSet(	p_Particle->getParticleHandle(), p_Particle->getNumParticles(), p_Particle->getBoundingRadius(), 
+	//											m_ProjectionMatrix * m_CurrentViewMatrix * m_CurrentModelMatrix, p_Particle->getCurrentColour()	));
+}
 
 SDL_Window* DeferredRenderer::getWindow(void)
 {
@@ -342,6 +348,8 @@ void DeferredRenderer::init(void)
 	m_UIShader = new Shader();
 	m_UIShader->initShader("Shaders\\UIPass.vert","Shaders\\UIPass.frag");
 
+	m_ParticleShader = new ParticleShader();
+	m_ParticleShader->initShader("Shaders\\particlesEffect.vert", "Shaders\\particlesEffect.frag");
 	m_BlurVerticalShader = new GaussianBlurShader();
 	m_BlurVerticalShader->initShader("Shaders\\gaussianBlurVertical.vert", "Shaders\\gaussianBlurVertical.frag");
 	m_BlurHorizontalShader = new GaussianBlurShader();
@@ -538,7 +546,7 @@ void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 {
 	m_GBuffer->initLightPass();
 
-	glStencilFunc(GL_NOTEQUAL, 0, 0xFF);	// Set stencil test to only render if a stencil value is greater than 0 (zero)
+	//glStencilFunc(GL_NOTEQUAL, 0, 0xFF);	// Set stencil test to only render if a stencil value is greater than 0 (zero)
 
 	glDisable(GL_DEPTH_TEST);		
 	glEnable(GL_BLEND);				// Use blending so that unlit fragments are black (final buffer is cleared to black every frame)
@@ -640,6 +648,18 @@ void DeferredRenderer::finalPass()
 	glBlitFramebuffer(	0, 0, m_ScreenWidth, m_ScreenHeight,									// Copy an area from origini to screen size (full screen area)
 						0, 0, m_ScreenWidth, m_ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);	// and paste it to the same sized full screen area, using 'NEAREST' filter,
 }																								// to avoid any artifacts, since the buffers are same size (pixels are 1 to 1)
+void DeferredRenderer::particlesPass(std::vector<ParticleDataSet> &p_particleList)
+{
+	m_ParticleShader->enable();
+	glEnable(GL_POINTS);
+	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
+	m_GBuffer->bindForWriting(GBuffer::GBufferEmissive);
+	std::vector<ParticleDataSet>::size_type numParticles = p_particleList.size();
+	for(std::vector<ParticleDataSet>::size_type i = 0; i < numParticles; i++)
+	{
+		
+	}
+}
 void DeferredRenderer::blurPass(GBuffer::GBufferTextureType p_sourceBuffer, GBuffer::GBufferTextureType p_destinationBuffer, int p_numPasses, float p_initialBlurOffset, float p_progressiveBlurOffset)
 {
 	glDisable(GL_CULL_FACE);

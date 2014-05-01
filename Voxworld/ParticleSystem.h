@@ -29,13 +29,15 @@ enum ParticleType
 	EXPLOSION,
 	BOX_EXPLOSION,
 	HOVER,
+	NUM_PARTICLE_TYPES
 };
 enum ParticleBufferSet
 {
 	PARTICLE_POSITION,
 	PARTICLE_VELOCITY,
 	PARTICLE_COLOUR,
-	PARTICLE_TTL,
+	PARTICLE_TTL,	// Time To Live
+	NUM_PARTICLE_BUFFERS
 };
 class ParticleSystem :
 	public SceneNode
@@ -46,6 +48,7 @@ public:
 	virtual void update(float p_DeltaTimeS);
 	virtual void render(Renderer* p_Renderer);
 	void setPointSize(int p_PointSize){m_PointSize = p_PointSize;}
+	void setVectorBias(glm::vec3& p_Bias);
 	void setParticlesPerEmmission(int p_Number){m_ParticlesPerEmission = p_Number;}
 	void setRepeatingMode(bool p_Switch){m_Repeating = p_Switch;}
 	int getPointSize(){return m_PointSize;}
@@ -58,32 +61,37 @@ public:
 	void setColourTransition(glm::vec4 p_StartColour,glm::vec4 p_EndColour);
 	GLuint getParticleHandle(){return m_ParticleHandle;}
 	int getNumParticles(){return m_MaxParticles;}
+	glm::vec4 getCurrentColour() { return m_CurrentColour; }
 	void release();
 	void reset();
 	virtual ~ParticleSystem(void);
 protected:
+	friend class ParticleSystemFactory;
+
 	void updateBuffers();
 	void updateParticles(float p_DeltaTimeS);
-	std::vector<glm::vec3> m_Positions;
-	float m_Altitude;
-	glm::vec3 m_ForceVector;
-	std::vector<glm::vec3> m_BaseVelocities;
-	std::vector<glm::vec3> m_Velocities;
-	std::vector<glm::vec3> m_Forces;
+	void interpolateColor(float p_DeltaTimeS);
+
 	std::vector<float> m_LifeTimes;
-	float m_BaseLifeTime;
-	int m_ParticlesPerEmission;
-	int m_PointSize;
-	int m_MaxParticles;
-	bool m_Repeating;
-	bool m_GradiantColour;
-	friend class ParticleSystemFactory;
 	ParticleType m_ParticleType;
-	glm::vec4 m_StartingColour;
-	glm::vec4 m_EndColour;
-	glm::vec4 m_DeltaColour;
-	GLuint* m_ParticleBuffers;
-	GLuint m_ParticleHandle;
-	bool m_BufferSet;
+	std::vector<glm::vec3>	m_Positions,
+							m_BaseVelocities,
+							m_Velocities,
+							m_Forces;
+	float	m_BaseLifeTime,
+			m_Altitude;
+	int		m_ParticlesPerEmission,
+			m_PointSize,
+			m_MaxParticles;
+	bool	m_Repeating,
+			m_GradiantColour,
+			m_BufferSet;
+	glm::vec4	m_StartingColour,
+				m_EndColour,
+				m_DeltaColour,
+				m_CurrentColour;
+	glm::vec3	m_ForceVector;
+	GLuint		*m_ParticleBuffers,
+				m_ParticleHandle;
 };
 

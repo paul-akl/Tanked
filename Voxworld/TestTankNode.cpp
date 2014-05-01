@@ -198,7 +198,7 @@ void TestTankNode::update(float p_DeltaTimeS)
 			//if theta is greater than 180 degrees, then make a small adjustment, to make deltaAngle relative to zero
 			//(make deltaAngle either positive or negative
 			if (abs(deltaAngle) > 180.0f)
-				deltaAngle += deltaAngle > 0? -360.0f:360.0f;
+				deltaAngle += (deltaAngle > 0) ? -360.0f:360.0f;
 			if(deltaAngle < 0)
 			{
 				m_OrientationDeg-=m_TurnAnimSpeed*p_DeltaTimeS;

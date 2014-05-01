@@ -10,7 +10,7 @@ void ParticleSystem::init()
 {
 	if(!m_BufferSet)
 	{
-		m_ParticleBuffers = new GLuint[4];
+		m_ParticleBuffers = new GLuint[NUM_PARTICLE_BUFFERS];
 		glGenVertexArrays(1, &m_ParticleHandle);
 		glBindVertexArray(m_ParticleHandle);
 		//now we populate the VAO with Vertex Buffer data, just as if we were creating a mesh, except we are using points.
@@ -74,9 +74,12 @@ void ParticleSystem::updateParticles(float p_DeltaTimeS)
 		}
 	}
 }
+void ParticleSystem::interpolateColor(float p_DeltaTimeS)
+{
+	m_CurrentColour += m_DeltaColour * p_DeltaTimeS;
+}
 void ParticleSystem::release()
 {
-
 	glDeleteBuffers(4,m_ParticleBuffers);
 	glDeleteVertexArrays(1,&m_ParticleHandle);
 	delete[] m_ParticleBuffers;
@@ -84,18 +87,19 @@ void ParticleSystem::release()
 }
 void ParticleSystem::reset()
 {
-	std::fill(m_Positions.begin(),m_Positions.begin(),glm::vec3(0.0f));
 	for (size_t i = 0; i < m_BaseVelocities.size();i++)
 	{
 		m_Velocities[i] = m_BaseVelocities[i];
 	}
+
 	std::fill(m_LifeTimes.begin(),m_LifeTimes.end(),m_BaseLifeTime);
+	std::fill(m_Positions.begin(),m_Positions.begin(),glm::vec3(0.0f));
 }
 void ParticleSystem::updateBuffers()
 {
-	glBindBuffer(GL_ARRAY_BUFFER,m_ParticleBuffers[PARTICLE_POSITION]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Positions.data(), GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER,m_ParticleBuffers[PARTICLE_VELOCITY]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_VELOCITY]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Velocities.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_TTL]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(GLfloat), m_LifeTimes.data(), GL_DYNAMIC_DRAW);
@@ -105,6 +109,7 @@ void ParticleSystem::setColourTransition(glm::vec4 p_StartColour,glm::vec4 p_End
 {
 	m_DeltaColour = (m_EndColour - m_StartingColour);
 	m_StartingColour = p_StartColour;
+	m_CurrentColour = p_StartColour;
 	m_EndColour = p_EndColour;
 }
 void ParticleSystem::update(float p_DeltaTimeS)
@@ -126,23 +131,31 @@ void ParticleSystem::update(float p_DeltaTimeS)
 		m_LocalTransform->update(p_DeltaTimeS);
 	}
 	updateParticles(p_DeltaTimeS);
+	interpolateColor(p_DeltaTimeS);
 	updateBuffers();
 }
 void ParticleSystem::render(Renderer* p_Renderer)
 {
 	p_Renderer->begin();
-	p_Renderer->render(this);
 	if(m_LocalTransform!=nullptr)
 		m_LocalTransform->render(p_Renderer);
-	if(m_Diffuse!=nullptr)
-		m_Diffuse->render(p_Renderer);
+	p_Renderer->render(this);
+
+	/*if(m_Diffuse!=nullptr)
+		m_Diffuse->render(p_Renderer);*/
 	//m_Emissive->Render(p_Renderer);
 	p_Renderer->end();
 }
-
+void ParticleSystem::setVectorBias(glm::vec3& p_Bias)
+{
+	size_t end = m_Velocities.size();
+	for(size_t i = 0; i < end;i++)
+	{
+		m_Velocities[i]+=p_Bias;
+	}
+}
 ParticleSystem::~ParticleSystem(void)
 {
-	glDeleteBuffers(4,m_ParticleBuffers);
-	delete[] m_ParticleBuffers;
+	release();
 	//clear up opengl buffers & vectors
 }

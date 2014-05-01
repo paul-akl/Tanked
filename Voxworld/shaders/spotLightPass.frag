@@ -52,10 +52,10 @@ vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, 
         vec3 vertexToEye = normalize(cameraPos - worldPos);
         vec3 lightReflect = normalize(reflect(lightDirection, normal));
         float specularFactor = dot(vertexToEye, lightReflect);
-        specularFactor = pow(specularFactor, specularPower);
+        specularFactor = pow(specularFactor, 1000.0);
         if (specularFactor > 0) 
 		{
-            specularColor = vec4(baseLight.color, 1.0) * specularIntensity * specularFactor;
+            specularColor = vec4(baseLight.color, 1.0) * 15.0 * specularFactor;
         }
     }
 
