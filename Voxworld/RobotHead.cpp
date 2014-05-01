@@ -14,6 +14,37 @@ RobotHead::RobotHead(void)
 
 void RobotHead::update(float p_DeltaTimeS)
 {
+	if(m_OrientationDeg >= 360.0f)
+	{
+		m_OrientationDeg-=360.0f;
+	}
+	else if(m_OrientationDeg < 0.0f)
+	{
+		m_OrientationDeg=360.0f+m_OrientationDeg;
+	}
+	bool turning = false;
+	float deltaOrientation = m_TargetOrientation-m_OrientationDeg;
+	if(abs(deltaOrientation) < 5.5f)
+	{
+		turning = false;
+	}
+	else
+	{
+		turning = true;
+	}
+	if(turning)
+	{
+		if (abs(deltaOrientation) > 180.0f)
+			deltaOrientation += deltaOrientation > 0? -360.0f:360.0f;
+			if(deltaOrientation < 0)
+			{
+				turnRight(p_DeltaTimeS);
+			}
+			else if(deltaOrientation > 0)
+			{
+				turnLeft(p_DeltaTimeS);
+			}
+	}
 
 
 	m_LocalTransform->reset();
@@ -33,15 +64,18 @@ void RobotHead::addDamagedTexture(TextureNode* p_Texture)
 }
 void RobotHead::turnLeft(float p_DeltaTimeS)
 {
-	m_OrientationDeg-=m_TurnSpeed*p_DeltaTimeS;
+	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
 }
 void RobotHead::turnRight(float p_DeltaTimeS)
 {
-	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
+	m_OrientationDeg-=m_TurnSpeed*p_DeltaTimeS;
 }
 void RobotHead::LookAt(const glm::vec3 p_Target)
 {
-	m_OrientationDeg = (atan2(p_Target.z,p_Target.x));
+	m_TargetOrientation = atan2f(p_Target.z,p_Target.x);
+	if(m_TargetOrientation<0.0f)
+		m_TargetOrientation+=PI*2.0f;
+	m_TargetOrientation*=RAD_TO_DEG;
 }
 void RobotHead::rotate(float p_Rotation)
 {

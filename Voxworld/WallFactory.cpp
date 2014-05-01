@@ -31,6 +31,11 @@ void WallFactory::init()
 	m_WallHeight1->setName("WallHeight0");
 	m_WallHeight1->loadTexture("images/openWallWrap_H.png");
 
+	m_WallSpecular1 =  new TextureNode();
+	m_WallSpecular1->setTextureType(SPECULAR);
+	m_WallSpecular1->setName("WallSpecular0");
+	m_WallSpecular1->loadTexture("images/openWallWrap_G.png"); //CHANGE_NEEDED
+
 	m_WallMesh1 = new MeshNode();
 	m_WallMesh1->setName("WallMesh0");
 	m_WallMesh1->loadModel("models/cube.obj");
@@ -90,6 +95,7 @@ WallNode* WallFactory::getInstance()
 		v_WallInstance->addTexture(m_WallNormal1);
 		v_WallInstance->addTexture(m_WallEmissive1);
 		v_WallInstance->addTexture(m_WallHeight1);
+		v_WallInstance->addTexture(m_WallSpecular1);
 		v_WallInstance->setType(SCENERY);
 		v_WallInstance->setBoundaryType(AAB);
 		v_WallInstance->activate();

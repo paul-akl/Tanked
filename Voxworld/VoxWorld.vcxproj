@@ -56,6 +56,7 @@
     <ClCompile Include="Notification.cpp" />
     <ClCompile Include="NotificationFactory.cpp" />
     <ClCompile Include="OffensiveUpgrade.cpp" />
+    <ClCompile Include="ParticleShader.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ParticleSystemFactory.cpp" />
     <ClCompile Include="Plane.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Notification.h" />
     <ClInclude Include="NotificationFactory.h" />
     <ClInclude Include="OffensiveUpgrade.h" />
+    <ClInclude Include="ParticleShader.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemFactory.h" />
     <ClInclude Include="Plane.h" />
@@ -188,12 +190,16 @@
     <None Include="shaders\gaussianBlurVertical.vert" />
     <None Include="shaders\geometryPass.frag" />
     <None Include="shaders\geometryPass.vert" />
+    <None Include="shaders\particlesEffect.frag" />
+    <None Include="shaders\particlesEffect.vert" />
     <None Include="shaders\pointLightPass.frag" />
     <None Include="shaders\pointLightPass.vert" />
     <None Include="shaders\spotLightPass.frag" />
     <None Include="shaders\spotLightPass.vert" />
     <None Include="shaders\stencilPass.frag" />
     <None Include="shaders\stencilPass.vert" />
+    <None Include="shaders\UIPass.frag" />
+    <None Include="shaders\UIPass.vert" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc" />

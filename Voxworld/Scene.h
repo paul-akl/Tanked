@@ -11,6 +11,7 @@
 #include "CameraNode.h"
 #include "Renderer.h"
 #include "CollisionResponse.h"
+#include "ParticleSystemFactory.h"
 //#include "Maze.h"
 #include "AIManager.h"
 #include "Maze.h"
@@ -56,6 +57,7 @@ public:
 	void addCollisionSolver(CollisionSolver* p_Solver);
 	void addController(Controller* p_Controller);
 	void addRenderer(Renderer* p_Renderer);
+	void addParticleFactory(ParticleSystemFactory* p_Factory);
 	void addUI(HUD* p_Hud);
 	void nextLevel();
 
@@ -104,6 +106,7 @@ protected:
 	BasicTankFactory* m_TankFactory;
 	UpgradeFactory* m_UpgradeFactory;
 	RoboGenFactory* m_RoboGenFactory;
+	ParticleSystemFactory* m_ParticleFactory;
 	HUD* m_Hud;
 	TestTankNode* m_Tank;
 	std::vector<CollisionPair*> m_CollisionEvents;

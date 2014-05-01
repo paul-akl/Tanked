@@ -38,6 +38,7 @@ public:
 	virtual void initGeometryPass();	// Bind geometry buffers for drawing
 	virtual void initStencilPass();		// Prepare for light's stencil pass
 	virtual void initLightPass();		// Bind buffers from geometry pass so they can be accessed when rendering lights
+	virtual void initParticlePass();
 	virtual void initFinalPass();		// Bind the final buffer to 'read from' and the default screen buffer to 'write to'
 
 	virtual GLuint getPositionBufferHandle()	{	return GBufferPosition;	}

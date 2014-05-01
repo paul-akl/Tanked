@@ -54,6 +54,7 @@ void RobotGenerator::init()
 		tmp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
 		tmp->setDetectionRadius(400.0f);
 		tmp->setStateTimer(0.1f);
+		tmp->setPosition(glm::vec3(0.0f));
 		m_Robots.push_front(tmp);
 		tmp->deactivate();
 	}

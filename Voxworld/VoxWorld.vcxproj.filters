@@ -444,6 +444,9 @@
     <ClCompile Include="AStarPool.cpp">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleShader.cpp">
+      <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -688,6 +691,9 @@
     <ClInclude Include="AStarPool.h">
       <Filter>Core Engine\AI Manager\Support classes</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleShader.h">
+      <Filter>Core Engine\Renderer\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">
@@ -737,6 +743,18 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
     <None Include="shaders\gaussianBlurVertical.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\UIPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\UIPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\particlesEffect.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\particlesEffect.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
   </ItemGroup>

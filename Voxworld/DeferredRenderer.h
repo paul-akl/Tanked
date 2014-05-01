@@ -15,6 +15,7 @@
 #include "SpotLight.h"
 #include "MaterialNode.h"
 #include "GBuffer.h"
+#include "ParticleShader.h"
 #include <SDL.h>
 
 class Frustum;
@@ -42,6 +43,7 @@ public:
 	virtual void render(LightNode* p_PointLightNode);
 	virtual void render(SpotLight* p_SpotLightNode);
 	virtual void render(MaterialNode* p_Material);
+	virtual void render(ParticleSystem* p_Particle);
 
 	virtual void setTransparencyMode(const bool p_Transparency){;}
 	virtual SDL_Window* getWindow(void);
@@ -53,9 +55,10 @@ public:
 	virtual void dirLightPass();	// Render a quad (so all the fragments on screen gets affected) for direction light calculations
 	virtual void pointLightPass(PointLightDataSet &p_lightData);	// Render a sphere for each point light
 	virtual void spotLightPass(SpotLightDataSet &p_lightData);		// Render a cone for each spot light
-	virtual void skyboxPass();		// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
-	virtual void finalPass();		// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
-	virtual void updateViewFrustum(); //update the frustum based on the view and projection matrices
+	virtual void skyboxPass();			// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
+	virtual void finalPass();			// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
+	virtual void updateViewFrustum();	//update the frustum based on the view and projection matrices
+	virtual void particlesPass(std::vector<ParticleDataSet> &p_particleList);
 	virtual void blurPass(GBuffer::GBufferTextureType p_sourceBuffer, GBuffer::GBufferTextureType p_destinationBuffer, int p_numPasses, float p_initialBlurOffset, float p_progressiveBlurOffset);
 
 	virtual Frustum* getFrustum(){return m_Frustum;}
@@ -73,6 +76,7 @@ private:
 							*m_UIShader;
 	GaussianBlurShader		*m_BlurVerticalShader,
 							*m_BlurHorizontalShader;
+	ParticleShader			*m_ParticleShader;
 	PointLightShader		*m_PointLightShader;
 	SpotLightShader			*m_SpotLightShader;
 	Shader					*m_CurrentShader,
@@ -86,7 +90,7 @@ private:
 							*m_NormalTexture;
 
 	//status flags, used for shader selection and error checking
-	bool	m_Textures[4],
+	bool	m_Textures[NUMTEXTURES],
 			m_Matrices[4],
 			m_MeshFlag,
 			m_UI_Phase;
@@ -106,13 +110,15 @@ private:
 			m_CurrentDiffuse,
 			m_CurrentEmissiveMap,
 			m_CurrentNormalMap,
-			m_CurrentHeightMap;
+			m_CurrentHeightMap,
+			m_CurrentSpecularMap;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;
 	std::vector<StandardDataSet>	m_CulledList;
 	std::vector<PointLightDataSet>	m_PointLightList;
 	std::vector<SpotLightDataSet>	m_SpotLightList;
+	std::vector<ParticleDataSet>	m_ParticlesList;
 
 	void cullDataSet(std::vector<StandardDataSet> p_Unculled, std::vector<StandardDataSet> p_Culled, glm::mat4& p_ViewMatrix);
 	bool frustumCheck(StandardDataSet p_DataSet);

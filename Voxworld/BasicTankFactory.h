@@ -18,6 +18,7 @@ private:
 	MeshNode* m_TurretMesh1;
 	TextureNode		*m_BodyDiffuse1,
 					*m_BodyEmissive1,
-					*m_BodyNormal1;
+					*m_BodyNormal1,
+					*m_BodySpecular1;
 };
 

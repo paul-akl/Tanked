@@ -37,7 +37,7 @@ uniform float	specularPower;
 uniform vec3 cameraPos;
 uniform vec2 screenSize;
 
-vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, vec3 normal)
+vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, vec3 normal, float specularPower, float specularIntensity)
 {
     vec4  ambientColor	= vec4(baseLight.color, 1.0) * baseLight.ambientIntensity;
     float diffuseFactor = dot(normal, -lightDirection);
@@ -62,7 +62,7 @@ vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, 
     return (ambientColor + diffuseColor + specularColor);
 }
 
-vec4 calcSpotLight(vec3 worldPos, vec3 normal)
+vec4 calcSpotLight(vec3 worldPos, vec3 normal, float specularPower, float specularIntensity)
 {
 	vec3 lightToFragment = normalize(worldPos - light.position);
 	float spotLightFactor = dot(lightToFragment, light.direction);
@@ -73,26 +73,14 @@ vec4 calcSpotLight(vec3 worldPos, vec3 normal)
 		float distance = length(lightDirection);
 		lightDirection = normalize(lightDirection);
 		
-		vec4 lightColor = calcLightInternal(light.base, lightDirection, worldPos, normal);
+		vec4 lightColor = calcLightInternal(light.base, lightDirection, worldPos, normal, specularPower, specularIntensity);
 		
 		float attenuation =  light.atten.constant	+
 			                 light.atten.linear	* distance +
 				             light.atten.quad	* distance * distance;
 
 		vec4 spotLightColor = (lightColor / attenuation) * (1.0 - (1.0 - spotLightFactor) * 1.0 / (1.0 - light.cutoff));
-
-		//vec4 shade1 = 	smoothstep(vec4(0.1),vec4(0.11),spotLightColor);
-		//vec4 shade2 = 	smoothstep(vec4(0.2),vec4(0.41),spotLightColor);
-		//vec4 shade3 = 	smoothstep(vec4(0.9),vec4(0.95),spotLightColor);
-
-			
-		//vec4 shade1 = 	step(vec4(0.1),spotLightColor);
-		//vec4 shade2 = 	step(vec4(0.45),spotLightColor);
-		//vec4 shade3 = 	step(vec4(0.8),spotLightColor);
-		//vec4 colour = 	max( max(0.3*shade1,0.4*shade2), shade3  );
-		//return colour;
 		return spotLightColor;
-
 	}
 	else
 	{
@@ -113,6 +101,9 @@ void main()
 	vec3 normal = texture(normalMap, texCoord).xyz;
 	normal = normalize(normal);
 	
+	float specularPower = texture(positionMap, texCoord).w;
+	float specularIntensity = texture(normalMap, texCoord).w;
+
 	//fragColor = vec4(0.0, 1.0, 0.0, 1.0);
-    fragColor = vec4(color, 1.0) * calcSpotLight(worldPos, normal);
+    fragColor = vec4(color, 1.0) * calcSpotLight(worldPos, normal, specularPower, specularIntensity);
 }
