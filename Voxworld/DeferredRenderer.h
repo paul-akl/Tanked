@@ -90,7 +90,7 @@ private:
 							*m_NormalTexture;
 
 	//status flags, used for shader selection and error checking
-	bool	m_Textures[4],
+	bool	m_Textures[NUMTEXTURES],
 			m_Matrices[4],
 			m_MeshFlag,
 			m_UI_Phase;
@@ -110,7 +110,8 @@ private:
 			m_CurrentDiffuse,
 			m_CurrentEmissiveMap,
 			m_CurrentNormalMap,
-			m_CurrentHeightMap;
+			m_CurrentHeightMap,
+			m_CurrentSpecularMap;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;

@@ -20,12 +20,15 @@ uniform sampler2D diffuseMap;	// Model's texture
 uniform sampler2D normalMap;
 uniform sampler2D emissiveMap;
 uniform sampler2D heightMap;
+uniform sampler2D specularMap;
 
 void main(void)
 {
 	float height = texture(heightMap, texCoord.st).r;
 	float v = height*0.04-0.02;
 	vec2 newCoords = texCoord+(eyeDir.xy*v);
+	
+	float specularPower = texture(specularMap, newCoords).r;
 	vec4 emissiveTexture = texture(emissiveMap, newCoords).rgba;
 	if(emissiveTexture.a<0.8)
 	{
@@ -34,7 +37,7 @@ void main(void)
 	emissiveBuffer	= emissiveTexture * emissiveTexture.a;
 
 	diffuseBuffer	= texture(diffuseMap, newCoords).rgba;	// Write the color from model's texture
-	texCoordBuffer	= vec4(texCoord, 0.0, 0.0);				// Write texture coordinates (and an aditional value for specular)
+	texCoordBuffer	= vec4(texCoord, 0.0, 0.0);				// Write texture coordinates (and an aditional values for specular)
 	positionBuffer	= vec4(worldPos, 0.0);					// Write fragment's position in world space
-	normalBuffer = vec4(TBN * normalize((2.0 * (texture(normalMap, newCoords).rgb) - 1.0)), 0.0);
+	normalBuffer = vec4(TBN * normalize((2.0 * (texture(normalMap, newCoords).rgb) - 1.0)), specularPower);
 }

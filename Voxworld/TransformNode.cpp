@@ -22,11 +22,11 @@ void TransformNode::scale(const glm::vec3& p_Scale)
 {
 	m_Matrix = glm::scale(m_Matrix, p_Scale);
 }
-const glm::mat4& TransformNode::getLocalTransform(void)
+const glm::mat4 TransformNode::getLocalTransform(void)
 {
 	return m_Matrix;
 }
-const glm::mat4& TransformNode::getWorldTransform(void)
+const glm::mat4 TransformNode::getWorldTransform(void)
 {
 	return m_Parent->getWorldTransform();
 }

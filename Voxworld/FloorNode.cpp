@@ -3,6 +3,7 @@
 #include "TransformNode.h"
 FloorNode::FloorNode(void)
 {
+
 }
 void FloorNode::render(Renderer* p_Renderer)
 {

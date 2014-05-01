@@ -5,6 +5,7 @@
 ParticleSystem::ParticleSystem(void)
 {
 	m_BufferSet = false;
+	m_BaseLifeTime = 0.0f;
 }
 void ParticleSystem::init()
 {
@@ -42,6 +43,7 @@ void ParticleSystem::init()
 		//now we are finished creating space on the GPU, so we can unbind the VBO and VAO
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		m_BufferSet = true;
 		//initialise particles & opengl buffers
 	}
 	else
@@ -54,7 +56,7 @@ void ParticleSystem::updateParticles(float p_DeltaTimeS)
 	{
 		netForce+=m_Forces[j];
 	}
-	for (size_t i = 0; i < m_MaxParticles; i++)
+	for (size_t i = 0; i < m_Positions.size(); i++)
 	{
 		m_LifeTimes[i]-=p_DeltaTimeS;
 
@@ -70,6 +72,7 @@ void ParticleSystem::updateParticles(float p_DeltaTimeS)
 				m_Positions[i] = glm::vec3(0.0f);
 				m_Velocities[i] = m_BaseVelocities[i];
 				m_LifeTimes[i] = m_BaseLifeTime;
+				m_CurrentColour = m_StartingColour;
 			}
 		}
 	}
@@ -107,10 +110,10 @@ void ParticleSystem::updateBuffers()
 }
 void ParticleSystem::setColourTransition(glm::vec4 p_StartColour,glm::vec4 p_EndColour)
 {
-	m_DeltaColour = (m_EndColour - m_StartingColour);
 	m_StartingColour = p_StartColour;
 	m_CurrentColour = p_StartColour;
 	m_EndColour = p_EndColour;
+	m_DeltaColour = (m_EndColour - m_StartingColour) * (1.0f / m_BaseLifeTime);
 }
 void ParticleSystem::update(float p_DeltaTimeS)
 {
@@ -127,9 +130,11 @@ void ParticleSystem::update(float p_DeltaTimeS)
 	{
 		m_LocalTransform->reset();
 		m_LocalTransform->translate(m_Position+glm::vec3(0.0f,m_Altitude,0.0f));
+		m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0f,1.0f,0.0f));
 		m_LocalTransform->scale(m_Scale);
 		m_LocalTransform->update(p_DeltaTimeS);
 	}
+	SceneNode::update(p_DeltaTimeS);
 	updateParticles(p_DeltaTimeS);
 	interpolateColor(p_DeltaTimeS);
 	updateBuffers();
@@ -144,7 +149,7 @@ void ParticleSystem::render(Renderer* p_Renderer)
 	/*if(m_Diffuse!=nullptr)
 		m_Diffuse->render(p_Renderer);*/
 	//m_Emissive->Render(p_Renderer);
-	p_Renderer->end();
+	//p_Renderer->end();
 }
 void ParticleSystem::setVectorBias(glm::vec3& p_Bias)
 {

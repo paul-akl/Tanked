@@ -745,6 +745,18 @@
     <None Include="shaders\gaussianBlurVertical.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
+    <None Include="shaders\UIPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\UIPass.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\particlesEffect.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\particlesEffect.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc">

@@ -11,6 +11,7 @@ SceneNode::SceneNode(void)
 	m_EmissiveMap = nullptr;
 	m_NormalMap = nullptr;
 	m_HeightMap = nullptr;
+	m_SpecularMap = nullptr;
 	m_LocalTransform = nullptr;
 	m_IsActive = true;
 	m_OrientationDeg = 0.0f;
@@ -69,6 +70,10 @@ void SceneNode::addTexture(TextureNode* p_Texture)
 		{
 			m_HeightMap = p_Texture;
 		}break;
+	case SPECULAR:
+		{
+			m_SpecularMap = p_Texture;
+		}break;
 	default:
 		return;
 		break;
@@ -76,7 +81,7 @@ void SceneNode::addTexture(TextureNode* p_Texture)
 
 	//addNode(p_Texture);
 }
-const glm::mat4& SceneNode::getWorldTransform(void)
+const glm::mat4 SceneNode::getWorldTransform(void)
 {
 	return m_WorldTransform;
 }
@@ -161,6 +166,8 @@ void SceneNode::render(Renderer* p_Renderer)
 					m_NormalMap->render(p_Renderer);
 				if(m_HeightMap!=nullptr)
 					m_HeightMap->render(p_Renderer);
+				if(m_SpecularMap!=nullptr)
+					m_SpecularMap->render(p_Renderer);
 				//signal the renderer we are done with this item
 				p_Renderer->end();
 			}

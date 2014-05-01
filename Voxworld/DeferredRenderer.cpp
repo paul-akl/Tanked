@@ -118,6 +118,11 @@ void DeferredRenderer::end(void)
 		else
 			v_DataSet.HeightLocation = m_WhiteTexture->getTexture();
 
+		if(m_CurrentSpecularMap != 0)
+			v_DataSet.SpecularLocation = m_CurrentSpecularMap;
+		else
+			v_DataSet.SpecularLocation = m_BlackTexture->getTexture();
+
 		//material
 		//v_DataSet.Material = m_CurrentMaterial;
 		//shader
@@ -169,6 +174,7 @@ void DeferredRenderer::end(void)
 	m_CurrentNormalMap	 = 0;
 	m_CurrentEmissiveMap = 0;
 	m_CurrentHeightMap	 = 0;
+	m_CurrentSpecularMap = 0;
 }
 //this is called only when every object to be rendered has called its own render function
 void DeferredRenderer::endRenderCycle(void)
@@ -193,6 +199,7 @@ void DeferredRenderer::endRenderCycle(void)
 	}
 	glBindVertexArray(0);
 	
+	particlesPass(m_ParticlesList);
 	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 0.6f, -0.1f);
 
     glCullFace(GL_BACK);
@@ -208,6 +215,7 @@ void DeferredRenderer::endRenderCycle(void)
 	m_UIDataList.clear();
 	m_PointLightList.clear();
 	m_SpotLightList.clear();
+	m_ParticlesList.clear();
 
 	m_Matrices[VIEW] = false;
 	m_Matrices[PROJECTION] = false;
@@ -255,6 +263,12 @@ void DeferredRenderer::render(TextureNode* p_TextureNode)
 			m_Textures[HEIGHT] = true;
 			break;
 		}
+		case(SPECULAR):
+		{
+			m_CurrentSpecularMap = p_TextureNode->getTexture();
+			m_Textures[SPECULAR] = true;
+			break;
+		}
 	}
 }
 void DeferredRenderer::render(TransformNode* p_Transform)
@@ -298,8 +312,9 @@ void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 }
 void DeferredRenderer::render(ParticleSystem* p_Particle)
 {
-	//m_ParticlesList.push_back(ParticleDataSet(	p_Particle->getParticleHandle(), p_Particle->getNumParticles(), p_Particle->getBoundingRadius(), 
-	//											m_ProjectionMatrix * m_CurrentViewMatrix * m_CurrentModelMatrix, p_Particle->getCurrentColour()	));
+	m_ParticlesList.push_back(ParticleDataSet(	p_Particle->getParticleHandle(), p_Particle->getNumParticles(), p_Particle->getBoundingRadius(), 
+												m_ProjectionMatrix * m_CurrentViewMatrix * m_CurrentModelMatrix, p_Particle->getCurrentColour(), 
+												p_Particle->getPointSize(), p_Particle->getMaxLifeTime()	));
 }
 
 SDL_Window* DeferredRenderer::getWindow(void)
@@ -459,6 +474,9 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		glActiveTexture(GL_TEXTURE0 + NORMAL);
 		p_DataList[i].SelectedShader->bindTexture(NORMAL, p_DataList[i].NormalMapLocation);
 
+		glActiveTexture(GL_TEXTURE0 + SPECULAR);
+		p_DataList[i].SelectedShader->bindTexture(SPECULAR, p_DataList[i].SpecularLocation);
+
 		/*if(v_NumTextures > HEIGHT)
 		{
 			glActiveTexture(GL_TEXTURE3);
@@ -551,6 +569,7 @@ void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
 	glDisable(GL_DEPTH_TEST);		
 	glEnable(GL_BLEND);				// Use blending so that unlit fragments are black (final buffer is cleared to black every frame)
 	glBlendEquation(GL_FUNC_ADD);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFunc(GL_ONE, GL_ONE);
         
 	glEnable(GL_CULL_FACE);
@@ -650,18 +669,33 @@ void DeferredRenderer::finalPass()
 }																								// to avoid any artifacts, since the buffers are same size (pixels are 1 to 1)
 void DeferredRenderer::particlesPass(std::vector<ParticleDataSet> &p_particleList)
 {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	//glBlendFunc(GL_ONE, GL_ZERO);
+	glBlendFunc(GL_ONE, GL_ONE);
+
 	m_ParticleShader->enable();
 	glEnable(GL_POINTS);
 	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
-	m_GBuffer->bindForWriting(GBuffer::GBufferEmissive);
-	std::vector<ParticleDataSet>::size_type numParticles = p_particleList.size();
-	for(std::vector<ParticleDataSet>::size_type i = 0; i < numParticles; i++)
+	//m_GBuffer->bindForWriting(GBuffer::GBufferEmissive);
+	m_ParticleShader->bindEmissiveBuffer(GBuffer::GBufferEmissive);
+	m_ParticleShader->bindFinalBuffer(GBuffer::GBufferEmissive);
+	for(std::vector<ParticleDataSet>::size_type i = 0, numParticles = p_particleList.size(); i < numParticles; i++)
 	{
-		
+		m_ParticleShader->setColour(p_particleList[i].colour);
+		m_ParticleShader->setMVP(p_particleList[i].MVP);
+		m_ParticleShader->setMaxLifeTime(p_particleList[i].maxLifeTime);
+
+		glBindVertexArray(p_particleList[i].VAO);
+		glPointSize(p_particleList[i].pointSize);
+		glDrawArrays(GL_POINTS, 0, p_particleList[i].numParticles);
 	}
+	glBindVertexArray(0);
 }
 void DeferredRenderer::blurPass(GBuffer::GBufferTextureType p_sourceBuffer, GBuffer::GBufferTextureType p_destinationBuffer, int p_numPasses, float p_initialBlurOffset, float p_progressiveBlurOffset)
 {
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glBlendFunc(GL_ONE, GL_ZERO);
 	//glBlendFunc(GL_ONE, GL_ONE);

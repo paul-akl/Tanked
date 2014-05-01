@@ -40,6 +40,7 @@ struct StandardDataSet
 	GLuint NormalMapLocation;
 	GLuint EmissiveMapLocation;
 	GLuint HeightLocation;
+	GLuint SpecularLocation;
 	Material* Material;
 	Shader* SelectedShader;
 	//non camera related transform matrices
@@ -145,12 +146,13 @@ struct ParticleDataSet
 	GLuint		VAO,
 				numParticles;
 	float		boundingRadius,
-				pointSize;
+				pointSize,
+				maxLifeTime;
 	glm::mat4	MVP;
 	glm::vec4	colour;
 	ParticleDataSet(	GLuint p_VAO,		GLuint p_numParticles,	float p_boundingRadius,
-						glm::mat4 &p_MVP,	glm::vec4 &p_colour,	float p_pointSize ):
-						VAO(p_VAO), numParticles(p_numParticles), boundingRadius(p_boundingRadius), MVP(p_MVP), colour(p_colour), pointSize(p_pointSize) { }
+						glm::mat4 &p_MVP,	glm::vec4 &p_colour,	float p_pointSize,		float p_maxLifeTime):
+						VAO(p_VAO), numParticles(p_numParticles), boundingRadius(p_boundingRadius), MVP(p_MVP), colour(p_colour), pointSize(p_pointSize), maxLifeTime(p_maxLifeTime) { }
 };
 
 class Renderer
