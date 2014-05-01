@@ -7,7 +7,9 @@ enum TextureType
 	EMISSIVE,
 	NORMAL,
 	HEIGHT,
-	DEPTH,
+	SPECULAR,
+	NUMTEXTURES,
+	DEPTH = NUMTEXTURES
 };
 class Renderer;
 

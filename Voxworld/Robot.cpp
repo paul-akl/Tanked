@@ -3,19 +3,20 @@
 #include "Renderer.h"
 #include "MeshNode.h"
 #include "TextureNode.h"
+#include <iostream>
 
 Robot::Robot(void)
 {
 	m_LeftArm = nullptr;
 	m_RightArm = nullptr;
 	m_Head = nullptr;
-	m_MaxVelocityScalar = 125.0f;
+	m_MaxVelocityScalar = 150.0f;
 	m_DamagedTextureDiffuse = nullptr;
 	m_TurnSpeed = 25.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
 	m_Thrust = 4000.0f;
-	m_Mass = 400.0f;
+	m_Mass = 300.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
 	m_LeftArmPosition = glm::vec3(0.0f,3.0f,-2.8f);
 	m_RightArmPosition = glm::vec3(0.0f,3.0f,2.8f);
@@ -78,11 +79,11 @@ void Robot::setHitPoints(const unsigned int p_HP)
 }
 void Robot::turnLeft(float p_DeltaTimeS)
 {
-	m_OrientationDeg-=m_TurnSpeed*p_DeltaTimeS;
+	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
 }
 void Robot::turnRight(float p_DeltaTimeS)
 {
-	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
+	m_OrientationDeg-=m_TurnSpeed*p_DeltaTimeS;
 }
 void Robot::update(float p_DeltaTimeS)
 {
@@ -104,6 +105,14 @@ void Robot::update(float p_DeltaTimeS)
 	/////////////////////////////////////////////////////////////////////////////
 	// TARGET HANDLING														/////
 	/////////////////////////////////////////////////////////////////////////////
+	if(m_OrientationDeg >= 360.0f)
+	{
+		m_OrientationDeg-=360.0f;
+	}
+	else if(m_OrientationDeg < 0.0f)
+	{
+		m_OrientationDeg=360.0f+m_OrientationDeg;
+	}
 	if(m_behaviourState!=PassiveStatus)
 	{
 		if(true)//m_StateTimer>0.0f)
@@ -116,6 +125,7 @@ void Robot::update(float p_DeltaTimeS)
 			if(!m_WayPoints.empty())
 			{
 				m_lookDirection=m_WayPoints.front()-m_Position;
+				glm::vec3 targetDir = glm::normalize(m_lookDirection);
 				if(glm::length(m_lookDirection) <= m_Radius*2.0f)
 				{
 					m_WayPoints.pop_front();
@@ -124,22 +134,45 @@ void Robot::update(float p_DeltaTimeS)
 				// convert vector to angle in degrees
 				// set angle to head
 					//m_TargetOrientation = acos(m_lookDirection.z)*RAD_TO_DEG;
-					m_TargetOrientation = atan2(m_lookDirection.z,m_lookDirection.x)*RAD_TO_DEG;
-					m_TargetOrientation;
-					m_Head->setOrientation(m_TargetOrientation);
-					if(abs(m_TargetOrientation-m_OrientationDeg)>5.0f)
+	
+					m_TargetOrientation = atanf(targetDir.z / targetDir.x);
+					//std::cout << targetDir.x << " | " << std::endl << targetDir.z << std::endl << std::endl;
+
+
+					//glm::vec3 axis = glm::cross(m_WayPoints.front(), m_Position);
+					//axis = glm::normalize(axis);
+					//float angle = acosf(glm::dot(m_WayPoints.front(), m_Position) / glm::length(m_WayPoints.front()) / glm::length(m_Position));
+					//m_TargetOrientation = atan2f(m_Position.y * sinf(angle) - m_Position.x * m_Position.z * (1 - cosf(angle)), 1 - ((m_Position.y*m_Position.y)*(m_Position.z*m_Position.z) * (1-cosf(angle))));
+					
+
+					//if(m_TargetOrientation<0.0f)
+					//	m_TargetOrientation+=PI*2.0f;
+					m_TargetOrientation*=RAD_TO_DEG;
+					m_OrientationDeg = m_TargetOrientation;
+					m_Head->setTargetOrientation(m_TargetOrientation);
+					float deltaOrientation = m_TargetOrientation-m_OrientationDeg;
+					if(abs(deltaOrientation) < 5.5f)
 					{
-						//printf("target: %f, current: %f\n", m_TargetOrientation,m_OrientationDeg);
-						if(m_TargetOrientation-m_OrientationDeg < 0.0f)
-						{
-							m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
-						}
-						else
-						{
-							m_OrientationDeg-=m_TurnSpeed*p_DeltaTimeS;
-						}
+						m_Turning = false;
 					}
-					//m_Head->LookAt(m_movementTarget);
+					else
+					{
+						m_Turning = true;
+					}
+					if(m_Turning)
+					{
+						if (abs(deltaOrientation) > 180.0f)
+							deltaOrientation += deltaOrientation > 0? -360.0f:360.0f;
+							if(deltaOrientation < 0)
+							{
+								turnRight(p_DeltaTimeS);
+							}
+							else if(deltaOrientation > 0)
+							{
+								turnLeft(p_DeltaTimeS);
+							}
+					}
+					m_Head->LookAt(m_movementTarget);
 					glm::vec3 v_AccelerationDir = glm::normalize(m_lookDirection);
 					//then calculate acceleration scalar, multiply that by acceleration direction, 
 					//times delta time, to calculate impulse magnitude, and add to velocity
@@ -220,7 +253,7 @@ void Robot::update(float p_DeltaTimeS)
 
 	m_LocalTransform->reset();
 	m_LocalTransform->translate(m_Position+glm::vec3(0.0f,8.0f,0.0f));
-	m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
+	m_LocalTransform->rotate(m_OrientationDeg+180.0f,glm::vec3(0.0f,1.0f,0.0f));
 	m_LocalTransform->scale(glm::vec3(1.5f));
 	SceneNode::update(p_DeltaTimeS);
 

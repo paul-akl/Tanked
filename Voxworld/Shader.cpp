@@ -60,6 +60,7 @@ void Shader::getDataHandles(GLuint p_programHandle)
 	m_normalMapLocation	 = glGetUniformLocation(p_programHandle, "normalMap");
 	m_emissiveLocation	 = glGetUniformLocation(p_programHandle, "emissiveMap");
 	m_heightLocation	 = glGetUniformLocation(p_programHandle, "heightMap");
+	m_specularLocation	 = glGetUniformLocation(p_programHandle, "specularMap");
 }
 char* Shader::loadFile(const char* p_FileName, int &p_FileSize)
 {
@@ -150,6 +151,7 @@ void Shader::setNormalMatrix(glm::mat3& p_InvTransposeModelViewMatrix)
 {
 	glUniformMatrix3fv(m_normalLocation, 1, GL_FALSE, glm::value_ptr(p_InvTransposeModelViewMatrix)); 
 }
+
 void Shader::bindTexture(TextureType p_type, GLuint p_textureHandle)
 {
 	glActiveTexture(GL_TEXTURE0 + p_type);
@@ -170,6 +172,10 @@ void Shader::bindTexture(TextureType p_type, GLuint p_textureHandle)
 
 		case(HEIGHT):
 		glUniform1i(m_heightLocation, p_type);
+		break;
+		
+		case(SPECULAR):
+		glUniform1i(m_specularLocation, p_type);
 		break;
 	}
 }

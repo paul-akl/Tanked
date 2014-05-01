@@ -20,6 +20,7 @@ protected:
 	bool m_Reusing;
 	TextureNode		*m_FloorTexture1,
 					*m_FloorNormal,
-					*m_FloorHeight;
+					*m_FloorHeight,
+					*m_FloorSpecular;
 };
 

@@ -7,9 +7,9 @@ class TransformNode:
 {
 public:
 	TransformNode(void);
-	const glm::mat4& getLocalTransform(void);
+	const glm::mat4 getLocalTransform(void);
 	void reset(void);
-	const glm::mat4& getWorldTransform(void);
+	const glm::mat4 getWorldTransform(void);
 	void translate(const glm::vec3 p_Translation);
 	//this function needs parameters replaced by a quaternion,
 	//so temporary function:

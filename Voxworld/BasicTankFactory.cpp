@@ -28,6 +28,11 @@ void BasicTankFactory::init()
 	m_BodyNormal1->setName("tank0normal0");
 	m_BodyNormal1->loadTexture("images/Tank_N.tga");
 
+	m_BodySpecular1 = new TextureNode();
+	m_BodySpecular1->setTextureType(SPECULAR);
+	m_BodySpecular1->setName("tank0specular0");
+	m_BodySpecular1->loadTexture("images/Tank_N.tga");	//CHANGE_NEEDED
+
 	m_BodyMesh1 = new MeshNode();
 	m_BodyMesh1->loadModel("models/Tank_base.obj");
 	//now set up uniform tank mesh and texture
@@ -80,6 +85,7 @@ TestTankNode* BasicTankFactory::getTank(void)
 		m_Instance->addTexture(m_BodyDiffuse1);
 		m_Instance->addTexture(m_BodyEmissive1);
 		m_Instance->addTexture(m_BodyNormal1);
+		m_Instance->addTexture(m_BodySpecular1);
 		m_Instance->addMesh(m_BodyMesh1);
 		m_Instance->setOrientation(0.0f);
 		m_Instance->setBoundaryType(CIRCLE);

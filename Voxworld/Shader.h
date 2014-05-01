@@ -40,6 +40,7 @@ protected:
 			m_diffuseLocation,
 			m_normalMapLocation,
 			m_emissiveLocation,
-			m_heightLocation;
+			m_heightLocation,
+			m_specularLocation;
 };
 

@@ -33,7 +33,7 @@ public:
 	void setOrientation(const float p_OrientationDeg);
 	float getOrientation(){return m_OrientationDeg;}
 	SceneNode* search(std::string p_Target);
-	const glm::mat4& getWorldTransform(void);
+	const glm::mat4 getWorldTransform(void);
 	virtual void render(Renderer* p_Renderer)=0;
 	virtual void update(float p_DeltaTimeS)=0;
 	void setVelocity(glm::vec3 p_Velocity);
@@ -60,6 +60,7 @@ protected:
 	TextureNode* m_EmissiveMap;
 	TextureNode* m_NormalMap;
 	TextureNode* m_HeightMap;
+	TextureNode* m_SpecularMap;
 	std::vector<SceneNode*> m_Children;
 	glm::mat4 m_WorldTransform;
 	glm::vec3 m_Position;

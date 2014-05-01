@@ -1,4 +1,5 @@
 #version 330 core
+precision highp float;
 
 //layout(location = 0) out vec4 fragColor;
 out vec4 fragColor;
@@ -26,15 +27,12 @@ uniform sampler2D positionMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 
-uniform PointLight	light;
-
-uniform float	specularIntensity;
-uniform float	specularPower;
-
 uniform vec3 cameraPos;
 uniform vec2 screenSize;
 
-vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, vec3 normal)
+uniform PointLight	light;
+
+vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, vec3 normal, float specularPower, float specularIntensity)
 {
     vec4  ambientColor	= vec4(baseLight.color, 1.0) * baseLight.ambientIntensity;
     float diffuseFactor = dot(normal, -lightDirection);
@@ -52,21 +50,20 @@ vec4 calcLightInternal(BaseLight baseLight, vec3 lightDirection, vec3 worldPos, 
         specularFactor = pow(specularFactor, specularPower);
         if (specularFactor > 0) 
 		{
-            specularColor = vec4(baseLight.color, 1.0) * specularIntensity * specularFactor;
+			specularColor = vec4(baseLight.color, 1.0) * specularIntensity * specularFactor;
+			//specularColor = vec4(baseLight.color, 1.0) * baseLight.diffuseIntensity * specularFactor;
         }
-		//return vec4(cameraPos, 1.0);
-		//return vec4(specularFactor, specularFactor, specularFactor, 1.0);
     }
 
     return (ambientColor + diffuseColor + specularColor);
 }
-vec4 calcPointLight(vec3 worldPos, vec3 normal)
+vec4 calcPointLight(vec3 worldPos, vec3 normal, float specularPower, float specularIntensity)
 {
     vec3 lightDirection = worldPos - light.position;
     float distance = length(lightDirection);
     lightDirection = normalize(lightDirection);
 
-    vec4 lightColor = calcLightInternal(light.base, lightDirection, worldPos, normal);
+    vec4 lightColor = calcLightInternal(light.base, lightDirection, worldPos, normal, specularPower, specularIntensity);
 
     float attenuation =  light.atten.constant	+
                          light.atten.linear	* distance +
@@ -87,8 +84,20 @@ void main()
 	vec3 color = texture(diffuseMap, texCoord).xyz;
 	vec3 normal = texture(normalMap, texCoord).xyz;
 	normal = normalize(normal);
+
+	float specularPower = texture(normalMap, texCoord).w * 500.0;
+	float specularIntensity = 20.0;
 	
-   fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal);
+	//float specularIntensity = texture(normalMap, texCoord).w * 50.0;
+	//float specularPower = 500.0;
+
+	// ==========================================
+	// specularIntensity	= specular strength
+	// specularPower		= specular exponent
+	// ==========================================
+
+	fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal, specularPower, specularIntensity);
+	//fragColor = vec4(normal, 1.0);
 	//fragColor = calcPointLight(worldPos, normal);
 	//fragColor = vec4(normal, 1.0);
 }

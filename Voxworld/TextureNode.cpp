@@ -56,16 +56,16 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 		glGenTextures(1, &m_Texture);											// Generate texture ID
 		glBindTexture(GL_TEXTURE_2D, m_Texture);								// Bind it, for changes below
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, v_imageWidth, v_imageHeight,	// Upload image to OpenGL
-					 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)v_Texture2D );		
+					 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLubyte*)v_Texture2D);
+		glGenerateMipmap(GL_TEXTURE_2D);	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);	// Texture2D filtering mode, when image is minimized, Linear with mipmaps for best quality
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				// Texture2D filtering mode, when image is magnified
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);			// Set image clamping parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);					// Set image clamping parameters
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glGenerateMipmap(GL_TEXTURE_2D);
 		
-		GLfloat v_TextureAnisFilter;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &v_TextureAnisFilter);					// Get the maximum anisotropic filtering available from current hardware
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)v_TextureAnisFilter);		// Set to maximum anisitropic filtering, for best quality
+		GLfloat v_TextureAnisFilter = 0.0f;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &v_TextureAnisFilter);						// Get the maximum anisotropic filtering available from current hardware
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)v_TextureAnisFilter);	// Set to maximum anisitropic filtering, for best quality
 	}
 	else	// If image wasn't loaded, throw an exception
 	{

@@ -14,6 +14,7 @@ class LightNode;
 class SpotLight;
 class MaterialNode;
 class Frustum;
+class ParticleSystem;
 
 enum RenderMode
 {
@@ -39,6 +40,7 @@ struct StandardDataSet
 	GLuint NormalMapLocation;
 	GLuint EmissiveMapLocation;
 	GLuint HeightLocation;
+	GLuint SpecularLocation;
 	Material* Material;
 	Shader* SelectedShader;
 	//non camera related transform matrices
@@ -51,7 +53,6 @@ struct StandardDataSet
 	glm::vec3 modelPosition;
 	glm::mat4 worldTransform;
 };
-
 struct UIDataSet
 {
 	//mesh Data
@@ -68,7 +69,6 @@ struct UIDataSet
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 };
-
 //simple stucture for storing cubemap data which will be written to, and read from.
 struct EnvironmentMapDataSet
 {
@@ -140,6 +140,21 @@ struct SpotLightDataSet
 		return glm::vec3(4000.0f, 4000.0f, 4000.0f);
 	}
 };
+
+struct ParticleDataSet
+{
+	GLuint		VAO,
+				numParticles;
+	float		boundingRadius,
+				pointSize,
+				maxLifeTime;
+	glm::mat4	MVP;
+	glm::vec4	colour;
+	ParticleDataSet(	GLuint p_VAO,		GLuint p_numParticles,	float p_boundingRadius,
+						glm::mat4 &p_MVP,	glm::vec4 &p_colour,	float p_pointSize,		float p_maxLifeTime):
+						VAO(p_VAO), numParticles(p_numParticles), boundingRadius(p_boundingRadius), MVP(p_MVP), colour(p_colour), pointSize(p_pointSize), maxLifeTime(p_maxLifeTime) { }
+};
+
 class Renderer
 {
 public:
@@ -158,6 +173,7 @@ public:
 	virtual void render(LightNode* p_LightNode)=0;
 	virtual void render(SpotLight* p_LightNode)=0;
 	virtual void render(MaterialNode* p_Material)=0;
+	virtual void render(ParticleSystem* p_Particle)=0;
 	virtual void setTransparencyMode(const bool p_Transparency)=0;
 	virtual void updateViewFrustum() = 0;
 	virtual Frustum* getFrustum() = 0;

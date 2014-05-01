@@ -58,13 +58,18 @@ void FloorFactory::init()
 
 	m_FloorNormal = new TextureNode();
 	m_FloorNormal->setTextureType(NORMAL);
-	m_FloorNormal->loadTexture("images/Metal_SciFiDiamondPlate_1k_n.tga");
+	m_FloorNormal->loadTexture("images/Metal_SciFiDiamondPlate_1k_n.png");
 	m_FloorNormal->setName("floor0normal0");
 
 	m_FloorHeight = new TextureNode();
 	m_FloorHeight->setTextureType(HEIGHT);
-	m_FloorHeight->loadTexture("images/Metal_SciFiDiamondPlate_1k_h.tga");
+	m_FloorHeight->loadTexture("images/Metal_SciFiDiamondPlate_1k_h.png");
 	m_FloorHeight->setName("floor0height0");
+
+	m_FloorSpecular = new TextureNode();
+	m_FloorSpecular->setTextureType(SPECULAR);
+	m_FloorSpecular->loadTexture("images/Metal_SciFiDiamondPlate_1k_g.tga");	//CHANGE_NEEDED
+	m_FloorSpecular->setName("floor0specular0");
 
 	m_FloorMesh1 = new MeshNode();
 	m_FloorMesh1->setName("floor0mesh0");
@@ -97,6 +102,7 @@ FloorNode* FloorFactory::getFloor(int p_numTiles, float p_tileSize)
 		floorInstance->addTexture(m_FloorTexture1);
 		floorInstance->addTexture(m_FloorNormal);
 		floorInstance->addTexture(m_FloorHeight);
+		floorInstance->addTexture(m_FloorSpecular);
 		floorInstance->addMesh(m_FloorMesh1);
 		floorInstance->addTransform(floorTransform);
 		floorInstance->setSize(p_numTiles / 2.0f);

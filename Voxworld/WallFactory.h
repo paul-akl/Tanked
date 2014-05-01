@@ -22,7 +22,8 @@ protected:
 	TextureNode	*m_WallDiffuse1,
 				*m_WallNormal1,
 				*m_WallEmissive1,
-				*m_WallHeight1;
+				*m_WallHeight1,
+				*m_WallSpecular1;
 	MeshNode* m_WallMesh1;
 	bool m_ReusingObject;
 	int m_NumObjects;

@@ -66,6 +66,7 @@ void Scene::init()
 	m_TankFactory->init();
 	m_RoboGenFactory->init();
 	m_UpgradeFactory->init();
+	m_ParticleFactory->init();
 	//will be changed upon integration of maze node
 	//addTank(mazeObject->getStartPoint());
 	//add 4 robot generators to world according to maze
@@ -224,9 +225,12 @@ void Scene::addTank(glm::vec3 p_Location)
 		upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 		upgrade = m_UpgradeFactory->getOffensiveUpgrade(DEFAULT);
-		//upgrade->init();
 		m_Tank->AddOffensiveUpgrade(upgrade);
 	}
+	ParticleSystem *pSys = m_ParticleFactory->getParticleSystem(WAVE);
+	pSys->setPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+	m_Tank->addNode(pSys);
+
 	m_Tank->setPosition(p_Location);
 	m_Tank->setRadius(6.0f);
 	//SceneNode::addNode(m_Tank);
@@ -269,6 +273,10 @@ void Scene::addRobot(Robot* p_Robot)
 		m_Robots.push_front(p_Robot);
 		m_Solver->addEnemy(p_Robot);
 	}
+}
+void Scene::addParticleFactory(ParticleSystemFactory* p_Factory)
+{
+	m_ParticleFactory = p_Factory;
 }
 void Scene::addCollisionSolver(CollisionSolver* p_Solver)
 {

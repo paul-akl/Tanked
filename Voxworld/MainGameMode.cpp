@@ -6,6 +6,7 @@
 #include "CollisionSolver.h"
 #include "CollisionResponse.h"
 #include "DeferredRenderer.h"
+#include "ParticleSystemFactory.h"
 #include <iostream>
 MainGameMode::MainGameMode(void)
 {
@@ -27,6 +28,7 @@ void MainGameMode::init(Game& iGame,Renderer* p_Renderer)
 	scene->addUpgradeFactory(new UpgradeFactory());
 	scene->addTankFactory(new BasicTankFactory());
 	scene->addRenderer(p_Renderer);
+	scene->addParticleFactory(new ParticleSystemFactory());
 	scene->init();
 
 	//change controller to game mode
