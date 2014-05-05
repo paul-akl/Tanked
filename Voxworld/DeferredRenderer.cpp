@@ -10,6 +10,7 @@
 #include "SpotLight.h"
 #include "ParticleSystem.h"
 
+
 DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Renderer(p_WindowWidth, p_WindowHeight)
 {
 		m_UI_Phase = false;
@@ -48,12 +49,14 @@ void DeferredRenderer::beginRenderCycle(RenderMode p_Mode)
 			}
 		case(DEBUG):
 			{
+				m_GBuffer->setFinalPassBuffer(GBuffer::GBufferDiffuse);
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				glDisable(GL_CULL_FACE);
 				break;
 			}
 		case(FILLED):
 			{
+				m_GBuffer->setFinalPassBuffer(GBuffer::GBufferFinal);
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				glEnable(GL_CULL_FACE);
 				break;
@@ -180,30 +183,16 @@ void DeferredRenderer::end(void)
 void DeferredRenderer::endRenderCycle(void)
 {
 	m_GBuffer->initFrame();		// Required to clear final buffer
-	//somewhere here will be a frustum check
-	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix); 
+
+	cullDataSet(m_DataList, m_CulledList, m_CurrentViewMatrix);
+
 	geometryPass(m_CulledList);	// Render geometry of objects, pass vector of dataSets for current frame
 	
-	//glEnable(GL_STENCIL_TEST);
-	for(std::vector<PointLightDataSet>::size_type i = 0; i < m_PointLightList.size(); i++)
-	{
-		//stencilPass(m_PointLightList[i].lightModel, *m_PointLightMesh);
-		pointLightPass(m_PointLightList[i]);
-	}
-	//glDisable(GL_STENCIL_TEST);
-	for(std::vector<SpotLightDataSet>::size_type i = 0; i < m_SpotLightList.size(); i++)
-	{
-		//stencilPass(m_SpotLightList[i].lightModel, *m_SpotLightMesh);
-		//glDisable(GL_STENCIL_TEST);
-		spotLightPass(m_SpotLightList[i]);
-	}
-	glBindVertexArray(0);
-	
-	particlesPass(m_ParticlesList);
-	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 0.6f, -0.1f);
+	lightPass();
 
-    glCullFace(GL_BACK);
-	glDisable(GL_BLEND);
+	particlesPass(m_ParticlesList);
+
+	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 1.0f, -0.2f);
 
 	UIPass(m_UIDataList);	// Render UI objects, pass vector of UI dataSets for current frame
 
@@ -298,17 +287,15 @@ void DeferredRenderer::render(CameraNode* p_CameraNode)
 void DeferredRenderer::render(LightNode* p_PointLightNode)
 {
 	m_PointLightList.push_back(PointLightDataSet(
-		p_PointLightNode->getLightModel(),			glm::vec3(p_PointLightNode->getWorldTransform()*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)),		p_PointLightNode->getColour(),				
-		p_PointLightNode->getAttenuation(),			p_PointLightNode->getAmbientIntensity(),	p_PointLightNode->getDiffuseIntensity(),	
- 		p_PointLightNode->getSpecularIntensity(),	p_PointLightNode->getSpecularPower() ));
+		glm::vec3(p_PointLightNode->getWorldTransform()*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)),		p_PointLightNode->getColour(),				
+		p_PointLightNode->getAttenuation(),			p_PointLightNode->getAmbientIntensity(),	p_PointLightNode->getDiffuseIntensity() ));
 }
 void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 {
 	m_SpotLightList.push_back(SpotLightDataSet(
 		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),			 p_SpotLightNode->getAttenuation(),
 		p_SpotLightNode->getTransformedDirection(),	p_SpotLightNode->getCutoffAngle(),		 p_SpotLightNode->getAmbientIntensity(),
-		p_SpotLightNode->getDiffuseIntensity(),		p_SpotLightNode->getSpecularIntensity(), p_SpotLightNode->getSpecularPower(),
-		p_SpotLightNode->getLightModel()	));
+		p_SpotLightNode->getDiffuseIntensity()	));
 }
 void DeferredRenderer::render(ParticleSystem* p_Particle)
 {
@@ -363,28 +350,18 @@ void DeferredRenderer::init(void)
 	m_UIShader = new Shader();
 	m_UIShader->initShader("Shaders\\UIPass.vert","Shaders\\UIPass.frag");
 
+	m_lightPassShader = new LightShader();
+	m_lightPassShader->initShader("Shaders\\lightPass.vert", "Shaders\\lightPass.frag");
 	m_ParticleShader = new ParticleShader();
 	m_ParticleShader->initShader("Shaders\\particlesEffect.vert", "Shaders\\particlesEffect.frag");
 	m_BlurVerticalShader = new GaussianBlurShader();
 	m_BlurVerticalShader->initShader("Shaders\\gaussianBlurVertical.vert", "Shaders\\gaussianBlurVertical.frag");
 	m_BlurHorizontalShader = new GaussianBlurShader();
 	m_BlurHorizontalShader->initShader("Shaders\\gaussianBlurHorizontal.vert", "Shaders\\gaussianBlurHorizontal.frag");
-	m_StencilPassShader = new Shader();
-	m_StencilPassShader->initShader("Shaders\\stencilPass.vert", "Shaders\\stencilPass.frag");
-	m_PointLightShader = new PointLightShader();
-	m_PointLightShader->initShader("Shaders\\pointLightPass.vert", "Shaders\\pointLightPass.frag");
-	m_SpotLightShader = new SpotLightShader();
-	m_SpotLightShader->initShader("Shaders\\spotLightPass.vert", "Shaders\\spotLightPass.frag");
 
 	m_FullscrenQuad = new MeshNode();
 	m_FullscrenQuad->loadModel("Models\\quad.obj");
 	m_FullscrenQuad->setName("Fullscreen Quad");
-	m_PointLightMesh = new MeshNode();
-	m_PointLightMesh->loadModel("Models\\sphere.obj");
-	m_PointLightMesh->setName("PointLight Sphere");
-	m_SpotLightMesh = new MeshNode();
-	m_SpotLightMesh->loadModel("Models\\sphere.obj");
-	m_SpotLightMesh->setName("SpotLight Cone");
 
 	m_DiffuseTexture = new TextureNode();
 	m_DiffuseTexture->loadTexture("images/default.png");
@@ -394,15 +371,19 @@ void DeferredRenderer::init(void)
 	m_BlackTexture->loadTexture("images/black.png");
 	m_NormalTexture = new TextureNode();
 	m_NormalTexture->loadTexture("images/defaultNormal.png");
-
-	//m_StencilPassShader = new Shader();
-	//m_StencilPassShader->initShader("shaders/stencilPass.vert", "shaders/stencilPass.frag");
-
-	//m_DirLightShader = new Shader();
-	//m_DirLightShader->initShader("shaders/dirLightPass.vert", "shaders/dirLightPass.frag");
-
-	//m_PointLightShader = new Shader();
-	//m_PointLightShader->initShader("shaders/pointLightPass.vert", "shaders/pointLightPass.frag");
+	
+	m_maxNumPointLights = m_lightPassShader->getPointLightBlockSize() / sizeof(PointLightDataSet);
+	m_maxNumSpotLights = m_lightPassShader->getSpotLightBlockSize() / sizeof(SpotLightDataSet);
+	
+	glGenBuffers(1, &m_PointLightBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_PointLightBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLightDataSet) * m_maxNumPointLights, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getPointLightBlockIndex(), m_PointLightBuffer);
+	
+	glGenBuffers(1, &m_SpotLightBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_SpotLightBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(SpotLightDataSet) * m_maxNumSpotLights, NULL, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getSpotLightBlockIndex(), m_SpotLightBuffer);
 
 	//enable standard opengl rendering features
 	glEnable(GL_TEXTURE_2D);
@@ -437,12 +418,8 @@ void DeferredRenderer::shutDown(void)
 	delete m_NormalTexture;
 	delete m_GeometryShader;
 	delete m_UIShader;
-	delete m_PointLightShader;
-	delete m_SpotLightShader;
 	delete m_CurrentShader;
-	delete m_StencilPassShader;
-	delete m_PointLightMesh;
-	delete m_SpotLightMesh;
+	delete m_lightPassShader;
 	delete m_DiffuseTexture;
 	delete m_WhiteTexture;
 	delete m_BlackTexture;
@@ -503,10 +480,10 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 void DeferredRenderer::UIPass(std::vector<UIDataSet> &p_DataList)
 {
 	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
-	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask(GL_FALSE);			// turn off depth testing as the UI is drawn over everything else
 	glDisable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
 	
 	// Pick a shader, and render each data, looping through dataList vector
 	for(std::vector<UIDataSet>::size_type i = 0; i < p_DataList.size(); i++)
@@ -526,133 +503,34 @@ void DeferredRenderer::UIPass(std::vector<UIDataSet> &p_DataList)
 	glDisable(GL_BLEND);
 }
 
-void DeferredRenderer::stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_lightMesh)
+void DeferredRenderer::lightPass()
 {
-	m_GBuffer->initStencilPass();	// Unbind any buffers
-
-	m_StencilPassShader->enable();
-	m_StencilPassShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightModelMat);
-
-	glEnable(GL_DEPTH_TEST);		// Depth test is a primary operation of stencil pass
-    glDisable(GL_CULL_FACE);		// We want both faces to be rendered, so it can test if a fragment is inside an object
-
-	glClear(GL_STENCIL_BUFFER_BIT);		// Clear stencil buffer
-	glStencilFunc(GL_ALWAYS, 0, 0);		// and set it to always pass the test (as we are generating it in this pass, not using it to minimize fragment renders)
-
-	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);		// If a fragment is closer than the back face of the model, increment stencil value
-	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);		// If a fragment is close than the front face, decrement the stencil value
-																		// So, if a fragment is inside a model, it's stencil value is increased and then kept increased (stencil + 1 - 0 = stencil++)
-																		// If a fragment is in front of the model, increase it's stencil value and then decrease it		(stencil + 1 - 1 = stencil)
-																		// If a fragmant is behind the model, just keep it's stencil value								(stencil + 0 - 0 = stencil)
-	
-	glBindVertexArray(p_lightMesh.getMeshLocation());
-	glDrawElements(GL_TRIANGLES, p_lightMesh.getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
-	//glBindVertexArray(0);
-}
-void DeferredRenderer::dirLightPass()
-{
-	glDisable(GL_DEPTH_TEST);		
-	glEnable(GL_BLEND);				// Enable blending, so the default state of fragments are dark (clearing final buffer to black)
-	glBlendEquation(GL_FUNC_ADD);	// unless they get lit by directional (or anyother) light
-	glBlendFunc(GL_ONE, GL_ONE);	
-
-	//TODO: set directional light data uniforms and render a quad using directional light shader
-	
-	glDisable(GL_BLEND);
-}
-void DeferredRenderer::pointLightPass(PointLightDataSet &p_lightData)
-{
-	m_GBuffer->initLightPass();
-
-	//glStencilFunc(GL_NOTEQUAL, 0, 0xFF);	// Set stencil test to only render if a stencil value is greater than 0 (zero)
-
-	glDisable(GL_DEPTH_TEST);		
-	glEnable(GL_BLEND);				// Use blending so that unlit fragments are black (final buffer is cleared to black every frame)
-	glBlendEquation(GL_FUNC_ADD);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFunc(GL_ONE, GL_ONE);
-        
-	glEnable(GL_CULL_FACE);
-	//glDisable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);	// Use face culling, so that a fragment doesn't receive light (and light calculations) for both faces
-							// Cull the front face (and not the back) so that the light will still be calculated even if the camera is inside the sphere
-
-	// TODO: set point light's uniform values, calculate sphere size (based on radius) and render a sphere using point light shader
-
-	//p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
-
-	m_PointLightShader->enable();
-	//glm::mat4 currentModel = p_lightData.lightModel * glm::vec4(p_lightData.worldPosition,1.0f);
-
-	m_PointLightShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightData.lightModel);
-	m_PointLightShader->setWorldPosition(p_lightData.worldPosition);
-	m_PointLightShader->setColour(p_lightData.colour);
-	m_PointLightShader->setAttenConstant(p_lightData.attenuation.x);
-	m_PointLightShader->setAttenLinear(p_lightData.attenuation.y);
-	m_PointLightShader->setAttenQuadratic(p_lightData.attenuation.z);
-	m_PointLightShader->setAmbientIntensity(p_lightData.ambientI);
-	m_PointLightShader->setDiffuseIntensity(p_lightData.diffuseI);
-	m_PointLightShader->setSpecularIntensity(0.1f);//p_lightData.SpecI);
-	m_PointLightShader->setSpecularPower(8.0f);//p_lightData.SpecP);
-	m_PointLightShader->setCameraWorldPosition(m_CameraPosition);
-	//m_PointLightShader->setCameraWorldPosition(glm::vec3(m_CurrentViewMatrix[3].x, m_CurrentViewMatrix[3].y, m_CurrentViewMatrix[3].z));
-	//m_PointLightShader->setCameraWorldPosition(glm::vec3(m_CurrentViewMatrix*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-	m_PointLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
-	
-	glm::vec3 view = glm::vec3(m_CurrentViewMatrix*glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-
-	m_PointLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
-	m_PointLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
-	m_PointLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
-
-	glBindVertexArray(m_PointLightMesh->getMeshLocation());
-	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
-	//glDrawElementsBaseVertex(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0, 0);
-	//glBindVertexArray(0);
-
-    glCullFace(GL_BACK);
-	glDisable(GL_BLEND);
-}
-void DeferredRenderer::spotLightPass(SpotLightDataSet &p_lightData)
-{
-	m_GBuffer->initLightPass();
-	glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
-
 	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glDisable(GL_CULL_FACE);
 
-	glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-
-	//p_lightData.lightModel = glm::scale(p_lightData.lightModel, p_lightData.calcLightScale());
-
-	m_SpotLightShader->enable();
-
-	m_SpotLightShader->setModelMatrix(m_ProjectionMatrix * m_CurrentViewMatrix * p_lightData.lightModel);
-	m_SpotLightShader->setWorldPosition(p_lightData.worldPosition);
-	m_SpotLightShader->setWorldDirection(glm::normalize(p_lightData.worldDirection));
-	//m_SpotLightShader->setWorldDirection(glm::vec3(1.0f, 1.0f, 1.0f));
-	m_SpotLightShader->setColour(p_lightData.colour);
-	m_SpotLightShader->setAttenConstant(p_lightData.attenuation.x);
-	m_SpotLightShader->setAttenLinear(p_lightData.attenuation.y);
-	m_SpotLightShader->setAttenQuadratic(p_lightData.attenuation.z);
-	m_SpotLightShader->setAmbientIntensity(p_lightData.ambientI);
-	m_SpotLightShader->setDiffuseIntensity(p_lightData.diffuseI);
-	m_SpotLightShader->setSpecularIntensity(p_lightData.SpecI);
-	m_SpotLightShader->setSpecularPower(p_lightData.SpecP);
-	m_SpotLightShader->setCutoffAngle(p_lightData.cutoffAngle * (float)PI / 180.0f);
-	m_SpotLightShader->setCameraWorldPosition(m_CameraPosition);
-	m_SpotLightShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
+	glBindBuffer(GL_UNIFORM_BUFFER, m_PointLightBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PointLightDataSet) * m_PointLightList.size(), m_PointLightList.data());
 	
-	m_SpotLightShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
-	m_SpotLightShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
-	m_SpotLightShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
+	glBindBuffer(GL_UNIFORM_BUFFER, m_SpotLightBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(SpotLightDataSet) * m_SpotLightList.size(), m_SpotLightList.data());
 
-	glBindVertexArray(m_PointLightMesh->getMeshLocation());
-	glDrawElements(GL_TRIANGLES, m_PointLightMesh->getNumVerts(), GL_UNSIGNED_INT, 0);	// draw VAO 
-	//glBindVertexArray(0);
+	m_lightPassShader->enable();
+	m_lightPassShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
+	m_lightPassShader->setNumPointLights(m_PointLightList.size());
+	m_lightPassShader->setNumSpotLights(m_SpotLightList.size());
+	m_lightPassShader->setCameraWorldPosition(m_CameraPosition);
+
+	m_lightPassShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
+	m_lightPassShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
+	m_lightPassShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
+	m_lightPassShader->bindEmissiveBuffer(m_GBuffer->getEmissiveBufferHandle());
+	
+	m_GBuffer->initLightPass();
+
+	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 void DeferredRenderer::skyboxPass()
 {

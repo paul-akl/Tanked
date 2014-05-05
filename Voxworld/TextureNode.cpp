@@ -70,7 +70,7 @@ bool TextureNode::loadTexture(const std::string& p_FileName)
 	else	// If image wasn't loaded, throw an exception
 	{
 		std::cout << "Error loading texture: " << p_FileName << std::endl;	// Delete this line, once catching of the exception has been implemented
-		throw new std::exception(("Error loading texture: " + p_FileName).c_str());
+		//throw new std::exception(("Error loading texture: " + p_FileName).c_str());
 	}
 	return true;
 }

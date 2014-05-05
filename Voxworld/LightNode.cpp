@@ -16,7 +16,7 @@ void LightNode::update(float p_DeltaTimeS)
 	//m_BaseData.m_LightModel.scale(glm::vec3(1.0f));
 
 	m_LocalTransform->reset();
-	m_LocalTransform->translate(m_Position);// + m_Parent->getLocation());
+	m_LocalTransform->translate(m_Position);
 	m_LocalTransform->scale(glm::vec3(100.0f));
 
 	SceneNode::update(p_DeltaTimeS);

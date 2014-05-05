@@ -15,8 +15,8 @@ Robot::Robot(void)
 	m_TurnSpeed = 25.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
-	m_Thrust = 4000.0f;
-	m_Mass = 300.0f;
+	m_Thrust = 5000.0f;
+	m_Mass = 250.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
 	m_LeftArmPosition = glm::vec3(0.0f,3.0f,-2.8f);
 	m_RightArmPosition = glm::vec3(0.0f,3.0f,2.8f);

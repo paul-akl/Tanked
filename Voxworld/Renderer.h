@@ -91,54 +91,36 @@ struct SpotLightShadowDataSet
 };
 struct PointLightDataSet
 {
-	glm::mat4 lightModel;
-	glm::vec3 worldPosition;
-	glm::vec3 attenuation;
 	glm::vec3 colour;
-	float ambientI;
-	float diffuseI;
-	float SpecI;
-	float SpecP;
-	PointLightDataSet(	glm::mat4 p_lightModel,	glm::vec3 p_worldPosition,	
+	float ambientInt;
+	float diffuseInt;
+	glm::vec3 attenuation;
+	glm::vec4 worldPosition;
+
+	PointLightDataSet(	glm::vec3 p_position,	
 						glm::vec3 p_colour,		glm::vec3 p_attenuation,	
-						float p_ambientI,		float p_diffuseI,			
-						float p_SpecI,			float p_SpecP):
-						lightModel(p_lightModel),	worldPosition(p_worldPosition), colour(p_colour),	
-						ambientI(p_ambientI),		diffuseI(p_diffuseI),			SpecI(p_SpecI),		
-						SpecP(p_SpecP),				attenuation(p_attenuation){;}
-	glm::vec3 calcLightScale()
-	{
-		float scale = (Utils::GeneralUtils::max(Utils::GeneralUtils::max(colour.r, colour.g), colour.b) * diffuseI);
-		scale = (3.0f * sqrtf(scale) / attenuation.z);
-		//return glm::vec3(scale, scale, scale);
-		return glm::vec3(5000.0f);
-	}
+						float p_ambientI,		float p_diffuseI):
+						worldPosition(glm::vec4(p_position, 1.0f)),
+						colour(p_colour),		attenuation(p_attenuation),
+						ambientInt(p_ambientI),	diffuseInt(p_diffuseI)	{;}
 };
 struct SpotLightDataSet
 {
-	glm::mat4 lightModel;
-	glm::vec3 worldPosition;
-	glm::vec3 attenuation;
 	glm::vec3 colour;
-	glm::vec3 worldDirection;
-	float cutoffAngle;
-	float ambientI;
-	float diffuseI;
-	float SpecI;
-	float SpecP;
+	float ambientInt;
+	float diffuseInt;
+	glm::vec3 attenuation;
+	glm::vec4 worldPosition;
+	//glm::vec3 worldDirection;
+	//float cutoffAngle;
+
 	SpotLightDataSet(	glm::vec3 p_worldPosition,		glm::vec3 p_colour,		glm::vec3 p_attenuation,
 						glm::vec3 p_worldDirection,		float p_cutoffAngle,	float p_ambientI,	
-						float p_diffuseI,				float p_SpecI,			float p_SpecP,
-						glm::mat4 &p_lightModel):
-						worldPosition(p_worldPosition), colour(p_colour),		worldDirection(p_worldDirection),
-						cutoffAngle(p_cutoffAngle),		ambientI(p_ambientI),	diffuseI(p_diffuseI),
-						SpecI(p_SpecI),					SpecP(p_SpecP),			attenuation(p_attenuation),
-						lightModel(p_lightModel){;}
-	glm::vec3 calcLightScale()
-	{
-		//magic number: check later
-		return glm::vec3(4000.0f, 4000.0f, 4000.0f);
-	}
+						float p_diffuseI	):
+						worldPosition(glm::vec4(p_worldPosition, 1.0f)),		colour(p_colour),		
+						//worldDirection(p_worldDirection),						cutoffAngle(p_cutoffAngle),		
+						ambientInt(p_ambientI),									diffuseInt(p_diffuseI),
+						attenuation(p_attenuation)	{;}
 };
 
 struct ParticleDataSet

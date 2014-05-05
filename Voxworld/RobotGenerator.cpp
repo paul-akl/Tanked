@@ -20,6 +20,7 @@ RobotGenerator::RobotGenerator(void)
 	m_BaseTimer = 5.0f;
 	m_SpawnDistance = 10.0f;
 	m_behaviourState = HostileStatus;
+	m_InternalLightOffset=glm::vec3(0.0f,0.5f,0.0f);
 }
 bool RobotGenerator::isReady()
 {
@@ -30,9 +31,18 @@ void RobotGenerator::setDifficulty(const unsigned int p_Difficulty)
 	m_Level = p_Difficulty;
 	m_SpawnDelay = m_BaseTimer-(m_BaseTimer*0.01f)*m_Level;
 }
+void RobotGenerator::addInternalLight(LightNode *p_light)
+{
+	m_interalPointLight = p_light;
+	m_interalPointLight->setPosition(m_InternalLightOffset);
+}
+void RobotGenerator::addInternalDamagedLight(LightNode *p_light)
+{
+	m_internalDamagedPointLight = p_light;
+	m_internalDamagedPointLight->setPosition(m_InternalLightOffset);
+}
 void RobotGenerator::init()
 {
-
 	for (int i = 0; i < MAX_ROBOTS;i++)
 	{
 		Robot* tmp = new Robot();
@@ -58,6 +68,8 @@ void RobotGenerator::init()
 		m_Robots.push_front(tmp);
 		tmp->deactivate();
 	}
+	m_interalPointLight->setParent(this);
+	m_internalDamagedPointLight->setParent(this);
 }
 Robot* RobotGenerator::getRobotFromPool()
 {
@@ -172,11 +184,15 @@ void RobotGenerator::update(float p_DeltaTimeS)
 			m_RobotSpawnPoint = m_Position+(glm::normalize(m_targetPosition-m_Position)*m_SpawnDistance);
 			//m_RobotSpawnPoint = m_Position+(glm::vec3(1.0f,0.0f,0.0f)*m_SpawnDistance);
 		}
-			m_LocalTransform->reset();
-			m_LocalTransform->translate(m_Position+glm::vec3(0.0f,9.0f,0.0f));
-			m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
-			m_LocalTransform->scale(glm::vec3(m_Radius));
-			SceneNode::update(p_DeltaTimeS);
+		m_LocalTransform->reset();
+		m_LocalTransform->translate(m_Position+glm::vec3(0.0f,0.0f,0.0f));
+		m_LocalTransform->rotate(m_OrientationDeg,glm::vec3(0.0f,1.0f,0.0f));
+		m_LocalTransform->scale(m_Scale);
+		SceneNode::update(p_DeltaTimeS);
+		//m_interalPointLight->setPosition(m_InternalLightOffset);
+		m_interalPointLight->update(p_DeltaTimeS);
+		m_internalDamagedPointLight->update(p_DeltaTimeS);
+		//m_internalDamagedPointLight->setPosition(m_InternalLightOffset);
 	}
 	else
 	{
@@ -191,15 +207,21 @@ void RobotGenerator::render(Renderer* p_Renderer)
 		{
 			p_Renderer->begin();
 			m_DamagedDiffuseTexture->render(p_Renderer);
+			m_DamagedEmissiveTexture->render(p_Renderer);
+			m_DamagedNormalTexture->render(p_Renderer);
+			m_DamagedSpecularTexture->render(p_Renderer);
 			m_LocalTransform->render(p_Renderer);
 			//any other texture render calls go in here
 			m_Mesh->render(p_Renderer);
 			p_Renderer->end();
+			m_internalDamagedPointLight->render(p_Renderer);
 		}
 	}
 	else
 	{
 		SceneNode::render(p_Renderer);
+		m_WorldTransform;
+		m_interalPointLight->render(p_Renderer);
 	}
 }
 bool RobotGenerator::deleteAll(Robot* p_Robot)
