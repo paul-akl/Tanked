@@ -45,9 +45,12 @@ public:
 	virtual GLuint getDiffuseBufferHandle()		{	return GBufferDiffuse;	}
 	virtual GLuint getNormalBufferHandle()		{	return GBufferNormal;	}
 	virtual GLuint getTextureCoordBufferHandle(){	return GBufferTexCoord;	}
+	virtual GLuint getEmissiveBufferHandle()	{	return GBufferEmissive;	}
 
 	virtual void bindForReading(GBufferTextureType p_buffer);
 	virtual void bindForWriting(GBufferTextureType p_buffer);
+
+	virtual void setFinalPassBuffer(GBufferTextureType p_buffer) { m_finalPassBuffer = p_buffer; }
 
 protected:
 
@@ -55,5 +58,6 @@ GLuint  m_GBTextures[GBufferNumTextures],	// Geometry pass textures
 		m_BlurBuffer,						// Intermediate buffer between vertical and horizontal blur passes
 		m_FinalBuffer;						// Final buffer that gets copied to the screen
 GLenum  m_TexBuffers[GBufferNumTextures];	// Handles for binding geometry buffers
+GBufferTextureType m_finalPassBuffer;
 
 };

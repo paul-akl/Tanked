@@ -26,7 +26,7 @@ public:
 	void addMesh(MeshNode* p_Mesh);
 	void addTexture(TextureNode* p_Texture);
 	TextureNode* getTexture(){return m_Diffuse;}
-	void setTexture(TextureNode* p_Texture){m_Diffuse = p_Texture;}
+	//void setTexture(TextureNode* p_Texture){m_Diffuse = p_Texture;}
 	void setPosition(const glm::vec3 p_Position);
 	bool isMoving();
 	glm::vec3 getLocation(){return m_Position;}

@@ -85,16 +85,16 @@ void main()
 	vec3 normal = texture(normalMap, texCoord).xyz;
 	normal = normalize(normal);
 
-	float specularPower = texture(normalMap, texCoord).w * 500.0;
+	float specularPower = texture(normalMap, texCoord).w * 512.0;
 	float specularIntensity = 20.0;
 	
 	//float specularIntensity = texture(normalMap, texCoord).w * 50.0;
 	//float specularPower = 500.0;
 
-	// ==========================================
+	//===========================================
 	// specularIntensity	= specular strength
 	// specularPower		= specular exponent
-	// ==========================================
+	//===========================================
 
 	fragColor = vec4(color, 1.0) * calcPointLight(worldPos, normal, specularPower, specularIntensity);
 	//fragColor = vec4(normal, 1.0);
