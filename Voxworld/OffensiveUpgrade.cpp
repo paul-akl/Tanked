@@ -12,12 +12,13 @@ OffensiveUpgrade::OffensiveUpgrade(void)
 }
 void OffensiveUpgrade::init()
 {
+	ProjectileNode* v_Instance = nullptr;
 	for (size_t i = 0; i < 10;i++)
 	{
-		ProjectileNode* v_Instance = new ProjectileNode();
+		v_Instance = new ProjectileNode();
 		v_Instance->addMesh(m_DefaultProjectileMesh);
 		v_Instance->addTexture(m_DefaultProjectileTexture);
-		//v_Instance->addTexture(m_DefaultProjEmissiveTexture);
+		v_Instance->addTexture(m_DefaultProjEmissiveTexture);
 		TransformNode* tmp = new TransformNode;
 		tmp->setName("ProjectileTransform");
 		v_Instance->addTransform(tmp);
@@ -30,12 +31,12 @@ void OffensiveUpgrade::init()
 		v_Instance->setBaseDamage(50.0f);
 		v_Instance->deactivate();
 		LightNode* light = new LightNode();
-		light->setColour(glm::vec3(0.4f,0.4f,1.0f));
+		light->setColour(glm::vec3(1.0f,1.0f,0.5f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(6.0f);
+		light->setDiffuseIntensity(4.0f);
 		light->setSpecularIntensity(1.0f);
 		light->setSpecularPower(1.0f);
-		light->setAttenuation(1.0f,0.1f,0.02f);
+		light->setAttenuation(1.0f,0.0f,0.002f);
 		light->setName("BulletLight");
 		v_Instance->addLight(light);
 		m_Projectiles.push_back(v_Instance);
@@ -75,6 +76,7 @@ ProjectileNode* OffensiveUpgrade::getProjectile()
 		{
 			if(!m_Reusing)
 			{
+				v_Instance->reset();
 				v_Instance->addMesh(m_DefaultProjectileMesh);
 				v_Instance->addTexture(m_DefaultProjectileTexture);
 				TransformNode* tmp = new TransformNode;
@@ -88,18 +90,19 @@ ProjectileNode* OffensiveUpgrade::getProjectile()
 				v_Instance->setLifeTime(3.0f);
 				v_Instance->setBaseDamage(50.0f);
 				LightNode* light = new LightNode();
-				light->setColour(glm::vec3(0.4f,0.4f,1.0f));
+				light->setColour(glm::vec3(0.5f,1.0f,1.0f));
 				light->setAmbientIntensity(0.0f);
-				light->setDiffuseIntensity(6.0f);
+				light->setDiffuseIntensity(10.0f);
 				light->setSpecularIntensity(1.0f);
 				light->setSpecularPower(1.0f);
-				light->setAttenuation(1.0f,0.1f,0.02f);
+				light->setAttenuation(1.0f,0.0f,0.001f);
 				light->setName("BulletLight");
 				v_Instance->addLight(light);
 			}
 			else
 			{
 				v_Instance->activate();
+				v_Instance->setLifeTime(3.0f);
 			}
 			m_NumObjects++;
 			std::stringstream ss;

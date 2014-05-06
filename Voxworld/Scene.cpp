@@ -100,11 +100,7 @@ void Scene::init()
 			}break;
 		case GENERATOR:
 			{
-				if (num < 1)
-				{
-					addRobotGenerator(m_TestMaze->getCellPosition(cell));
-					num++;
-				}
+				addRobotGenerator(m_TestMaze->getCellPosition(cell));
 			}break;
 		case START:
 			{
@@ -136,6 +132,11 @@ void Scene::nextLevel()
 	{
 		(*it)->deactivate();
 		it = m_Projectiles.erase(it);
+	}
+	for(std::list<ParticleSystem*>::iterator it = m_PSystems.begin();it!= m_PSystems.end();)
+	{
+		(*it)->deactivate();
+		it = m_PSystems.erase(it);
 	}
 	for(std::list<Robot*>::iterator it = m_Robots.begin();it!= m_Robots.end();)
 	{
@@ -200,7 +201,7 @@ void Scene::nextLevel()
 			}break;
 		case START:
 			{
-				addTank(m_TestMaze->getCellPosition(cell));
+				m_Tank->setPosition(m_TestMaze->getCellPosition(cell));
 			}break;
 		};
 	}
@@ -215,6 +216,12 @@ void Scene::nextLevel()
 	//set maze to ai solver
 	//get maze data
 	//construct level from walls, generators, floor
+}
+void Scene::addParticleSystem(ParticleType p_Type, glm::vec3 p_Location)
+{
+	ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(p_Type);
+	p_Sys->setPosition(p_Location);
+	m_PSystems.push_back(p_Sys);
 }
 void Scene::addTank(glm::vec3 p_Location)
 {
@@ -302,6 +309,23 @@ void Scene::addRenderer(Renderer* p_Renderer)
 {
 	m_Renderer = p_Renderer;
 }
+void Scene::updateParticles()
+{
+	std::list<ParticleSystem*>::iterator position = m_PSystems.begin();
+	std::list<ParticleSystem*>::iterator end = m_PSystems.end();
+	for (;position!=end;)
+	{
+		if(!(*position)->isActive())
+		{
+			position = m_PSystems.erase(position);
+		}
+		else
+		{
+			(*position)->update(m_DeltaTimeSeconds);
+			position++;
+		}
+	}
+}
 void Scene::updateGameObjects()
 {
 	//multi-threading candidates
@@ -345,7 +369,7 @@ void Scene::updateGameObjects()
 	floorBlock.vector = (std::vector<SceneNode*>*)&m_Floors;
 	floorThread = SDL_CreateThread(updateScenery,"floor Thread", &floorBlock);
 	m_Renderer->endRenderCycle();
-
+	updateParticles();
 	//signal OS to wait until threads are complete before moving on.
 	if(hasEnemies)
 		SDL_WaitThread(enemyThread, &num);
@@ -545,6 +569,17 @@ void Scene::checkGameConditions()
 							{
 								m_Audio->Effect(PROJECTILECOLLISION).play(0.1f);
 								tmp->deactivate();
+								ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(SPARK);
+								if(p_Sys!=nullptr)
+								{
+									p_Sys->setPosition(tmp->getLocation());
+									p_Sys->setAltitude(10.0f);
+									//p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
+									//p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
+									m_PSystems.push_back(p_Sys);
+								}
+
+								
 								//leave death effect in it's place (future feature)
 							}
 						}
@@ -565,7 +600,15 @@ void Scene::checkGameConditions()
 							{
 								m_Audio->Effect(PROJECTILECOLLISION).play(0.1f);
 								tmp->deactivate();
-								//leave a bullet bounce effect
+								ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(SPARK);
+								if(p_Sys!=nullptr)
+								{
+									p_Sys->setPosition(tmp->getLocation());
+									p_Sys->setAltitude(10.0f);
+									//p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
+									//p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
+									m_PSystems.push_back(p_Sys);
+								}
 							}
 						}
 					}break;
@@ -587,6 +630,13 @@ void Scene::checkGameConditions()
 							robot->deactivate();
 							m_PlayerScore+=25.0f;
 							//leave non hazard death effect
+							ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(RADIAL_EXPLOSION);
+							if(p_Sys!=nullptr)
+							{
+								p_Sys->setPosition(robot->getLocation());
+								p_Sys->setAltitude(10.0f);
+								m_PSystems.push_back(p_Sys);
+							}
 						}
 					}
 					else
@@ -603,6 +653,13 @@ void Scene::checkGameConditions()
 							//update player score
 							m_PlayerScore+=25;
 							robot->deactivate();
+							ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(RADIAL_EXPLOSION);
+							if(p_Sys!=nullptr)
+							{
+								p_Sys->setPosition(robot->getLocation());
+								p_Sys->setAltitude(10.0f);
+								m_PSystems.push_back(p_Sys);
+							}
 							//leave non hazard death effect
 						}
 					}
@@ -677,6 +734,13 @@ void Scene::checkGameConditions()
 							Robot* robot = dynamic_cast<Robot*>(m_CollisionEvents[i]->m_Collidable_B);
 							m_Tank->dealDamage((int)robot->getDamage());
 							m_Audio->Effect(EXPLOSION).play();
+							ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(RADIAL_EXPLOSION);
+							if(p_Sys!=nullptr)
+							{
+								p_Sys->setPosition(robot->getLocation());
+								p_Sys->setAltitude(10.0f);
+								m_PSystems.push_back(p_Sys);
+							}
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							robot->deactivate();
 						}
@@ -690,6 +754,13 @@ void Scene::checkGameConditions()
 							//leave death effect in it's place (future feature), hazard death effect will deal damage instead
 							m_Tank->dealDamage((int)robot->getDamage());
 							m_Audio->Effect(EXPLOSION).play();
+							ParticleSystem* p_Sys = m_ParticleFactory->getParticleSystem(RADIAL_EXPLOSION);
+							if(p_Sys!=nullptr)
+							{
+								p_Sys->setPosition(robot->getLocation());
+								p_Sys->setAltitude(10.0f);
+								m_PSystems.push_back(p_Sys);
+							}
 							robot->deactivate();
 						}
 						if(m_CollisionEvents[i]->m_Collidable_A->getType() == ENEMY)
@@ -702,6 +773,7 @@ void Scene::checkGameConditions()
 						glm::vec3 reflected = glm::reflect(m_Tank->getVelocity()*2.0f,m_CollisionEvents[i]->m_CollisionNormal);
 						m_Tank->stop();
 						m_Tank->setVelocity(glm::vec3(reflected.x,0.0f,reflected.z));
+
 					}break;
 				//enemy hitting enemy , circle/circle collision response, no game events
 				case ENEMYVSENEMY:
@@ -928,6 +1000,13 @@ void Scene::render(Renderer* p_Renderer)
 				(*it)->render(p_Renderer);
 			}
 		}
+		for(std::list<ParticleSystem*>::iterator it = m_PSystems.begin(); it != m_PSystems.end(); it++)
+		{
+			if((*it)->isActive()) //isActive & isCollected returns a bool
+			{
+				(*it)->render(p_Renderer);
+			}
+		}
 		//draw ammo boxes
 		for(std::list<OffensiveUpgrade*>::iterator it = m_AmmoBoxes.begin(); it != m_AmmoBoxes.end(); it++)
 		{
@@ -968,7 +1047,6 @@ void Scene::render(Renderer* p_Renderer)
 				m_Floors[i]->render(p_Renderer);
 			}
 		} 
-
 		//draw ui
 		m_Hud->render(p_Renderer);
 		//p_Renderer->endRenderCycle();

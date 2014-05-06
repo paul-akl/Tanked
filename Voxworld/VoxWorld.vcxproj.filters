@@ -769,6 +769,7 @@
     <None Include="shaders\lightPass.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc">

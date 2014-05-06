@@ -10,7 +10,7 @@ public:
 	~ParticleSystemFactory(void);
 private:
 	//initialisation functions & data
-	static const int MAX_SYSTEMS = 64;
+	static const int MAX_SYSTEMS = 128;
 	static const int MAX_PARTICLES_PER_SYSTEM = 512;
 	static const int MAX_PARTICLE_TYPES = 4;
 	int m_SparkCount;

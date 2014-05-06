@@ -181,6 +181,7 @@
     <ClInclude Include="WeaponGauge.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
