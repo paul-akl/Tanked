@@ -20,16 +20,9 @@ void ParticleSystem::init()
 		//as this data can change dynamically, we specify this to opengl. Unfortunately, storage size cannot be dynamic, 
 		//so we create the storage at maximum size, regardless of how many particles we actually have.
 		glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Positions.data(), GL_DYNAMIC_DRAW);
-		glVertexAttribPointer((GLuint)PARTICLE_POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0); 
+		glVertexAttribPointer((GLuint)PARTICLE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0); 
 		glEnableVertexAttribArray(PARTICLE_POSITION);
 
-		glGenBuffers(1, &m_ParticleBuffers[PARTICLE_VELOCITY]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_VELOCITY]);
-		//as this data can change dynamically, we specify this to opengl. Unfortunately, storage size cannot be dynamic, 
-		//so we create the storage at maximum size, regardless of how many particles we actually have.
-		glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Velocities.data(), GL_DYNAMIC_DRAW);
-		glVertexAttribPointer((GLuint)PARTICLE_VELOCITY, 4, GL_FLOAT, GL_FALSE, 0, 0); 
-		glEnableVertexAttribArray(PARTICLE_VELOCITY);
 
 
 		//this VBO is used for a simple compute shader, or for cpu processing. undecided yet
@@ -102,8 +95,7 @@ void ParticleSystem::updateBuffers()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Positions.data(), GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_VELOCITY]);
-	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Velocities.data(), GL_DYNAMIC_DRAW);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_TTL]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(GLfloat), m_LifeTimes.data(), GL_DYNAMIC_DRAW);
 	glBindVertexArray(0);

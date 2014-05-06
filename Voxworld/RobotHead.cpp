@@ -6,7 +6,7 @@
 RobotHead::RobotHead(void)
 {
 	m_DamagedDiffuseTexture = nullptr;
-	m_TurnSpeed = 30.0f;
+	m_TurnSpeed = 60.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
 	m_Damaged = false;
@@ -14,36 +14,37 @@ RobotHead::RobotHead(void)
 
 void RobotHead::update(float p_DeltaTimeS)
 {
-	if(m_OrientationDeg >= 360.0f)
+
+	float orientationRad = m_OrientationDeg*PI_OVER180;
+	float targetOrientationRad = m_TargetOrientation*PI_OVER180;
+	//create a heading vector from current orientation
+	glm::vec3 heading(sin(orientationRad),0.0f,cos(orientationRad));
+	//and a vector to target
+	glm::vec3 toTarget = glm::normalize(m_LookTarget-m_Parent->getLocation());
+
+	//to tell if the target needs turned let or right towards, we need a reference direction
+	//this can be any arbitrary non changing vector
+	glm::vec3 reference(0.0f,0.0f,-1.0f);
+	//lets get the relationship of each vector to the reference
+	float h = glm::dot(heading,reference);
+	float t = glm::dot(toTarget,reference);
+	//and now to each other, based on those relationships
+	float ht = t-h;
+	//if the difference is noticable
+	//(this stops jittering)
+	if(abs(ht) > 0.01f)
 	{
-		m_OrientationDeg-=360.0f;
-	}
-	else if(m_OrientationDeg < 0.0f)
-	{
-		m_OrientationDeg=360.0f+m_OrientationDeg;
-	}
-	bool turning = false;
-	float deltaOrientation = m_TargetOrientation-m_OrientationDeg;
-	if(abs(deltaOrientation) < 5.5f)
-	{
-		turning = false;
-	}
-	else
-	{
-		turning = true;
-	}
-	if(turning)
-	{
-		if (abs(deltaOrientation) > 180.0f)
-			deltaOrientation += deltaOrientation > 0? -360.0f:360.0f;
-			if(deltaOrientation < 0)
-			{
-				turnRight(p_DeltaTimeS);
-			}
-			else if(deltaOrientation > 0)
-			{
-				turnLeft(p_DeltaTimeS);
-			}
+		//turn right
+		if(ht < 0.0f)
+		{
+			turnRight(p_DeltaTimeS);
+		}
+		//turn left
+		else
+		{
+			turnLeft(p_DeltaTimeS);
+		}
+		//now calculate rotation for head
 	}
 
 
@@ -72,10 +73,7 @@ void RobotHead::turnRight(float p_DeltaTimeS)
 }
 void RobotHead::LookAt(const glm::vec3 p_Target)
 {
-	m_TargetOrientation = atan2f(p_Target.z,p_Target.x);
-	if(m_TargetOrientation<0.0f)
-		m_TargetOrientation+=PI*2.0f;
-	m_TargetOrientation*=RAD_TO_DEG;
+	m_LookTarget = p_Target;
 }
 void RobotHead::rotate(float p_Rotation)
 {
