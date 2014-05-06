@@ -58,6 +58,7 @@ public:
 	void addController(Controller* p_Controller);
 	void addRenderer(Renderer* p_Renderer);
 	void addParticleFactory(ParticleSystemFactory* p_Factory);
+	void addParticleSystem(ParticleType, glm::vec3 p_Location);
 	void addUI(HUD* p_Hud);
 	void nextLevel();
 
@@ -90,6 +91,7 @@ protected:
 	void updateFloors();
 	void updateProjectiles();
 	void updateUI();
+	void updateParticles();
 	static int updateEnemies(void* p_EnemBlock);
 	static int updateScenery(void* p_Scenery);
 	static int updateCollectables(void* p_Collectables);
@@ -115,6 +117,7 @@ protected:
 	std::list<RobotGenerator*> m_RoboGens;
 	std::list<UpgradeNode*> m_Upgrades;
 	std::list<OffensiveUpgrade*> m_AmmoBoxes;
+	std::list<ParticleSystem*> m_PSystems;
 	std::vector<WallNode*> m_Walls;
 	std::vector<FloorNode*> m_Floors;
 	//std::List<DefensiveUpgrade*> m_ShieldBoosts;

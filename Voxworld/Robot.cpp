@@ -10,12 +10,12 @@ Robot::Robot(void)
 	m_LeftArm = nullptr;
 	m_RightArm = nullptr;
 	m_Head = nullptr;
-	m_MaxVelocityScalar = 150.0f;
+	m_MaxVelocityScalar = 200.0f;
 	m_DamagedTextureDiffuse = nullptr;
 	m_TurnSpeed = 35.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
-	m_Thrust = 5000.0f;
+	m_Thrust = 7500.0f;
 	m_Mass = 250.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
 	m_LeftArmPosition = glm::vec3(2.5f,3.0f,0.0f);

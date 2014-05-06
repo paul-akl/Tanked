@@ -24,6 +24,7 @@
 
 enum ParticleType
 {
+	NOEFFECT,
 	SPARK,
 	WAVE,
 	RADIAL_EXPLOSION,
@@ -49,6 +50,7 @@ public:
 	virtual void render(Renderer* p_Renderer);
 	void setPointSize(int p_PointSize){m_PointSize = p_PointSize;}
 	void setVectorBias(glm::vec3& p_Bias);
+	void setNumWaves(const int &numWaves){m_NumWaves = numWaves;}
 	void setParticlesPerEmmission(int p_Number){m_ParticlesPerEmission = p_Number;}
 	void setRepeatingMode(bool p_Switch){m_Repeating = p_Switch;}
 	int getPointSize(){return m_PointSize;}
@@ -67,22 +69,27 @@ public:
 	virtual ~ParticleSystem(void);
 protected:
 	friend class ParticleSystemFactory;
-
+	void updateWave();
+	void resetWave();
 	void updateBuffers();
 	void updateParticles(float p_DeltaTimeS);
 	void interpolateColor(float p_DeltaTimeS);
 
-	std::vector<float> m_LifeTimes;
+	std::vector<float>	m_LifeTimes,
+						m_WaveDelays,
+						m_WaveTimers;
 	ParticleType m_ParticleType;
 	std::vector<glm::vec3>	m_Positions,
 							m_BaseVelocities,
 							m_Velocities,
 							m_Forces;
+	std::vector<glm::vec4>	m_Colours;
 	float	m_BaseLifeTime,
 			m_Altitude;
 	int		m_ParticlesPerEmission,
 			m_PointSize,
-			m_MaxParticles;
+			m_MaxParticles,
+			m_NumWaves;
 	bool	m_Repeating,
 			m_GradiantColour,
 			m_BufferSet;
