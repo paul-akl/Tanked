@@ -16,6 +16,7 @@
 #include "MaterialNode.h"
 #include "GBuffer.h"
 #include "ParticleShader.h"
+#include "LightShader.h"
 #include <SDL.h>
 
 class Frustum;
@@ -51,10 +52,7 @@ public:
 	// Write all the geometry data to different buffers (similar to forward rendering), take the vector of dataSets as a parameter
 	virtual void geometryPass(std::vector<StandardDataSet> &p_DataList);
 	virtual void UIPass(std::vector<UIDataSet> &p_DataList);
-	virtual void stencilPass(glm::mat4 &p_lightModelMat, MeshNode &p_lightMesh);	// Use depth testing to generate stencil buffer
-	virtual void dirLightPass();	// Render a quad (so all the fragments on screen gets affected) for direction light calculations
-	virtual void pointLightPass(PointLightDataSet &p_lightData);	// Render a sphere for each point light
-	virtual void spotLightPass(SpotLightDataSet &p_lightData);		// Render a cone for each spot light
+	virtual void lightPass();			// All the lights are rendered at once, passing them as buffer. This eliminates drawing overhead, and texture lookups (inside a shader)
 	virtual void skyboxPass();			// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
 	virtual void finalPass();			// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
 	virtual void updateViewFrustum();	//update the frustum based on the view and projection matrices
@@ -74,16 +72,12 @@ private:
 	std::vector<LightStruct> m_Lights;
 	Shader					*m_GeometryShader,
 							*m_UIShader;
+	LightShader				*m_lightPassShader;
 	GaussianBlurShader		*m_BlurVerticalShader,
 							*m_BlurHorizontalShader;
 	ParticleShader			*m_ParticleShader;
-	PointLightShader		*m_PointLightShader;
-	SpotLightShader			*m_SpotLightShader;
-	Shader					*m_CurrentShader,
-							*m_StencilPassShader;
-	MeshNode				*m_FullscrenQuad,
-							*m_PointLightMesh,
-							*m_SpotLightMesh;
+	Shader					*m_CurrentShader;
+	MeshNode				*m_FullscrenQuad;
 	TextureNode				*m_DiffuseTexture,
 							*m_WhiteTexture,
 							*m_BlackTexture,
@@ -95,6 +89,8 @@ private:
 			m_MeshFlag,
 			m_UI_Phase;
 	float	m_CurrentBRadius;
+	int		m_maxNumPointLights,
+			m_maxNumSpotLights;
 
 	glm::vec3	m_ModelPosition,
 				m_CameraPosition;
@@ -111,7 +107,9 @@ private:
 			m_CurrentEmissiveMap,
 			m_CurrentNormalMap,
 			m_CurrentHeightMap,
-			m_CurrentSpecularMap;
+			m_CurrentSpecularMap,
+			m_PointLightBuffer,
+			m_SpotLightBuffer;
 
 	std::vector<StandardDataSet>	m_DataList;
 	std::vector<UIDataSet>			m_UIDataList;

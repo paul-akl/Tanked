@@ -10,6 +10,7 @@ GBuffer::GBuffer(int p_WindowWidth, int p_WindowHeight)
 
 	m_WindowWidth	= p_WindowWidth;
 	m_WindowHeight	= p_WindowHeight;
+	m_finalPassBuffer = GBufferFinal;
 	
 	for(int i=0; i < GBufferNumTextures; i++)		// For each buffer
 		m_TexBuffers[i] = GL_COLOR_ATTACHMENT0 + i;	// set up it's position in the shader
@@ -177,6 +178,9 @@ void GBuffer::initLightPass()
 	
 	glActiveTexture(GL_TEXTURE0 + GBufferTexCoord);
 	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferTexCoord]);
+	
+	glActiveTexture(GL_TEXTURE0 + GBufferEmissive);
+	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferEmissive]);
 }
 void GBuffer::initParticlePass()
 {
@@ -186,7 +190,7 @@ void GBuffer::initFinalPass()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);				// Set default framebuffer to paste to
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FboHandle);	// Set GBuffer's framebuffer to copy from
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);		// Bind final buffer, to copy from
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + m_finalPassBuffer);		// Bind final buffer, to copy from
 	// ^
 	// L <-- FOR DEBUG PURPOSES we are attaching a 1's buffer (diffuse buffer), instead of the 'GL_COLOR_ATTACHMENT0 + GBufferFinal' (final buffer)
 }

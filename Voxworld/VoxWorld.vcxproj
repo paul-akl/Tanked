@@ -45,6 +45,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="IntroGameMode.cpp" />
     <ClCompile Include="LightNode.cpp" />
+    <ClCompile Include="LightShader.cpp" />
     <ClCompile Include="Locator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGameMode.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="I_MeshManager.h" />
     <ClInclude Include="I_TextureManager.h" />
     <ClInclude Include="LightNode.h" />
+    <ClInclude Include="LightShader.h" />
     <ClInclude Include="Locator.h" />
     <ClInclude Include="MainGameMode.h" />
     <ClInclude Include="MaterialNode.h" />
@@ -190,6 +192,8 @@
     <None Include="shaders\gaussianBlurVertical.vert" />
     <None Include="shaders\geometryPass.frag" />
     <None Include="shaders\geometryPass.vert" />
+    <None Include="shaders\lightPass.frag" />
+    <None Include="shaders\lightPass.vert" />
     <None Include="shaders\particlesEffect.frag" />
     <None Include="shaders\particlesEffect.vert" />
     <None Include="shaders\pointLightPass.frag" />
@@ -285,6 +289,7 @@
       <AdditionalDependencies>"opengl32.lib";"glew32.lib";"SDL2.lib";"SDL2_ttf.lib";"SDL2main.lib";"FreeImage.lib";"assimp.lib";"fmodex_vc.lib";%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

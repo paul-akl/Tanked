@@ -18,10 +18,16 @@ public:
 protected:
 	RobotGenerator* getRoboGenFromPool();
 	//default robot visual data. Maps will be used when other robot types are added
-	TextureNode* m_DefaultGeneratorTexture;
-	TextureNode* m_DamagedGeneratorTexture;
-	TextureNode* m_DamagedRobotTexture;
-	TextureNode* m_DefaultRobotTexture;
+	TextureNode		*m_DefaultGeneratorTexture,
+					*m_DefaultGeneratorNormal,
+					*m_DefaultGeneratorEmissive,
+					*m_DefaultGeneratorSpecular,
+					*m_DamagedGeneratorTexture,
+					*m_DamagedGeneratorNormal,
+					*m_DamagedGeneratorEmissive,
+					*m_DamagedGeneratorSpecular,
+					*m_DamagedRobotTexture,
+					*m_DefaultRobotTexture;
 	MeshNode* m_RoboGenMesh;
 	MeshNode* m_RoboHeadMesh;
 	MeshNode* m_RoboArmMesh;

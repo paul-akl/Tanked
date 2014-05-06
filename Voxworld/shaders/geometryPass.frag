@@ -30,7 +30,7 @@ void main(void)
 	
 	float specularPower = texture(specularMap, newCoords).r;
 	vec4 emissiveTexture = texture(emissiveMap, newCoords).rgba;
-	if(emissiveTexture.a<0.8)
+	if(emissiveTexture.a<0.3)
 	{
 		emissiveTexture = vec4(0.0);
 	}

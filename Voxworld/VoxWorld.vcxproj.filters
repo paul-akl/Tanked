@@ -447,6 +447,9 @@
     <ClCompile Include="ParticleShader.cpp">
       <Filter>Core Engine\Renderer\Shader</Filter>
     </ClCompile>
+    <ClCompile Include="LightShader.cpp">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h">
@@ -694,6 +697,9 @@
     <ClInclude Include="ParticleShader.h">
       <Filter>Core Engine\Renderer\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="LightShader.h">
+      <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">
@@ -755,6 +761,12 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
     <None Include="shaders\particlesEffect.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\lightPass.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\lightPass.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
   </ItemGroup>
