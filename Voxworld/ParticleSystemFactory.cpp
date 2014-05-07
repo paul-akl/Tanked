@@ -15,14 +15,14 @@ void ParticleSystemFactory::init()
 		TransformNode* ts = new TransformNode();
 		ts->activate();
 		ts->reset();
-		PSys->init();
+		//set non unique settings
 		PSys->deactivate();
 		PSys->addTransform(ts);
 		PSys->setPointSize(2.0f);
 		PSys->setAltitude(-1.0f);
-		PSys->setMaxLifeTime(1.5f);
+		PSys->setMaxLifeTime(2.0f);
 		PSys->setBoundingRadius(15.0f);
-		PSys->setScale(glm::vec3(2.0f));
+		PSys->setScale(glm::vec3(5.0f));
 		PSys->setMaxParticles(MAX_PARTICLES_PER_SYSTEM);
 		m_ParticleSystems.push_back(PSys);
 		m_BaseVelocities.resize(NUM_PARTICLE_TYPES);
@@ -175,7 +175,6 @@ ParticleSystem* ParticleSystemFactory::getInstanceFromPool()
 	{
 		if(!(*it)->isActive())
 		{
-			(*it)->reset();
 			return (*it);
 		}
 	}
@@ -204,6 +203,7 @@ void ParticleSystemFactory::initSparkEffect(ParticleSystem* p_ParticleSystem)
 		p_ParticleSystem->resetForces();
 	}
 	p_ParticleSystem->setRepeatingMode(false);
+	p_ParticleSystem->init();
 }
 void ParticleSystemFactory::initExplosionEffect(ParticleSystem* p_ParticleSystem)
 {
@@ -214,10 +214,10 @@ void ParticleSystemFactory::initExplosionEffect(ParticleSystem* p_ParticleSystem
 		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
 		{
 			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[RADIAL_EXPLOSION][i]);
-			p_ParticleSystem->m_LifeTimes.resize(MAX_PARTICLES_PER_SYSTEM, 1.0f);
-			p_ParticleSystem->m_Positions.resize(MAX_PARTICLES_PER_SYSTEM, glm::vec3(0.0f));
-			p_ParticleSystem->m_Velocities = p_ParticleSystem->m_BaseVelocities;
 		}
+		p_ParticleSystem->m_Positions.resize(MAX_PARTICLES_PER_SYSTEM, glm::vec3(0.0f));
+		p_ParticleSystem->m_LifeTimes.resize(MAX_PARTICLES_PER_SYSTEM, 1.0f);
+		p_ParticleSystem->m_Velocities = p_ParticleSystem->m_BaseVelocities;
 		p_ParticleSystem->m_ParticleType = RADIAL_EXPLOSION;
 		// start at yellowish white and proceed to red.
 		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,0.85f,0.0f,1.0f),glm::vec4(0.58f,0.35f,0.0f,0.0f));
@@ -228,6 +228,7 @@ void ParticleSystemFactory::initExplosionEffect(ParticleSystem* p_ParticleSystem
 		p_ParticleSystem->resetForces();
 	}
 	p_ParticleSystem->setRepeatingMode(false);
+	p_ParticleSystem->init();
 }
 void ParticleSystemFactory::initBoxExplosionEffect(ParticleSystem* p_ParticleSystem)
 {
@@ -238,10 +239,11 @@ void ParticleSystemFactory::initBoxExplosionEffect(ParticleSystem* p_ParticleSys
 		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
 		{
 			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[BOX_EXPLOSION][i]);
-			p_ParticleSystem->m_LifeTimes.resize(MAX_PARTICLES_PER_SYSTEM, 1.0f);
-			p_ParticleSystem->m_Positions.resize(MAX_PARTICLES_PER_SYSTEM, glm::vec3(0.0f));
-			p_ParticleSystem->m_Velocities = p_ParticleSystem->m_BaseVelocities;
+
 		}
+		p_ParticleSystem->m_LifeTimes.resize(MAX_PARTICLES_PER_SYSTEM, 1.0f);
+		p_ParticleSystem->m_Positions.resize(MAX_PARTICLES_PER_SYSTEM, glm::vec3(0.0f));
+		p_ParticleSystem->m_Velocities = p_ParticleSystem->m_BaseVelocities;
 		p_ParticleSystem->m_ParticleType = BOX_EXPLOSION;
 		// start at yellowish white and proceed to red.
 		p_ParticleSystem->setColourTransition(glm::vec4(1.0f,0.85f,0.0f,1.0f),glm::vec4(0.58f,0.35f,0.0f,0.0f));
@@ -252,6 +254,7 @@ void ParticleSystemFactory::initBoxExplosionEffect(ParticleSystem* p_ParticleSys
 		p_ParticleSystem->resetForces();
 	}
 	p_ParticleSystem->setRepeatingMode(false);
+	p_ParticleSystem->init();
 }
 void ParticleSystemFactory::initWaveEffect(ParticleSystem* p_ParticleSystem)
 {
@@ -276,7 +279,7 @@ void ParticleSystemFactory::initWaveEffect(ParticleSystem* p_ParticleSystem)
 		p_ParticleSystem->resetForces();
 	}
 	p_ParticleSystem->setRepeatingMode(true);
-	
+	p_ParticleSystem->init();
 }
 ParticleSystemFactory::~ParticleSystemFactory(void)
 {

@@ -28,8 +28,8 @@ struct SpotLight
 {
     BaseLight base;
     vec3 position;
-	//vec3 direction;
-	//float cutoff;
+	vec3 direction;
+	float cutoff;
 };
 
 layout (std140) uniform PointLights
@@ -97,7 +97,7 @@ vec4 calcPointLight(PointLight light)
 
     return lightColor / attenuation;
 }
-/*vec4 calcSpotLight(SpotLight light)
+vec4 calcSpotLight(SpotLight light)
 {
 	vec3 lightToFragment = normalize(worldPos - light.position);
 	float spotLightFactor = dot(lightToFragment, light.direction);
@@ -121,7 +121,7 @@ vec4 calcPointLight(PointLight light)
 	{
 		return vec4(0.0, 0.0, 0.0, 0.0);
 	}
-}*/
+}
 
 vec2 calcTexCoord(void)
 {
@@ -150,11 +150,12 @@ void main(void)
 	}
 	for(int i = 0; i < numSpotLights; i++)
 	{
-		//lightColor += calcSpotLight(spotLights[i]);
+		lightColor += calcSpotLight(spotLights[i]);
 	}
 	
 	vec3 lightDirection = worldPos - cameraPos;
 	float distance = length(lightDirection);
 
 	fragColor = vec4(color, 1.0) * lightColor + emissiveColor;
+	//fragColor = vec4(spotLights[0].base.color, 1.0);
 }

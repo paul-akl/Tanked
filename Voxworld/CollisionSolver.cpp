@@ -376,9 +376,9 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
 						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*overlap;
 						//float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
+						//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_CollisionNormal*pair->m_Penetration);
 						//ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
+						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 						pair->m_ResultType = ENEMYVSPROJECTILE;
 						p_Pairs.push_back(pair);
 					}
@@ -404,10 +404,9 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 							pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
 							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*overlap;
 							pair->m_ResultType = ENEMYGENVSPROJECTILE;
-							//float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
-							//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
-							//ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
-							//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
+							
+							//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_CollisionNormal*pair->m_Penetration);
+							//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 							p_Pairs.push_back(pair);
 						}
 						//get overlap of two circles. if overlap is >=0 collision is true
@@ -444,11 +443,8 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_Collided = true;
 						pair->m_Penetration = sqrt(overlap);
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
-						//float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
-						//ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
-
+						pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_CollisionNormal*pair->m_Penetration);
+						pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 
 						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
 						pair->m_ResultType = ENEMYVSENEMY;
@@ -483,10 +479,8 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 						pair->m_Penetration = sqrt(overlap);
 						pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
 						pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
-						//float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
-						//ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
-						//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
+						pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_CollisionNormal*pair->m_Penetration);
+						pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 						pair->m_ResultType = PLAYERVSENEMY;
 						p_Pairs.push_back(pair);
 
@@ -512,10 +506,8 @@ void CollisionSolver::processCollisions(std::vector<CollisionPair*>& p_Pairs)
 							pair->m_CollisionNormal = (glm::normalize( (*it)->getLocation() - (*jt)->getLocation() ));
 							pair->m_CollisionPoint = (*jt)->getLocation() + pair->m_CollisionNormal*pair->m_Penetration;
 							pair->m_ResultType = PLAYERVSENEMY;
-							//float ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_A->getVelocity(),pair->m_CollisionNormal);
-							//pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_Collidable_A->getVelocity()*ratio);
-							//ratio = pair->m_Penetration/glm::dot(pair->m_Collidable_B->getVelocity(),pair->m_CollisionNormal);
-							//pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()+pair->m_Collidable_B->getVelocity()*ratio);
+							pair->m_Collidable_A->setPosition(pair->m_Collidable_A->getLocation()+pair->m_CollisionNormal*pair->m_Penetration);
+							pair->m_Collidable_B->setPosition(pair->m_Collidable_B->getLocation()-pair->m_CollisionNormal*pair->m_Penetration);
 							p_Pairs.push_back(pair);
 						}
 						//get overlap of two circles. if overlap is >=0 collision is true

@@ -10,16 +10,16 @@ Robot::Robot(void)
 	m_LeftArm = nullptr;
 	m_RightArm = nullptr;
 	m_Head = nullptr;
-	m_MaxVelocityScalar = 150.0f;
+	m_MaxVelocityScalar = 200.0f;
 	m_DamagedTextureDiffuse = nullptr;
-	m_TurnSpeed = 25.0f;
+	m_TurnSpeed = 35.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
-	m_Thrust = 5000.0f;
+	m_Thrust = 7500.0f;
 	m_Mass = 250.0f;
 	m_HeadPosition = glm::vec3(0.0f,3.5f,0.0f);
-	m_LeftArmPosition = glm::vec3(0.0f,3.0f,-2.8f);
-	m_RightArmPosition = glm::vec3(0.0f,3.0f,2.8f);
+	m_LeftArmPosition = glm::vec3(2.5f,3.0f,0.0f);
+	m_RightArmPosition = glm::vec3(-2.5f,3.0f,0.0f);
 	m_Velocity = glm::vec3(0.0f);
 	m_behaviourState=HostileStatus;
 	m_Turning = false;
@@ -124,68 +124,57 @@ void Robot::update(float p_DeltaTimeS)
 				//if a path has been set
 			if(!m_WayPoints.empty())
 			{
+				glm::vec3 target = m_WayPoints.front();
 				m_lookDirection=m_WayPoints.front()-m_Position;
 				glm::vec3 targetDir = glm::normalize(m_lookDirection);
 				if(glm::length(m_lookDirection) <= m_Radius*2.0f)
 				{
 					m_WayPoints.pop_front();
 				}
-				// calculate vector from current position to target position
-				// convert vector to angle in degrees
-				// set angle to head
-					//m_TargetOrientation = acos(m_lookDirection.z)*RAD_TO_DEG;
-	
-					m_TargetOrientation = atanf(targetDir.z / targetDir.x);
-					//std::cout << targetDir.x << " | " << std::endl << targetDir.z << std::endl << std::endl;
-
-
-					//glm::vec3 axis = glm::cross(m_WayPoints.front(), m_Position);
-					//axis = glm::normalize(axis);
-					//float angle = acosf(glm::dot(m_WayPoints.front(), m_Position) / glm::length(m_WayPoints.front()) / glm::length(m_Position));
-					//m_TargetOrientation = atan2f(m_Position.y * sinf(angle) - m_Position.x * m_Position.z * (1 - cosf(angle)), 1 - ((m_Position.y*m_Position.y)*(m_Position.z*m_Position.z) * (1-cosf(angle))));
-					
-
-					//if(m_TargetOrientation<0.0f)
-					//	m_TargetOrientation+=PI*2.0f;
-					m_TargetOrientation*=RAD_TO_DEG;
-					m_OrientationDeg = m_TargetOrientation;
-					m_Head->setTargetOrientation(m_TargetOrientation);
-					float deltaOrientation = m_TargetOrientation-m_OrientationDeg;
-					if(abs(deltaOrientation) < 5.5f)
+				//we are working in radians from now on
+				float orientationRad = m_OrientationDeg*PI_OVER180;
+				//create a heading vector from current orientation
+				glm::vec3 heading(sin(orientationRad),0.0f,cos(orientationRad));
+				//and a vector to target
+				glm::vec3 toTarget = glm::normalize(m_lookDirection);
+				//to tell if the target needs turned let or right towards, we need a reference direction
+				//this can be any arbitrary non changing vector
+				glm::vec3 reference(0.0f,0.0f,-1.0f);
+				//lets get the relationship of each vector to the reference
+				float h = glm::dot(heading,reference);
+				float t = glm::dot(toTarget,reference);
+				//and now to each other, based on those relationships
+				float ht = t-h;
+				//if the difference is noticable
+				//(this stops jittering)
+				if(abs(ht) > 0.01f)
+				{
+					//turn right
+					if(ht < 0.0f)
 					{
-						m_Turning = false;
+						turnRight(p_DeltaTimeS);
+						//m_Head->turnRight(p_DeltaTimeS);
 					}
+					//turn left
 					else
 					{
-						m_Turning = true;
+						turnLeft(p_DeltaTimeS);
+						//m_Head->turnLeft(p_DeltaTimeS);
 					}
-					if(m_Turning)
-					{
-						if (abs(deltaOrientation) > 180.0f)
-							deltaOrientation += deltaOrientation > 0? -360.0f:360.0f;
-							if(deltaOrientation < 0)
-							{
-								turnRight(p_DeltaTimeS);
-							}
-							else if(deltaOrientation > 0)
-							{
-								turnLeft(p_DeltaTimeS);
-							}
-					}
-					m_Head->LookAt(m_movementTarget);
-					glm::vec3 v_AccelerationDir = glm::normalize(m_lookDirection);
-					//then calculate acceleration scalar, multiply that by acceleration direction, 
-					//times delta time, to calculate impulse magnitude, and add to velocity
-					//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
-					m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
-					m_IsMoving = true;
+					//now calculate rotation for head
+					m_Head->LookAt(m_targetPosition);
 				}
-				//else
-				//{
-				//	printf("no path set\n");
-				//}
-
-
+				orientationRad = m_OrientationDeg*PI_OVER180;
+				//create a heading vector from current orientation
+				//glm::vec3 v_AccelerationDir(sin(orientationRad),0.0f,cos(orientationRad));
+				glm::vec3 v_AccelerationDir = glm::normalize(m_lookDirection);
+				glm::vec3 AirResImpulse = ((-m_Velocity*glm::length(m_Velocity)*20.0f)*(p_DeltaTimeS))/m_Mass;
+				//v_AccelerationDir*=(m_Thrust/m_Mass)*p_DeltaTimeS;
+				//v_AccelerationDir+=AirResImpulse;
+				//impulse is a force, applied over time, so we take the thrust force (in Newtons) X deltaTime, then X inverse Mass, for final acc
+				m_Velocity+=v_AccelerationDir*((m_Thrust*(p_DeltaTimeS))*(1.0f/m_Mass));
+				m_IsMoving = true;
+			}
 		}
 		else
 		{

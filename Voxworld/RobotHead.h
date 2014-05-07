@@ -17,9 +17,9 @@ public:
 	void turnRight(float p_DeltaTimeS);
 	virtual ~RobotHead(void);
 protected:
-
 	float m_TargetOrientation;
 	TextureNode* m_DamagedDiffuseTexture;
+	glm::vec3 m_LookTarget;
 	bool m_Damaged;
 	float m_TurnSpeed;
 	bool m_Turning;

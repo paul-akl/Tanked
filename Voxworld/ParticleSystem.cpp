@@ -6,9 +6,12 @@ ParticleSystem::ParticleSystem(void)
 {
 	m_BufferSet = false;
 	m_BaseLifeTime = 0.0f;
+	m_NumWaves = 1;
+	m_ParticleType = NOEFFECT;
 }
 void ParticleSystem::init()
 {
+	m_Colours.resize(m_MaxParticles,glm::vec4(0.0f));
 	if(!m_BufferSet)
 	{
 		m_ParticleBuffers = new GLuint[NUM_PARTICLE_BUFFERS];
@@ -20,16 +23,17 @@ void ParticleSystem::init()
 		//as this data can change dynamically, we specify this to opengl. Unfortunately, storage size cannot be dynamic, 
 		//so we create the storage at maximum size, regardless of how many particles we actually have.
 		glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Positions.data(), GL_DYNAMIC_DRAW);
-		glVertexAttribPointer((GLuint)PARTICLE_POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0); 
+		glVertexAttribPointer((GLuint)PARTICLE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, 0); 
 		glEnableVertexAttribArray(PARTICLE_POSITION);
 
-		glGenBuffers(1, &m_ParticleBuffers[PARTICLE_VELOCITY]);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_VELOCITY]);
+		//populate the colour vbo
+		glGenBuffers(1, &m_ParticleBuffers[PARTICLE_COLOUR]);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_COLOUR]);
 		//as this data can change dynamically, we specify this to opengl. Unfortunately, storage size cannot be dynamic, 
 		//so we create the storage at maximum size, regardless of how many particles we actually have.
-		glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Velocities.data(), GL_DYNAMIC_DRAW);
-		glVertexAttribPointer((GLuint)PARTICLE_VELOCITY, 4, GL_FLOAT, GL_FALSE, 0, 0); 
-		glEnableVertexAttribArray(PARTICLE_VELOCITY);
+		glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec4), m_Colours.data(), GL_DYNAMIC_DRAW);
+		glVertexAttribPointer((GLuint)PARTICLE_COLOUR, 4, GL_FLOAT, GL_FALSE, 0, 0); 
+		glEnableVertexAttribArray(PARTICLE_COLOUR);
 
 
 		//this VBO is used for a simple compute shader, or for cpu processing. undecided yet
@@ -74,6 +78,12 @@ void ParticleSystem::updateParticles(float p_DeltaTimeS)
 				m_LifeTimes[i] = m_BaseLifeTime;
 				m_CurrentColour = m_StartingColour;
 			}
+			else
+			{
+				deactivate();
+				reset();
+				return;
+			}
 		}
 	}
 }
@@ -90,20 +100,18 @@ void ParticleSystem::release()
 }
 void ParticleSystem::reset()
 {
-	for (size_t i = 0; i < m_BaseVelocities.size();i++)
-	{
-		m_Velocities[i] = m_BaseVelocities[i];
-	}
-
+	m_Velocities = m_BaseVelocities;
+	m_CurrentColour = m_StartingColour;
 	std::fill(m_LifeTimes.begin(),m_LifeTimes.end(),m_BaseLifeTime);
-	std::fill(m_Positions.begin(),m_Positions.begin(),glm::vec3(0.0f));
+	std::fill(m_Positions.begin(),m_Positions.end(),glm::vec3(0.0f));
+	updateBuffers();
 }
 void ParticleSystem::updateBuffers()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Positions.data(), GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_VELOCITY]);
-	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec3), m_Velocities.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_COLOUR]);
+	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(glm::vec4), m_Colours.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ParticleBuffers[PARTICLE_TTL]);
 	glBufferData(GL_ARRAY_BUFFER, m_MaxParticles*sizeof(GLfloat), m_LifeTimes.data(), GL_DYNAMIC_DRAW);
 	glBindVertexArray(0);
@@ -130,7 +138,8 @@ void ParticleSystem::update(float p_DeltaTimeS)
 	{
 		m_LocalTransform->reset();
 		m_LocalTransform->translate(m_Position+glm::vec3(0.0f,m_Altitude,0.0f));
-		m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0f,1.0f,0.0f));
+		if(m_Parent!=nullptr)
+			m_LocalTransform->rotate(-m_Parent->getOrientation(),glm::vec3(0.0f,1.0f,0.0f));
 		m_LocalTransform->scale(m_Scale);
 		m_LocalTransform->update(p_DeltaTimeS);
 	}
