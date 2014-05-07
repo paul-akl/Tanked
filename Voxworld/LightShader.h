@@ -6,10 +6,10 @@ public:
 	LightShader(void);
 	~LightShader(void);
 
-	virtual int getPointLightBlockSize() { return m_pointLightBlockSize;		}
-	virtual int getSpotLightBlockSize() { return m_spotLightBlockSize;			}
-	virtual GLuint getPointLightBlockIndex() { return m_pointLightBlockIndex;	}
-	virtual GLuint getSpotLightBlockIndex() { return m_spotLightBlockIndex;		}
+	virtual int getPointLightBlockSize()		{ return m_pointLightBlockSize;		}
+	virtual int getSpotLightBlockSize()			{ return m_spotLightBlockSize;		}
+	virtual GLuint getPointLightBlockIndex()	{ return m_pointLightBlockIndex;	}
+	virtual GLuint getSpotLightBlockIndex()		{ return m_spotLightBlockIndex;		}
 	
 	virtual void setNumPointLights(int p_numLights)							{ glUniform1i(m_numPointLights, p_numLights);					}
 	virtual void setNumSpotLights(int p_numLights)							{ glUniform1i(m_numSpotLights, p_numLights);					}
@@ -20,6 +20,9 @@ public:
 	virtual void bindDiffuseBuffer(GLuint p_textureHandle)					{ glUniform1i(m_diffuseBuffer, p_textureHandle);	}
 	virtual void bindNormalBuffer(GLuint p_textureHandle)					{ glUniform1i(m_normalBuffer, p_textureHandle);		}
 	virtual void bindEmissiveBuffer(GLuint p_textureHandle)					{ glUniform1i(m_emissiveBuffer, p_textureHandle);	}
+
+	virtual void bindPointLightBuffer(GLuint p_buffer)	{ glBindBufferBase(GL_UNIFORM_BUFFER, PointLightBindingPoint, p_buffer);	}
+	virtual void bindSpotLightBuffer(GLuint p_buffer)	{ glBindBufferBase(GL_UNIFORM_BUFFER, SpotLightBindingPoint, p_buffer);		}
 
 protected:
 	virtual void getDataHandles(GLuint p_programHandle);
@@ -33,8 +36,16 @@ protected:
 			m_numPointLights,
 			m_numSpotLights,
 			m_pointLightBlockIndex,
-			m_spotLightBlockIndex;
+			m_spotLightBlockIndex,
+			m_pointLightUniformBindingPoint,
+			m_spotLightUniformBindingPoint;
 	GLint	m_pointLightBlockSize,
 			m_spotLightBlockSize;
+
+	enum UniformBindingPoints
+	{
+		PointLightBindingPoint = 0,
+		SpotLightBindingPoint
+	};
 };
 

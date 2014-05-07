@@ -14,6 +14,8 @@ LightShader::LightShader(void)
 	m_spotLightBlockIndex	= 0;
 	m_pointLightBlockSize	= 0;
 	m_spotLightBlockSize	= 0;
+	m_pointLightUniformBindingPoint	= 0;
+	m_spotLightUniformBindingPoint	= 0;
 }
 
 LightShader::~LightShader(void)
@@ -34,7 +36,9 @@ void LightShader::getDataHandles(GLuint p_programHandle)
 
 	m_pointLightBlockIndex = glGetUniformBlockIndex(p_programHandle, "PointLights");
 	glGetActiveUniformBlockiv(p_programHandle, m_pointLightBlockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &m_pointLightBlockSize);
+	glUniformBlockBinding(p_programHandle, m_pointLightBlockIndex, PointLightBindingPoint);
 	
 	m_spotLightBlockIndex = glGetUniformBlockIndex(p_programHandle, "SpotLights");
 	glGetActiveUniformBlockiv(p_programHandle, m_spotLightBlockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &m_spotLightBlockSize);
+	glUniformBlockBinding(p_programHandle, m_spotLightBlockIndex, SpotLightBindingPoint);
 }

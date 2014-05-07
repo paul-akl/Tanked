@@ -293,9 +293,9 @@ void DeferredRenderer::render(LightNode* p_PointLightNode)
 void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 {
 	m_SpotLightList.push_back(SpotLightDataSet(
-		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),			 p_SpotLightNode->getAttenuation(),
-		p_SpotLightNode->getTransformedDirection(),	p_SpotLightNode->getCutoffAngle(),		 p_SpotLightNode->getAmbientIntensity(),
-		p_SpotLightNode->getDiffuseIntensity()	));
+		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),	p_SpotLightNode->getAttenuation(),
+		glm::normalize(p_SpotLightNode->getTransformedDirection()),					cosf(p_SpotLightNode->getCutoffAngle() * (float)PI / 180.0f),
+		p_SpotLightNode->getAmbientIntensity(),										p_SpotLightNode->getDiffuseIntensity()	));
 }
 void DeferredRenderer::render(ParticleSystem* p_Particle)
 {
@@ -378,12 +378,12 @@ void DeferredRenderer::init(void)
 	glGenBuffers(1, &m_PointLightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_PointLightBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLightDataSet) * m_maxNumPointLights, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getPointLightBlockIndex(), m_PointLightBuffer);
+	//glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getPointLightBlockIndex(), m_PointLightBuffer);
 	
 	glGenBuffers(1, &m_SpotLightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_SpotLightBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(SpotLightDataSet) * m_maxNumSpotLights, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getSpotLightBlockIndex(), m_SpotLightBuffer);
+	//glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getSpotLightBlockIndex(), m_SpotLightBuffer);
 
 	//enable standard opengl rendering features
 	glEnable(GL_TEXTURE_2D);
@@ -526,6 +526,9 @@ void DeferredRenderer::lightPass()
 	m_lightPassShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
 	m_lightPassShader->bindEmissiveBuffer(m_GBuffer->getEmissiveBufferHandle());
 	
+	m_lightPassShader->bindPointLightBuffer(m_PointLightBuffer);
+	m_lightPassShader->bindSpotLightBuffer(m_SpotLightBuffer);
+
 	m_GBuffer->initLightPass();
 
 	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
