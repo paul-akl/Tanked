@@ -105,7 +105,10 @@ vec4 calcPointLight(PointLight light)
 }
 vec4 calcSpotLight(SpotLight light)
 {
+	// Calculate direction from position of light to current pixel
 	vec3 lightToFragment = normalize(worldPos - light.position);
+
+	// 
 	float spotLightFactor = dot(lightToFragment, light.direction);
 
 	if(spotLightFactor > light.cutoff)
@@ -136,25 +139,45 @@ vec2 calcTexCoord(void)
 
 void main(void)
 {
+	// Calculate screen-space texture coordinates, for buffer access
 	vec2 texCoord = calcTexCoord();
+
+	// Get diffuse color (full-bright) from diffuse buffer
 	vec3 color = texture(diffuseMap, texCoord).xyz;
+
 	vec4 lightColor = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 emissiveColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+	// Gloss map value (specular power) is packed in 4th float of normal map, to save space
 	vec4 normalAndGloss = texture(normalMap, texCoord).xyzw;
 
+	// Get pixel's world position from position buffer
 	worldPos = texture(positionMap, texCoord).xyz;
+
+	// Get normal from normal and gloss buffer (vec3 only) and normalize it to minimize floating point approximation errors
 	normal = normalize(normalAndGloss.xyz);
 
+	// Calculate gloss map value. Specular intensity should ideally be set from specular map (vec3 color of specular reflection)
 	specularPower = normalAndGloss.w * GLOSS_VALUE_MULTIPLIER;
 	specularIntensity = SPECULAR_EXPONENT;
+
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	//	Because of old GPU drivers in labs (ATI driver bug), shaders do no support dynamic for loops (that are controlled by a uniform.
+	//	A costly fix (checking every light MAX_NUM_LIGHTS times) is due, it would be removed otherwise.
+	// ------------------------------------------------------------------------------------------------------------------------------------
 
 	for(int i = 0; i < MAX_NUM_POINT_LIGHTS; i++)
 	{
 		if(i < numPointLights)
 		{
+			// Calculate color of the light (ADS lighting)
 			lightColor = calcPointLight(pointLights[i]);
+
+			// Write color (that is brighter than a set treshold) to emissive buffer
 			emissiveColor += clamp(lightColor / EMISSIVE_COLOR_DIVIDER, 0.0, 0.1);
+
+			// Clamp the color of the light for diffuse light
 			finalColor += clamp(lightColor, 0.0, MAX_LIGHT_MULTIPLIER);
 		}
 	}
@@ -168,6 +191,10 @@ void main(void)
 		}
 	}
 
+	// Emissive color is for bloom simulation, instead of having over-brightened pixels, due to a large number of lights,
+	// light color is clamped (saturated) and over brightness of that color is written into emissive buffer, for bluring.
 	emissiveBuffer += emissiveColor;
-	finalBuffer = vec4(color, 1.0) * finalColor;// + emissiveColor;
+
+	// Multiply the diffuse color by the amound of light the current pixel recieves
+	finalBuffer = vec4(color, 1.0) * finalColor;
 }

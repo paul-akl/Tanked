@@ -153,6 +153,7 @@
     <ClInclude Include="ProjectileNode.h" />
     <ClInclude Include="QTNode.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RoboGenFactory.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="RobotArm.h" />
@@ -181,8 +182,12 @@
     <ClInclude Include="WeaponGauge.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\Desktop\menu images\Tanked Icon small.ico" />
+    <None Include="..\..\..\..\..\..\Desktop\menu images\Tanked Icon.ico" />
     <None Include="ClassDiagram.cd" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="icon1.ico" />
+    <None Include="icon2.ico" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
     <None Include="shaders\dirLightPass.frag" />

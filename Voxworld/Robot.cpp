@@ -25,6 +25,10 @@ Robot::Robot(void)
 	m_Turning = false;
 	m_BaseDamage = 50;
 	m_LastMoveTarget =glm::vec3(0.0f); 
+	m_DamagedTextureDiffuse = nullptr;
+	m_DamagedTextureEmissive = nullptr;
+	m_DamagedTextureNormal = nullptr;
+	m_DamagedTextureSpecular = nullptr;
 }
 void Robot::addLeftArm(RobotArm* p_LeftArm)
 {
@@ -51,9 +55,30 @@ const int Robot::getHitPoints()
 void Robot::addDamagedTexture(TextureNode* p_Texture)
 {
 	m_DamagedTextureDiffuse = p_Texture;
-	m_Head->addDamagedTexture(p_Texture);
-	m_LeftArm->addDamagedTexture(p_Texture);
-	m_RightArm->addDamagedTexture(p_Texture);
+	//m_Head->addDamagedTexture(p_Texture);
+	//m_LeftArm->addDamagedTexture(p_Texture);
+	//m_RightArm->addDamagedTexture(p_Texture);
+}
+void Robot::addDamagedEmissive(TextureNode* p_Texture)
+{
+	m_DamagedTextureEmissive = p_Texture;
+	//m_Head->addDamagedEmissive(p_Texture);
+	//m_LeftArm->addDamagedEmissive(p_Texture);
+	//m_RightArm->addDamagedEmissive(p_Texture);
+}
+void Robot::addDamagedNormal(TextureNode* p_Texture)
+{
+	m_DamagedTextureNormal = p_Texture;
+	//m_Head->addDamagedNormal(p_Texture);
+	//m_LeftArm->addDamagedNormal(p_Texture);
+	//m_RightArm->addDamagedNormal(p_Texture);
+}
+void Robot::addDamagedSpecular(TextureNode* p_Texture)
+{
+	m_DamagedTextureSpecular = p_Texture;
+	//m_Head->addDamagedSpecular(p_Texture);
+	//m_LeftArm->addDamagedSpecular(p_Texture);
+	//m_RightArm->addDamagedSpecular(p_Texture);
 }
 void Robot::dealDamage(unsigned int p_DamageAmount)
 {
@@ -255,6 +280,12 @@ void Robot::render(Renderer* p_Renderer)
 		{
 			p_Renderer->begin();
 			m_DamagedTextureDiffuse->render(p_Renderer);
+			if(m_DamagedTextureEmissive != nullptr)
+				m_DamagedTextureEmissive->render(p_Renderer);
+			if(m_DamagedTextureNormal != nullptr)
+				m_DamagedTextureNormal->render(p_Renderer);
+			if(m_DamagedTextureSpecular != nullptr)
+				m_DamagedTextureSpecular->render(p_Renderer);
 			m_LocalTransform->render(p_Renderer);
 			//any other texture render calls go in here
 			m_Mesh->render(p_Renderer);
@@ -279,4 +310,7 @@ Robot::~Robot(void)
 	delete m_RightArm;
 	delete m_Head;
 	m_DamagedTextureDiffuse = nullptr;
+	m_DamagedTextureEmissive = nullptr;
+	m_DamagedTextureNormal = nullptr;
+	m_DamagedTextureSpecular = nullptr;
 }

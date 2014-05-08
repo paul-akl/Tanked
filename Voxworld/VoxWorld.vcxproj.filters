@@ -700,6 +700,7 @@
     <ClInclude Include="LightShader.h">
       <Filter>Core Engine\Renderer\Shader\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.vert">
@@ -775,6 +776,18 @@
     </None>
     <None Include="shaders\emissivePassThrough.vert">
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="icon2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\Desktop\menu images\Tanked Icon.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\Desktop\menu images\Tanked Icon small.ico">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

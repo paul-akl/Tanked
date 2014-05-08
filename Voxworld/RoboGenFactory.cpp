@@ -54,7 +54,7 @@ void RoboGenFactory::init()
 	m_DamagedGeneratorSpecular->setName("DefaultRoboGenDamagedDiffuse");
 
 	m_DamagedRobotDiffuse = new TextureNode();
-	m_DamagedRobotDiffuse->loadTexture("images/DefaultRobot.png");
+	m_DamagedRobotDiffuse->loadTexture("images/DefaultDamagedRobot.png");
 	m_DamagedRobotDiffuse->setTextureType(DIFFUSE);
 	m_DamagedRobotDiffuse->setName("DefaultDamagedRobotDiffuse");
 	m_DefaultRobotDiffuse = new TextureNode();
@@ -65,13 +65,11 @@ void RoboGenFactory::init()
 	m_DamagedRobotEmissive = new TextureNode();
 	m_DamagedRobotEmissive->loadTexture("images/DefaultRobot_glow.png");
 	m_DamagedRobotEmissive->setTextureType(EMISSIVE);
-	m_DamagedRobotEmissive->setName("DefaultRobotEmissive");
+	m_DamagedRobotEmissive->setName("DefaultDamagedRobotEmissive");
 	m_DefaultRobotEmissive = new TextureNode();
 	m_DefaultRobotEmissive->loadTexture("images/DefaultRobot_glow.png");
 	m_DefaultRobotEmissive->setTextureType(EMISSIVE);
-	m_DefaultRobotEmissive->setName("DefaultDamagedRobotEmissive");
-
-	printf("70%% \n");
+	m_DefaultRobotEmissive->setName("DefaultRobotEmissive");
 
 	m_DamagedRobotSpecular = new TextureNode();
 	m_DamagedRobotSpecular->loadTexture("images/DefaultRobot_g.png");

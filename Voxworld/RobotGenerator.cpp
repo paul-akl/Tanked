@@ -71,6 +71,9 @@ void RobotGenerator::init()
 		tmp->addLeftArm(getArm(true));
 		tmp->addRightArm(getArm(false));
 		tmp->addDamagedTexture(m_DamagedRobotDiffuse);
+		tmp->addDamagedEmissive(m_DamagedEmissiveTexture);
+		tmp->addDamagedNormal(m_DamagedNormalTexture);
+		tmp->addDamagedSpecular(m_DamagedRobotSpecular);
 		tmp->setDetectionRadius(400.0f);
 		tmp->setStateTimer(0.1f);
 		tmp->setPosition(glm::vec3(0.0f));

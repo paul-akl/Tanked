@@ -15,6 +15,9 @@ public:
 	void addRightArm(RobotArm* p_RightArm);
 	void addHead(RobotHead* p_Head);
 	void addDamagedTexture(TextureNode* p_Texture);
+	void addDamagedEmissive(TextureNode* p_Texture);
+	void addDamagedNormal(TextureNode* p_Texture);
+	void addDamagedSpecular(TextureNode* p_Texture);
 	const int getHitPoints();
 	void setHitPoints(const unsigned int p_HP);
 	void dealDamage(unsigned int p_DamageAmount);
@@ -36,7 +39,10 @@ protected:
 	RobotHead* m_Head;
 	float m_TurnSpeed;
 	bool m_Turning;
-	TextureNode* m_DamagedTextureDiffuse;
+	TextureNode *m_DamagedTextureDiffuse,
+				*m_DamagedTextureEmissive,
+				*m_DamagedTextureNormal,
+				*m_DamagedTextureSpecular;
 	int m_HitPoints;
 	int m_MaxHitPoints;
 	float m_TargetOrientation;
