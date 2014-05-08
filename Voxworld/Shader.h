@@ -21,6 +21,7 @@ public:
 	virtual void setModelView(glm::mat4& p_ModelViewMatrix);
 	virtual void setProjectionMatrix(glm::mat4& p_ProjectionMatrix);
 	virtual void setNormalMatrix(glm::mat3& p_InvTransposeModelViewMatrix);
+	virtual void setCameraWorldPosition(glm::vec3 p_cameraWorldPosition);
 	void enable();
 	void disable();
 	GLuint getShaderLocation(){return m_ShaderLocation;}
@@ -41,6 +42,7 @@ protected:
 			m_normalMapLocation,
 			m_emissiveLocation,
 			m_heightLocation,
-			m_specularLocation;
+			m_specularLocation,
+			m_cameraPosition;
 };
 

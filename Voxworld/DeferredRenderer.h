@@ -47,13 +47,14 @@ public:
 	virtual void render(ParticleSystem* p_Particle);
 
 	virtual void setTransparencyMode(const bool p_Transparency){;}
+	virtual void toggleFullscreen();
 	virtual SDL_Window* getWindow(void);
 
 	// Write all the geometry data to different buffers (similar to forward rendering), take the vector of dataSets as a parameter
 	virtual void geometryPass(std::vector<StandardDataSet> &p_DataList);
 	virtual void UIPass(std::vector<UIDataSet> &p_DataList);
 	virtual void lightPass();			// All the lights are rendered at once, passing them as buffer. This eliminates drawing overhead, and texture lookups (inside a shader)
-	virtual void skyboxPass();			// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
+	virtual void emissiveToFinalPass();			// If we use a skybox, it will be rendered here, so it's placement is correct and is not affected by the lights
 	virtual void finalPass();			// Copy the final image to the screen (instead of an older method of rendering a fullscreen sized quad)
 	virtual void updateViewFrustum();	//update the frustum based on the view and projection matrices
 	virtual void particlesPass(std::vector<ParticleDataSet> &p_particleList);
@@ -72,7 +73,8 @@ private:
 	std::vector<LightStruct> m_Lights;
 	Shader					*m_GeometryShader,
 							*m_UIShader;
-	LightShader				*m_lightPassShader;
+	LightShader				*m_lightPassShader,
+							*m_emissiveToFinalShader;
 	GaussianBlurShader		*m_BlurVerticalShader,
 							*m_BlurHorizontalShader;
 	ParticleShader			*m_ParticleShader;
@@ -120,5 +122,6 @@ private:
 
 	void cullDataSet(std::vector<StandardDataSet> p_Unculled, std::vector<StandardDataSet> p_Culled, glm::mat4& p_ViewMatrix);
 	bool frustumCheck(StandardDataSet p_DataSet);
+	virtual void resizeWindow(int p_width, int p_height);
 };
 

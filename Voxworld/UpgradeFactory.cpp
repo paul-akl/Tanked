@@ -13,17 +13,26 @@ UpgradeFactory::UpgradeFactory(void)
 void UpgradeFactory::init()
 {
 	//assets for the objects the upgrade will create
-	m_DefaultProjectileMesh =  new MeshNode();
+	m_DefaultProjectileMesh = new MeshNode();
 	m_DefaultProjectileMesh->loadModel("models/capsule.obj");
 	m_DefaultProjectileMesh->setName("bulletDefaultMesh");
-	m_DefaultProjectileTexture =  new TextureNode();
+	m_DefaultProjectileTexture = new TextureNode();
 	m_DefaultProjectileTexture->loadTexture("images/bullet_D.jpg");
 	m_DefaultProjectileTexture->setTextureType(DIFFUSE);
 	m_DefaultProjectileTexture->setName("bulletDefaultTexture");
-	m_AutoGunProjectileEmissive =  new TextureNode();
+	m_AutoGunProjectileEmissive = new TextureNode();
 	m_AutoGunProjectileEmissive->loadTexture("images/AutoBullet_E.jpg");
 	m_AutoGunProjectileEmissive->setTextureType(EMISSIVE);
 	m_AutoGunProjectileEmissive->setName("bulletEmissiveTexture");
+
+	m_MainGunProjectileDiffuse = new TextureNode();
+	m_MainGunProjectileDiffuse->loadTexture("images/MainBullet_E.png");
+	m_MainGunProjectileDiffuse->setTextureType(DIFFUSE);
+	m_MainGunProjectileDiffuse->setName("mainGunDiffuseTexture");
+	m_MainGunProjectileEmissive = new TextureNode();
+	m_MainGunProjectileEmissive->loadTexture("images/MainBullet_E.png");
+	m_MainGunProjectileEmissive->setTextureType(EMISSIVE);
+	m_MainGunProjectileEmissive->setName("mainGunEmissiveTexture");
 
 	//assets for the upgrade itself
 	m_DefaultUpgradeMesh = new MeshNode();
@@ -236,8 +245,31 @@ OffensiveUpgrade* UpgradeFactory::getOffensiveUpgrade(OffensiveUpgradeType p_Typ
 			TransformNode* tmp = new TransformNode();
 			tmp->reset();
 			v_Upgrade->addTransform(tmp);
-			v_Upgrade->setProjectileDiffuse(m_DefaultProjectileTexture);
-			v_Upgrade->setDefaultProjEmissiveTexture(m_AutoGunProjectileEmissive);
+
+			switch(v_Upgrade->getProjectileType())
+			{
+			case DEFAULT_MAIN:
+				v_Upgrade->setProjectileDiffuse(m_MainGunProjectileDiffuse);
+				v_Upgrade->setDefaultProjEmissiveTexture(m_MainGunProjectileEmissive);
+				break;
+			case DEFAULT_SECONDARY:
+				v_Upgrade->setProjectileDiffuse(m_DefaultProjectileTexture);
+				v_Upgrade->setDefaultProjEmissiveTexture(m_AutoGunProjectileEmissive);
+				break;
+			// Future implementation for upgrades
+			case BOUNCING_SHELL:
+				break;
+			case INCENDIARY:
+				break;
+			case ICE_SHOT:
+				break;
+			case GRAVITY_SHELL:
+				break;
+			case CONCUSSION_SHELL:
+				break;
+			default:
+				break;
+			}
 			v_Upgrade->setProjectileMesh(m_DefaultProjectileMesh);
 			v_Upgrade->activate();
 			v_Upgrade->setType(COLLECTABLE);

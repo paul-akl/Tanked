@@ -89,6 +89,21 @@ bool Controller::update(SDL_Event& p_Event)
 				keyBuffer[RENDERMODE_DEFAULT] = true;
 			}
 			break;
+			case SDL_SCANCODE_RETURN:
+			{
+				keyBuffer[FULLSCREEN_KEY_A] = true;
+			}
+			break;
+			case SDL_SCANCODE_LALT:
+			{
+				keyBuffer[FULLSCREEN_KEY_B] = true;
+			}
+			break;
+			case SDL_SCANCODE_RALT:
+			{
+				keyBuffer[FULLSCREEN_KEY_B] = true;
+			}
+			break;
 		}
 	}
 	if(p_Event.type == SDL_KEYUP)
@@ -143,6 +158,21 @@ bool Controller::update(SDL_Event& p_Event)
 			case SDL_SCANCODE_D:
 			{
 				keyBuffer[STRAFE_R] = false;
+			}
+			break;
+			case SDL_SCANCODE_RETURN:
+			{
+				keyBuffer[FULLSCREEN_KEY_A] = false;
+			}
+			break;
+			case SDL_SCANCODE_LALT:
+			{
+				keyBuffer[FULLSCREEN_KEY_B] = false;
+			}
+			break;
+			case SDL_SCANCODE_RALT:
+			{
+				keyBuffer[FULLSCREEN_KEY_B] = false;
 			}
 			break;
 		}

@@ -41,7 +41,7 @@ void ParticleSystemFactory::init()
 					ty = ((std::rand() % 100)/50.0f)-1.0f;
 					tz = ((std::rand() % 100)/50.0f)-1.0f;
 					glm::vec3 v(tx,ty,tz);
-					m_BaseVelocities[i].push_back(glm::normalize(v));
+					m_BaseVelocities[i].push_back(glm::normalize(v)*(float)(std::rand()%100)/50.0f);
 				}
 			}
 			break;
@@ -58,7 +58,7 @@ void ParticleSystemFactory::init()
 					ty = 0.0f;
 					tz = ((std::rand() % 100)/50.0f)-1.0f;
 					glm::vec3 v(tx,ty,tz);
-					m_BaseVelocities[i].push_back(glm::normalize(v) * 5.0f);
+					m_BaseVelocities[i].push_back(glm::normalize(v));
 					m_BaseVelocities[i].back().y=0.0f;
 				}
 			}
@@ -73,7 +73,7 @@ void ParticleSystemFactory::init()
 					ty = ((std::rand() % 100)/50.0f)-1.0f;
 					tz = ((std::rand() % 100)/50.0f)-1.0f;
 					glm::vec3 v(tx,ty,tz);
-					m_BaseVelocities[i].push_back(glm::normalize(v));
+					m_BaseVelocities[i].push_back(glm::normalize(v)*(float)(std::rand()%100)/50.0f);
 				}
 			}
 			break;
@@ -88,7 +88,7 @@ void ParticleSystemFactory::init()
 					tz = ((std::rand() % 100)/50.0f)-1.0f;
 					glm::vec3 v(tx,ty,tz);
 					//not normalised, we want this in the shape of a box
-					m_BaseVelocities[i].push_back(v);
+					m_BaseVelocities[i].push_back(v*(float)(std::rand()%100)/50.0f);
 				}
 			}
 			break;
@@ -264,7 +264,7 @@ void ParticleSystemFactory::initWaveEffect(ParticleSystem* p_ParticleSystem)
 		p_ParticleSystem->m_BaseVelocities.clear();
 		for(size_t i = 0; i < MAX_PARTICLES_PER_SYSTEM; i++)
 		{
-			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[WAVE][i]);
+			p_ParticleSystem->m_BaseVelocities.push_back(m_BaseVelocities[WAVE][i] * 3.5f);
 			p_ParticleSystem->m_LifeTimes.resize(MAX_PARTICLES_PER_SYSTEM, 1.0f);
 			p_ParticleSystem->m_Positions.resize(MAX_PARTICLES_PER_SYSTEM, glm::vec3(0.0f));
 			p_ParticleSystem->m_Velocities = p_ParticleSystem->m_BaseVelocities;
@@ -279,6 +279,7 @@ void ParticleSystemFactory::initWaveEffect(ParticleSystem* p_ParticleSystem)
 		p_ParticleSystem->resetForces();
 	}
 	p_ParticleSystem->setRepeatingMode(true);
+	p_ParticleSystem->setMaxLifeTime(0.45f);
 	p_ParticleSystem->init();
 }
 ParticleSystemFactory::~ParticleSystemFactory(void)

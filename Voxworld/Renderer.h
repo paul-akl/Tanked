@@ -166,12 +166,23 @@ public:
 	virtual void render(MaterialNode* p_Material)=0;
 	virtual void render(ParticleSystem* p_Particle)=0;
 	virtual void setTransparencyMode(const bool p_Transparency)=0;
+	virtual void toggleFullscreen() = 0;
 	virtual void updateViewFrustum() = 0;
 	virtual Frustum* getFrustum() = 0;
 	virtual SDL_Window* getWindow(void)=0;
 	virtual void shutDown(void) = 0;
 	virtual ~Renderer(void);
 protected:
-	int m_ScreenWidth, m_ScreenHeight;
+	virtual void resizeWindow(int p_width, int p_height) = 0;
+	int		m_CurrentScreenWidth,
+			m_CurrentScreenHeight,
+			m_WindowedScrenWidth,
+			m_WindowedScreenHeight,
+			m_FullscreenWidth,
+			m_FullscreenHeight;
+	float	m_FOV,
+			m_zFar,
+			m_zNear;
+	bool	m_Fullscreen;
 };
 

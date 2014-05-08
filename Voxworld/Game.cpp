@@ -19,7 +19,7 @@ void Game::init()
 	
 	Utils::GeneralUtils * util = new Utils::GeneralUtils();
 	util->initialiseTTF();
-	m_Renderer = new DeferredRenderer(1024,768);
+	m_Renderer = new DeferredRenderer(1600, 900);
 	m_Renderer->init();
 	m_Window = m_Renderer->getWindow();
 	//initialise asset system
@@ -37,10 +37,10 @@ void Game::init()
 	//and initialise our game Mode
 	m_Controller = new Controller();
 	m_MainMode->setController(m_Controller);
-	m_IntroMode->init(*this,m_Renderer);
+	//m_IntroMode->init(*this,m_Renderer);
 	m_MainMode->init(*this,m_Renderer);
-	m_MenuMode->init(*this,m_Renderer);
-	m_CreditsMode->init(*this,m_Renderer);
+	//m_MenuMode->init(*this,m_Renderer);
+	//m_CreditsMode->init(*this,m_Renderer);
 	m_Controller->setWindow(m_Renderer->getWindow());
 	//mShopMode->init(*this);
 	//and set our default starting mode, which would normally be intro mode, but for now we will stick with main mode.

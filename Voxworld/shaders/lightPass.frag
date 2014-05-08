@@ -1,9 +1,12 @@
 #version 330
 
-#define MAX_NUM_POINT_LIGHTS 100
-#define MAX_NUM_SPOT_LIGHTS 25
+#define MAX_NUM_POINT_LIGHTS 50
+#define MAX_NUM_SPOT_LIGHTS 5
 #define GLOSS_VALUE_MULTIPLIER 512
+#define SPECULAR_EXPONENT 20
 #define EMISSIVE_CAP_DISTANCE 25
+#define MAX_LIGHT_MULTIPLIER 1
+#define EMISSIVE_COLOR_DIVIDER 50
 
 // Some drivers require the following
 precision highp float;
@@ -50,9 +53,12 @@ uniform int numSpotLights;
 uniform sampler2D positionMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
-uniform sampler2D emissiveMap;
+//uniform sampler2D emissiveMap;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 emissiveBuffer;
+layout(location = 1) out vec4 finalBuffer;
+
+//out vec4 fragColor;
 
 vec3 worldPos;
 vec3 normal;
@@ -133,29 +139,35 @@ void main(void)
 	vec2 texCoord = calcTexCoord();
 	vec3 color = texture(diffuseMap, texCoord).xyz;
 	vec4 lightColor = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 emissiveColor = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 normalAndGloss = texture(normalMap, texCoord).xyzw;
 
 	worldPos = texture(positionMap, texCoord).xyz;
 	normal = normalize(normalAndGloss.xyz);
 
 	specularPower = normalAndGloss.w * GLOSS_VALUE_MULTIPLIER;
-	specularIntensity = 20.0;
-	
-	float distanceToFragment = length(worldPos - cameraPos);
-	vec4 emissiveColor = texture(emissiveMap, texCoord) * clamp((EMISSIVE_CAP_DISTANCE / distanceToFragment), 0.2, 0.8);
+	specularIntensity = SPECULAR_EXPONENT;
 
-	for(int i = 0; i < numPointLights; i++)
+	for(int i = 0; i < MAX_NUM_POINT_LIGHTS; i++)
 	{
-		lightColor += calcPointLight(pointLights[i]);
+		if(i < numPointLights)
+		{
+			lightColor = calcPointLight(pointLights[i]);
+			emissiveColor += clamp(lightColor / EMISSIVE_COLOR_DIVIDER, 0.0, 0.1);
+			finalColor += clamp(lightColor, 0.0, MAX_LIGHT_MULTIPLIER);
+		}
 	}
-	for(int i = 0; i < numSpotLights; i++)
+	for(int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++)
 	{
-		lightColor += calcSpotLight(spotLights[i]);
+		if(i < numSpotLights)
+		{
+			lightColor = calcSpotLight(spotLights[i]);
+			emissiveColor += clamp(lightColor / EMISSIVE_COLOR_DIVIDER, 0.0, 0.1);
+			finalColor += clamp(lightColor, 0.0, MAX_LIGHT_MULTIPLIER);
+		}
 	}
-	
-	vec3 lightDirection = worldPos - cameraPos;
-	float distance = length(lightDirection);
 
-	fragColor = vec4(color, 1.0) * lightColor + emissiveColor;
-	//fragColor = vec4(spotLights[0].base.color, 1.0);
+	emissiveBuffer += emissiveColor;
+	finalBuffer = vec4(color, 1.0) * finalColor;// + emissiveColor;
 }

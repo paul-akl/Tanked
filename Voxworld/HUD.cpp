@@ -145,7 +145,7 @@ void HUD::update(float p_DeltaTimeS)
 	m_HudComponents[WEAPONGAUGE]->update(p_DeltaTimeS);
 	m_HudComponents[SCORE]->update(p_DeltaTimeS);
 	m_HudComponents[GENERATORDISPLAY]->update(p_DeltaTimeS);
-	m_HudComponents[FRAMECOUNTER]->update(p_DeltaTimeS);
+	//m_HudComponents[FRAMECOUNTER]->update(p_DeltaTimeS);
 	
 }
 
@@ -159,7 +159,7 @@ void HUD::render(Renderer * p_Renderer)
 	m_HudComponents[WEAPONGAUGE]->render(p_Renderer);
 	m_HudComponents[SCORE]->render(p_Renderer);
 	m_HudComponents[GENERATORDISPLAY]->render(p_Renderer);
-	m_HudComponents[FRAMECOUNTER]->render(p_Renderer);
+	//m_HudComponents[FRAMECOUNTER]->render(p_Renderer);
 	
 
 }

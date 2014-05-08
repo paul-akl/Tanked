@@ -187,6 +187,8 @@
     <None Include="phong-tex.vert" />
     <None Include="shaders\dirLightPass.frag" />
     <None Include="shaders\dirLightPass.vert" />
+    <None Include="shaders\emissivePassThrough.frag" />
+    <None Include="shaders\emissivePassThrough.vert" />
     <None Include="shaders\gaussianBlurHorizontal.frag" />
     <None Include="shaders\gaussianBlurHorizontal.vert" />
     <None Include="shaders\gaussianBlurVertical.frag" />
