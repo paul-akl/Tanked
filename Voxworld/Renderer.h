@@ -89,6 +89,15 @@ struct SpotLightShadowDataSet
 	GLuint renderTargetTexture;
 	glm::mat4 depthMapLocation;
 };
+
+//		 ===========================================================================================================
+//		|												WARNING:													|
+//		|			DO NOT EDIT THE VARIABLE LAYOUT OF "PointLightDataSet" and "SpotLightDataSet" STRUCTS.			|
+//		|																											|
+//		| Their member variables are arranged by the order of buffer offsets used in light pass shader.				|
+//		| Editing their location would break the synchronization, since these structs are put into buffers as is.	|
+//		 ===========================================================================================================
+
 struct PointLightDataSet
 {
 	glm::vec3 colour;
@@ -111,14 +120,14 @@ struct SpotLightDataSet
 	float diffuseInt;
 	glm::vec3 attenuation;
 	glm::vec4 worldPosition;
-	//glm::vec3 worldDirection;
-	//float cutoffAngle;
+	glm::vec3 worldDirection;
+	float cutoffAngle;
 
 	SpotLightDataSet(	glm::vec3 p_worldPosition,		glm::vec3 p_colour,		glm::vec3 p_attenuation,
 						glm::vec3 p_worldDirection,		float p_cutoffAngle,	float p_ambientI,	
 						float p_diffuseI	):
 						worldPosition(glm::vec4(p_worldPosition, 1.0f)),		colour(p_colour),		
-						//worldDirection(p_worldDirection),						cutoffAngle(p_cutoffAngle),		
+						worldDirection(p_worldDirection),						cutoffAngle(p_cutoffAngle),		
 						ambientInt(p_ambientI),									diffuseInt(p_diffuseI),
 						attenuation(p_attenuation)	{;}
 };
@@ -157,12 +166,23 @@ public:
 	virtual void render(MaterialNode* p_Material)=0;
 	virtual void render(ParticleSystem* p_Particle)=0;
 	virtual void setTransparencyMode(const bool p_Transparency)=0;
+	virtual void toggleFullscreen() = 0;
 	virtual void updateViewFrustum() = 0;
 	virtual Frustum* getFrustum() = 0;
 	virtual SDL_Window* getWindow(void)=0;
 	virtual void shutDown(void) = 0;
 	virtual ~Renderer(void);
 protected:
-	int m_ScreenWidth, m_ScreenHeight;
+	virtual void resizeWindow(int p_width, int p_height) = 0;
+	int		m_CurrentScreenWidth,
+			m_CurrentScreenHeight,
+			m_WindowedScrenWidth,
+			m_WindowedScreenHeight,
+			m_FullscreenWidth,
+			m_FullscreenHeight;
+	float	m_FOV,
+			m_zFar,
+			m_zNear;
+	bool	m_Fullscreen;
 };
 

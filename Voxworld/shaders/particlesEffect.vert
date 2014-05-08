@@ -1,6 +1,7 @@
 #version 330 core
 
 layout(location = 0) in vec3 vertexPosition;
+layout(location = 0) in vec4 colours;
 layout(location = 3) in float TTL;
 
 uniform mat4 MVP;

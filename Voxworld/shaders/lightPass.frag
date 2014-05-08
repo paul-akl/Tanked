@@ -1,9 +1,12 @@
 #version 330
 
-#define MAX_NUM_POINT_LIGHTS 100
-#define MAX_NUM_SPOT_LIGHTS 25
+#define MAX_NUM_POINT_LIGHTS 50
+#define MAX_NUM_SPOT_LIGHTS 5
 #define GLOSS_VALUE_MULTIPLIER 512
+#define SPECULAR_EXPONENT 20
 #define EMISSIVE_CAP_DISTANCE 25
+#define MAX_LIGHT_MULTIPLIER 1
+#define EMISSIVE_COLOR_DIVIDER 50
 
 // Some drivers require the following
 precision highp float;
@@ -28,8 +31,8 @@ struct SpotLight
 {
     BaseLight base;
     vec3 position;
-	//vec3 direction;
-	//float cutoff;
+	vec3 direction;
+	float cutoff;
 };
 
 layout (std140) uniform PointLights
@@ -50,9 +53,12 @@ uniform int numSpotLights;
 uniform sampler2D positionMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
-uniform sampler2D emissiveMap;
+//uniform sampler2D emissiveMap;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 emissiveBuffer;
+layout(location = 1) out vec4 finalBuffer;
+
+//out vec4 fragColor;
 
 vec3 worldPos;
 vec3 normal;
@@ -97,9 +103,12 @@ vec4 calcPointLight(PointLight light)
 
     return lightColor / attenuation;
 }
-/*vec4 calcSpotLight(SpotLight light)
+vec4 calcSpotLight(SpotLight light)
 {
+	// Calculate direction from position of light to current pixel
 	vec3 lightToFragment = normalize(worldPos - light.position);
+
+	// 
 	float spotLightFactor = dot(lightToFragment, light.direction);
 
 	if(spotLightFactor > light.cutoff)
@@ -121,7 +130,7 @@ vec4 calcPointLight(PointLight light)
 	{
 		return vec4(0.0, 0.0, 0.0, 0.0);
 	}
-}*/
+}
 
 vec2 calcTexCoord(void)
 {
@@ -130,31 +139,62 @@ vec2 calcTexCoord(void)
 
 void main(void)
 {
+	// Calculate screen-space texture coordinates, for buffer access
 	vec2 texCoord = calcTexCoord();
+
+	// Get diffuse color (full-bright) from diffuse buffer
 	vec3 color = texture(diffuseMap, texCoord).xyz;
+
 	vec4 lightColor = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 emissiveColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+	// Gloss map value (specular power) is packed in 4th float of normal map, to save space
 	vec4 normalAndGloss = texture(normalMap, texCoord).xyzw;
 
+	// Get pixel's world position from position buffer
 	worldPos = texture(positionMap, texCoord).xyz;
+
+	// Get normal from normal and gloss buffer (vec3 only) and normalize it to minimize floating point approximation errors
 	normal = normalize(normalAndGloss.xyz);
 
+	// Calculate gloss map value. Specular intensity should ideally be set from specular map (vec3 color of specular reflection)
 	specularPower = normalAndGloss.w * GLOSS_VALUE_MULTIPLIER;
-	specularIntensity = 20.0;
-	
-	float distanceToFragment = length(worldPos - cameraPos);
-	vec4 emissiveColor = texture(emissiveMap, texCoord) * clamp((EMISSIVE_CAP_DISTANCE / distanceToFragment), 0.2, 0.8);
+	specularIntensity = SPECULAR_EXPONENT;
 
-	for(int i = 0; i < numPointLights; i++)
-	{
-		lightColor += calcPointLight(pointLights[i]);
-	}
-	for(int i = 0; i < numSpotLights; i++)
-	{
-		//lightColor += calcSpotLight(spotLights[i]);
-	}
-	
-	vec3 lightDirection = worldPos - cameraPos;
-	float distance = length(lightDirection);
+	// ------------------------------------------------------------------------------------------------------------------------------------
+	//	Because of old GPU drivers in labs (ATI driver bug), shaders do no support dynamic for loops (that are controlled by a uniform.
+	//	A costly fix (checking every light MAX_NUM_LIGHTS times) is due, it would be removed otherwise.
+	// ------------------------------------------------------------------------------------------------------------------------------------
 
-	fragColor = vec4(color, 1.0) * lightColor + emissiveColor;
+	for(int i = 0; i < MAX_NUM_POINT_LIGHTS; i++)
+	{
+		if(i < numPointLights)
+		{
+			// Calculate color of the light (ADS lighting)
+			lightColor = calcPointLight(pointLights[i]);
+
+			// Write color (that is brighter than a set treshold) to emissive buffer
+			emissiveColor += clamp(lightColor / EMISSIVE_COLOR_DIVIDER, 0.0, 0.1);
+
+			// Clamp the color of the light for diffuse light
+			finalColor += clamp(lightColor, 0.0, MAX_LIGHT_MULTIPLIER);
+		}
+	}
+	for(int i = 0; i < MAX_NUM_SPOT_LIGHTS; i++)
+	{
+		if(i < numSpotLights)
+		{
+			lightColor = calcSpotLight(spotLights[i]);
+			emissiveColor += clamp(lightColor / EMISSIVE_COLOR_DIVIDER, 0.0, 0.1);
+			finalColor += clamp(lightColor, 0.0, MAX_LIGHT_MULTIPLIER);
+		}
+	}
+
+	// Emissive color is for bloom simulation, instead of having over-brightened pixels, due to a large number of lights,
+	// light color is clamped (saturated) and over brightness of that color is written into emissive buffer, for bluring.
+	emissiveBuffer += emissiveColor;
+
+	// Multiply the diffuse color by the amound of light the current pixel recieves
+	finalBuffer = vec4(color, 1.0) * finalColor;
 }

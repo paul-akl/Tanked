@@ -27,6 +27,7 @@ protected:
 	MeshNode* m_DefaultUpgradeMesh;
 	TextureNode* m_DefensiveDiffuse;
 	TextureNode* m_MobilityDiffuse;
+	TextureNode* m_MainGunProjectileDiffuse;
 	TextureNode* m_AutoGunProjectileEmissive;
 	TextureNode* m_MainGunProjectileEmissive;
 	TextureNode* m_FireGunProjectileEmissive;

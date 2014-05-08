@@ -68,6 +68,10 @@ void ParticleSystem::updateParticles(float p_DeltaTimeS)
 		{
 			m_Velocities[i]+=netForce*p_DeltaTimeS;
 			m_Positions[i]+=m_Velocities[i]*p_DeltaTimeS;
+			if(m_Positions[i].y < -2.0f)
+			{
+				m_Velocities[i] = glm::reflect(m_Velocities[i], glm::vec3(0.0f, 1.0f, 0.0f));
+			}
 		}
 		else
 		{
@@ -165,7 +169,8 @@ void ParticleSystem::setVectorBias(glm::vec3& p_Bias)
 	size_t end = m_Velocities.size();
 	for(size_t i = 0; i < end;i++)
 	{
-		m_Velocities[i]+=p_Bias;
+		m_Velocities[i] = glm::normalize(m_Velocities[i] + p_Bias);
+		
 	}
 }
 ParticleSystem::~ParticleSystem(void)

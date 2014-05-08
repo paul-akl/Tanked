@@ -14,6 +14,9 @@ GBuffer::GBuffer(int p_WindowWidth, int p_WindowHeight)
 	
 	for(int i=0; i < GBufferNumTextures; i++)		// For each buffer
 		m_TexBuffers[i] = GL_COLOR_ATTACHMENT0 + i;	// set up it's position in the shader
+
+	m_EmissiveAndFinalBuffers[0] = GL_COLOR_ATTACHMENT0 + GBufferEmissive;
+	m_EmissiveAndFinalBuffers[1] = GL_COLOR_ATTACHMENT0 + GBufferFinal;
 }
 GBuffer::~GBuffer(void)
 {
@@ -46,9 +49,9 @@ void GBuffer::init()
 	glGenTextures(1, &m_BlurBuffer);
 	glGenTextures(1, &m_FinalBuffer);
 	
-	GLint internalFormats[GBufferNumTextures];
-	GLenum textureFormats[GBufferNumTextures];
-	GLenum textureTypes[GBufferNumTextures];
+	//GLint internalFormats[GBufferNumTextures];
+	//GLenum textureFormats[GBufferNumTextures];
+	//GLenum textureTypes[GBufferNumTextures];
 
 	internalFormats[GBufferPosition] = GL_RGBA32F;
 	textureFormats[GBufferPosition] = GL_RGBA;
@@ -61,10 +64,6 @@ void GBuffer::init()
 	internalFormats[GBufferNormal] = GL_RGBA16F;
 	textureFormats[GBufferNormal] = GL_RGBA;
 	textureTypes[GBufferNormal] = GL_FLOAT;
-
-	internalFormats[GBufferTexCoord] = GL_RGBA16F;
-	textureFormats[GBufferTexCoord] = GL_RGBA;
-	textureTypes[GBufferTexCoord] = GL_FLOAT;
 
 	internalFormats[GBufferEmissive] = GL_RGBA16F;
 	textureFormats[GBufferEmissive] = GL_RGBA;
@@ -115,26 +114,29 @@ void GBuffer::init()
 }
 void GBuffer::reload(unsigned int p_windowWidth, unsigned int p_windowHeight)
 {
+	m_WindowWidth	= p_windowWidth;
+	m_WindowHeight	= p_windowHeight;
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FboHandle);
 
 	// Resize geometry textures
 	for(int i=0; i < GBufferNumTextures; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_GBTextures[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, p_windowWidth, p_windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[i], m_WindowWidth, m_WindowHeight, 0, textureFormats[i], textureTypes[i], NULL);
 	}
 	
 	// Resize depth buffer
 	glBindTexture(GL_TEXTURE_2D, m_DepthBufferHandle);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, p_windowWidth, p_windowHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);	// For AMD GPUs at labs
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_WindowWidth, p_windowHeight, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);	// For AMD GPUs at labs
 
 	// Resize the blur buffer
 	glBindTexture(GL_TEXTURE_2D, m_BlurBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_windowWidth, p_windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_WindowWidth, p_windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 
 	// Resize the final buffer
 	glBindTexture(GL_TEXTURE_2D, m_FinalBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_windowWidth, p_windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_WindowWidth, p_windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 }
 
 void GBuffer::initFrame()
@@ -150,23 +152,8 @@ void GBuffer::initGeometryPass()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FboHandle);
     glDrawBuffers(GBufferNumTextures, m_TexBuffers);		// Bind geometry pass buffers to write to
 }
-void GBuffer::initStencilPass()
-{
-	// Disable the draw buffers, since stencil pass uses the depth and stencil test only, no actual rendering
-	glDrawBuffer(GL_NONE);
-}
 void GBuffer::initLightPass()
-{
-	//glDrawBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);			// Bind final buffer to draw to
-	
-	/*for(int i=0; i < GBufferNumTextures; i++)							 // For each geometry buffer
-	{
-		glActiveTexture(GL_TEXTURE0 + i);								 // Make it active
-		glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferPosition + i]); // and bind it so it can be accessed in the shaders
-	}*/
-
-	glDrawBuffer(GL_COLOR_ATTACHMENT0 + GBufferFinal);
-	
+{	
 	glActiveTexture(GL_TEXTURE0 + GBufferPosition);
 	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferPosition]);
 	
@@ -175,16 +162,12 @@ void GBuffer::initLightPass()
 	
 	glActiveTexture(GL_TEXTURE0 + GBufferNormal);
 	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferNormal]);
-	
-	glActiveTexture(GL_TEXTURE0 + GBufferTexCoord);
-	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferTexCoord]);
-	
-	glActiveTexture(GL_TEXTURE0 + GBufferEmissive);
-	glBindTexture(GL_TEXTURE_2D, m_GBTextures[GBufferEmissive]);
+
+	glDrawBuffers(2, m_EmissiveAndFinalBuffers);
 }
 void GBuffer::initParticlePass()
 {
-
+	glDrawBuffers(2, m_EmissiveAndFinalBuffers);
 }
 void GBuffer::initFinalPass()
 {
@@ -195,6 +178,34 @@ void GBuffer::initFinalPass()
 	// L <-- FOR DEBUG PURPOSES we are attaching a 1's buffer (diffuse buffer), instead of the 'GL_COLOR_ATTACHMENT0 + GBufferFinal' (final buffer)
 }
 
+void GBuffer::bindForReading(GBufferTextureType p_buffer, int p_activeTexture)
+{
+	glActiveTexture(GL_TEXTURE0 + p_activeTexture);
+	switch (p_buffer)
+	{
+	case GBuffer::GBufferPosition:
+		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
+		break;
+	case GBuffer::GBufferDiffuse:
+		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
+		break;
+	case GBuffer::GBufferNormal:
+		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
+		break;
+	case GBuffer::GBufferEmissive:
+		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
+		break;
+	case GBuffer::GBufferFinal:
+		glBindTexture(GL_TEXTURE_2D, m_FinalBuffer);
+		break;
+	case GBuffer::GBufferBlur:
+		glBindTexture(GL_TEXTURE_2D, m_BlurBuffer);
+		break;
+	default:
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		break;
+	}
+}
 void GBuffer::bindForReading(GBufferTextureType p_buffer)
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -207,9 +218,6 @@ void GBuffer::bindForReading(GBufferTextureType p_buffer)
 		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
 		break;
 	case GBuffer::GBufferNormal:
-		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
-		break;
-	case GBuffer::GBufferTexCoord:
 		glBindTexture(GL_TEXTURE_2D, m_GBTextures[p_buffer]);
 		break;
 	case GBuffer::GBufferEmissive:

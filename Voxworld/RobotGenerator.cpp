@@ -7,8 +7,14 @@
 
 RobotGenerator::RobotGenerator(void)
 {
-	m_DefaultRobotDiffuseTexture = nullptr;
-	m_DamagedRobotDiffuseTexture = nullptr;
+	m_DefaultRobotDiffuse = nullptr;
+	m_DamagedRobotDiffuse = nullptr;
+	m_DefaultRobotEmissive = nullptr;
+	m_DamagedRobotEmissive = nullptr;
+	m_DamagedRobotNormal = nullptr;
+	m_DamagedRobotNormal = nullptr;
+	m_DamagedRobotSpecular = nullptr;
+	m_DefaultRobotSpecular = nullptr;
 	m_DamagedDiffuseTexture = nullptr;
 	m_RobotBodyMesh = nullptr;
 	m_RobotHeadMesh = nullptr;
@@ -52,7 +58,10 @@ void RobotGenerator::init()
 		tmp->setBoundingRadius(5.0f);
 		//visual data 
 		tmp->addMesh(m_RobotBodyMesh);
-		tmp->addTexture(m_DefaultRobotDiffuseTexture);
+		tmp->addTexture(m_DefaultRobotDiffuse);
+		tmp->addTexture(m_DefaultRobotEmissive);
+		tmp->addTexture(m_DefaultRobotNormal);
+		tmp->addTexture(m_DefaultRobotSpecular);
 		TransformNode* temp = new TransformNode();
 		temp->reset();
 		temp->setName("RobotTransform");
@@ -61,7 +70,10 @@ void RobotGenerator::init()
 		tmp->addHead(getHead());
 		tmp->addLeftArm(getArm(true));
 		tmp->addRightArm(getArm(false));
-		tmp->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+		tmp->addDamagedTexture(m_DamagedRobotDiffuse);
+		tmp->addDamagedEmissive(m_DamagedEmissiveTexture);
+		tmp->addDamagedNormal(m_DamagedNormalTexture);
+		tmp->addDamagedSpecular(m_DamagedRobotSpecular);
 		tmp->setDetectionRadius(400.0f);
 		tmp->setStateTimer(0.1f);
 		tmp->setPosition(glm::vec3(0.0f));
@@ -150,8 +162,11 @@ RobotArm* RobotGenerator::getArm(bool p_Left)
 		temp->setName("rightArmTransform");
 	}
 
-	arm->addTexture(m_DefaultRobotDiffuseTexture);
-	arm->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+	arm->addTexture(m_DefaultRobotDiffuse);
+	arm->addDamagedTexture(m_DamagedRobotDiffuse);
+	arm->addTexture(m_DefaultRobotEmissive);
+	arm->addTexture(m_DefaultRobotNormal);
+	arm->addTexture(m_DefaultRobotSpecular);
 
 	return arm;
 }
@@ -160,8 +175,11 @@ RobotHead* RobotGenerator::getHead()
 	RobotHead* head = new RobotHead();
 	head->setBoundingRadius(3.0f);
 	head->addMesh(m_RobotHeadMesh);
-	head->addTexture(m_DefaultRobotDiffuseTexture);
-	head->addDamagedTexture(m_DamagedRobotDiffuseTexture);
+	head->addTexture(m_DefaultRobotDiffuse);
+	head->addTexture(m_DefaultRobotEmissive);
+	head->addTexture(m_DefaultRobotNormal);
+	head->addTexture(m_DefaultRobotSpecular);
+	head->addDamagedTexture(m_DamagedRobotDiffuse);
 	TransformNode* temp = new TransformNode();
 	temp->setName("HeadTransform");
 
@@ -231,8 +249,8 @@ bool RobotGenerator::deleteAll(Robot* p_Robot)
 }
 RobotGenerator::~RobotGenerator(void)
 {
-	m_DefaultRobotDiffuseTexture = nullptr;
-	m_DamagedRobotDiffuseTexture = nullptr;
+	m_DefaultRobotDiffuse = nullptr;
+	m_DamagedRobotDiffuse = nullptr;
 	m_DamagedDiffuseTexture = nullptr;
 	m_RobotBodyMesh = nullptr;
 	m_RobotHeadMesh = nullptr;

@@ -31,7 +31,7 @@ void BasicTankFactory::init()
 	m_BodySpecular1 = new TextureNode();
 	m_BodySpecular1->setTextureType(SPECULAR);
 	m_BodySpecular1->setName("tank0specular0");
-	m_BodySpecular1->loadTexture("images/Tank_N.tga");	//CHANGE_NEEDED
+	m_BodySpecular1->loadTexture("images/Tank_S.tga");
 
 	m_BodyMesh1 = new MeshNode();
 	m_BodyMesh1->loadModel("models/Tank_base.obj");

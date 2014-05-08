@@ -15,7 +15,6 @@ DeferredRenderer::DeferredRenderer(int p_WindowWidth, int p_WindowHeight):Render
 {
 		m_UI_Phase = false;
 		m_Frustum = new Frustum();
-		m_ProjectionMatrix = glm::perspective(60.0f, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0f, 400.0f);
 }
 
 void DeferredRenderer::begin(void)
@@ -192,6 +191,8 @@ void DeferredRenderer::endRenderCycle(void)
 
 	particlesPass(m_ParticlesList);
 
+	emissiveToFinalPass();
+
 	blurPass(GBuffer::GBufferEmissive, GBuffer::GBufferFinal, 3, 1.0f, -0.2f);
 
 	UIPass(m_UIDataList);	// Render UI objects, pass vector of UI dataSets for current frame
@@ -293,9 +294,9 @@ void DeferredRenderer::render(LightNode* p_PointLightNode)
 void DeferredRenderer::render(SpotLight* p_SpotLightNode)
 {
 	m_SpotLightList.push_back(SpotLightDataSet(
-		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),			 p_SpotLightNode->getAttenuation(),
-		p_SpotLightNode->getTransformedDirection(),	p_SpotLightNode->getCutoffAngle(),		 p_SpotLightNode->getAmbientIntensity(),
-		p_SpotLightNode->getDiffuseIntensity()	));
+		p_SpotLightNode->getTransformedPosition(),	p_SpotLightNode->getColour(),	p_SpotLightNode->getAttenuation(),
+		glm::normalize(p_SpotLightNode->getTransformedDirection()),					cosf(p_SpotLightNode->getCutoffAngle() * (float)PI / 180.0f),
+		p_SpotLightNode->getAmbientIntensity(),										p_SpotLightNode->getDiffuseIntensity()	));
 }
 void DeferredRenderer::render(ParticleSystem* p_Particle)
 {
@@ -304,6 +305,20 @@ void DeferredRenderer::render(ParticleSystem* p_Particle)
 												p_Particle->getPointSize(), p_Particle->getMaxLifeTime()	));
 }
 
+void DeferredRenderer::toggleFullscreen()
+{
+	if(m_Fullscreen)
+	{
+		SDL_SetWindowFullscreen(m_Window, SDL_FALSE);
+		resizeWindow(m_WindowedScrenWidth, m_WindowedScreenHeight);
+	}
+	else
+	{
+		resizeWindow(m_FullscreenWidth, m_FullscreenHeight);
+		SDL_SetWindowFullscreen(m_Window, SDL_TRUE);
+	}
+	m_Fullscreen = !m_Fullscreen;
+}
 SDL_Window* DeferredRenderer::getWindow(void)
 {
 	return m_Window;
@@ -314,7 +329,6 @@ void DeferredRenderer::init(void)
 		Utils::GeneralUtils::exitFatalError("SDL Init error");
 
     // Request an OpenGL 3.0 context.
-	
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); 
@@ -324,7 +338,7 @@ void DeferredRenderer::init(void)
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4); // Turn on x4 multisampling anti-aliasing (MSAA)
     // Create 800x600 window
    m_Window = SDL_CreateWindow("SDL/GLM/OpenGL Demo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        m_ScreenWidth, m_ScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+        m_CurrentScreenWidth, m_CurrentScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 	if (!m_Window) // Check window was created OK
         Utils::GeneralUtils::exitFatalError("cannot create window");
 
@@ -343,13 +357,23 @@ void DeferredRenderer::init(void)
 	// Clear color needs to be black, for light blending
 	glClearColor(0.0f,0.0f,0.0f,1.0f);
 
+	// Get current display settings and set fullscreen resolution as maximum screen resolution
+	SDL_DisplayMode currentDisplayMode;
+	SDL_GetCurrentDisplayMode(0, &currentDisplayMode);
+	m_FullscreenHeight = currentDisplayMode.h;
+	m_FullscreenWidth = currentDisplayMode.w;
+
+	m_ProjectionMatrix = glm::perspective(m_FOV, (float)m_CurrentScreenWidth / (float)m_CurrentScreenHeight, m_zNear, m_zFar);
+
 	//repeat next 4 lines for each additional shader
 	m_CurrentShader = nullptr;
 	m_GeometryShader = new Shader();
 	m_GeometryShader->initShader("Shaders\\geometryPass.vert","Shaders\\geometryPass.frag");
 	m_UIShader = new Shader();
 	m_UIShader->initShader("Shaders\\UIPass.vert","Shaders\\UIPass.frag");
-
+	
+	m_emissiveToFinalShader = new LightShader();
+	m_emissiveToFinalShader->initShader("Shaders\\emissivePassThrough.vert","Shaders\\emissivePassThrough.frag");
 	m_lightPassShader = new LightShader();
 	m_lightPassShader->initShader("Shaders\\lightPass.vert", "Shaders\\lightPass.frag");
 	m_ParticleShader = new ParticleShader();
@@ -378,12 +402,12 @@ void DeferredRenderer::init(void)
 	glGenBuffers(1, &m_PointLightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_PointLightBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLightDataSet) * m_maxNumPointLights, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getPointLightBlockIndex(), m_PointLightBuffer);
+	//glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getPointLightBlockIndex(), m_PointLightBuffer);
 	
 	glGenBuffers(1, &m_SpotLightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_SpotLightBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(SpotLightDataSet) * m_maxNumSpotLights, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getSpotLightBlockIndex(), m_SpotLightBuffer);
+	//glBindBufferBase(GL_UNIFORM_BUFFER, m_lightPassShader->getSpotLightBlockIndex(), m_SpotLightBuffer);
 
 	//enable standard opengl rendering features
 	glEnable(GL_TEXTURE_2D);
@@ -396,7 +420,7 @@ void DeferredRenderer::init(void)
 	fprintf(stderr, "Error: %s\n", glewGetErrorString(glGetError()));
 
 	//initialize the geometry buffer
-	m_GBuffer = new GBuffer(m_ScreenWidth, m_ScreenHeight);
+	m_GBuffer = new GBuffer(m_CurrentScreenWidth, m_CurrentScreenHeight);
 	m_GBuffer->init();
 
 	m_CurrentShader = m_GeometryShader;
@@ -424,6 +448,7 @@ void DeferredRenderer::shutDown(void)
 	delete m_WhiteTexture;
 	delete m_BlackTexture;
 	delete m_NormalTexture;
+	delete m_emissiveToFinalShader;
 }
 
 void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
@@ -467,6 +492,7 @@ void DeferredRenderer::geometryPass(std::vector<StandardDataSet> &p_DataList)
 		p_DataList[i].SelectedShader->setModelMatrix(p_DataList[i].ModelMatrix);
 		p_DataList[i].SelectedShader->setProjectionMatrix(p_DataList[i].projectionMatrix);
 		p_DataList[i].SelectedShader->setModelView(p_DataList[i].viewMatrix * p_DataList[i].ModelMatrix);
+		p_DataList[i].SelectedShader->setCameraWorldPosition(m_CameraPosition);
 
 		glDrawElements(GL_TRIANGLES, p_DataList[i].MeshVertCount, GL_UNSIGNED_INT, 0);	// draw VAO 
 
@@ -505,6 +531,9 @@ void DeferredRenderer::UIPass(std::vector<UIDataSet> &p_DataList)
 
 void DeferredRenderer::lightPass()
 {
+	m_GBuffer->initLightPass();
+
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -516,7 +545,7 @@ void DeferredRenderer::lightPass()
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(SpotLightDataSet) * m_SpotLightList.size(), m_SpotLightList.data());
 
 	m_lightPassShader->enable();
-	m_lightPassShader->setScreenSize(glm::vec2((float)m_ScreenWidth, (float)m_ScreenHeight));
+	m_lightPassShader->setScreenSize(glm::vec2((float)m_CurrentScreenWidth, (float)m_CurrentScreenHeight));
 	m_lightPassShader->setNumPointLights(m_PointLightList.size());
 	m_lightPassShader->setNumSpotLights(m_SpotLightList.size());
 	m_lightPassShader->setCameraWorldPosition(m_CameraPosition);
@@ -524,29 +553,49 @@ void DeferredRenderer::lightPass()
 	m_lightPassShader->bindPositionBuffer(m_GBuffer->getPositionBufferHandle());
 	m_lightPassShader->bindDiffuseBuffer(m_GBuffer->getDiffuseBufferHandle());
 	m_lightPassShader->bindNormalBuffer(m_GBuffer->getNormalBufferHandle());
-	m_lightPassShader->bindEmissiveBuffer(m_GBuffer->getEmissiveBufferHandle());
+	//m_lightPassShader->bindEmissiveBuffer(m_GBuffer->getEmissiveBufferHandle());
 	
-	m_GBuffer->initLightPass();
+	m_lightPassShader->bindPointLightBuffer(m_PointLightBuffer);
+	m_lightPassShader->bindSpotLightBuffer(m_SpotLightBuffer);
 
 	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
 	glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
-void DeferredRenderer::skyboxPass()
+void DeferredRenderer::emissiveToFinalPass()
 {
-	glEnable(GL_DEPTH_TEST);	// Enable depth test
-								// and make sure that the skybox is as big as Z FAR value, so it only get's rendered to the empty areas behind ALL the objects
-	// Render skybox here
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	
+	//m_GBuffer->initLightPass();
+
+	m_GBuffer->bindForReading(GBuffer::GBufferPosition, 0);
+	m_GBuffer->bindForReading(GBuffer::GBufferEmissive, 1);
+
+	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
+
+	m_emissiveToFinalShader->enable();
+	m_emissiveToFinalShader->setCameraWorldPosition(m_CameraPosition);
+	m_emissiveToFinalShader->setScreenSize(glm::vec2((float)m_CurrentScreenWidth, (float)m_CurrentScreenHeight));
+	
+	m_emissiveToFinalShader->bindPositionBuffer(0);
+	m_emissiveToFinalShader->bindEmissiveBuffer(1);
+	
+	glBindVertexArray(m_FullscrenQuad->getMeshLocation());
+	glDrawElements(GL_TRIANGLES, m_FullscrenQuad->getNumVerts(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 void DeferredRenderer::finalPass()
 {
 	m_GBuffer->initFinalPass();																	// Bind required framebuffers
 																								// Copy a buffer to another buffer
-	glBlitFramebuffer(	0, 0, m_ScreenWidth, m_ScreenHeight,									// Copy an area from origini to screen size (full screen area)
-						0, 0, m_ScreenWidth, m_ScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);	// and paste it to the same sized full screen area, using 'NEAREST' filter,
+	glBlitFramebuffer(	0, 0, m_CurrentScreenWidth, m_CurrentScreenHeight,									// Copy an area from origini to screen size (full screen area)
+						0, 0, m_CurrentScreenWidth, m_CurrentScreenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);	// and paste it to the same sized full screen area, using 'NEAREST' filter,
 }																								// to avoid any artifacts, since the buffers are same size (pixels are 1 to 1)
 void DeferredRenderer::particlesPass(std::vector<ParticleDataSet> &p_particleList)
 {
+	m_GBuffer->initParticlePass();
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
@@ -555,7 +604,7 @@ void DeferredRenderer::particlesPass(std::vector<ParticleDataSet> &p_particleLis
 
 	m_ParticleShader->enable();
 	glEnable(GL_POINTS);
-	m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
+	//m_GBuffer->bindForWriting(GBuffer::GBufferFinal);
 	//m_GBuffer->bindForWriting(GBuffer::GBufferEmissive);
 	m_ParticleShader->bindEmissiveBuffer(GBuffer::GBufferEmissive);
 	m_ParticleShader->bindFinalBuffer(GBuffer::GBufferEmissive);
@@ -634,4 +683,13 @@ void DeferredRenderer::cullDataSet(std::vector<StandardDataSet> p_Unculled, std:
 					count++; 
 		}
 	}//std::cout << "objects rendered:" << count << std::endl;
+}
+void DeferredRenderer::resizeWindow(int p_width, int p_height)
+{
+	m_CurrentScreenWidth = p_width;
+	m_CurrentScreenHeight = p_height;
+	m_GBuffer->reload(m_CurrentScreenWidth, m_CurrentScreenHeight);
+	m_ProjectionMatrix = glm::perspective(m_FOV, (float)m_CurrentScreenWidth / (float)m_CurrentScreenHeight, m_zNear, m_zFar);
+	glViewport(0, 0, m_CurrentScreenWidth, m_CurrentScreenHeight);
+	SDL_SetWindowSize(m_Window, m_CurrentScreenWidth, m_CurrentScreenHeight);
 }

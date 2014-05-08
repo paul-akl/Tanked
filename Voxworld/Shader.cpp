@@ -61,6 +61,7 @@ void Shader::getDataHandles(GLuint p_programHandle)
 	m_emissiveLocation	 = glGetUniformLocation(p_programHandle, "emissiveMap");
 	m_heightLocation	 = glGetUniformLocation(p_programHandle, "heightMap");
 	m_specularLocation	 = glGetUniformLocation(p_programHandle, "specularMap");
+	m_cameraPosition	= glGetUniformLocation(p_programHandle, "cameraPos");
 }
 char* Shader::loadFile(const char* p_FileName, int &p_FileSize)
 {
@@ -150,6 +151,10 @@ void Shader::setProjectionMatrix(glm::mat4& p_ProjectionMatrix)
 void Shader::setNormalMatrix(glm::mat3& p_InvTransposeModelViewMatrix)
 {
 	glUniformMatrix3fv(m_normalLocation, 1, GL_FALSE, glm::value_ptr(p_InvTransposeModelViewMatrix)); 
+}
+void Shader::setCameraWorldPosition(glm::vec3 p_cameraWorldPosition)
+{
+	glUniform3f(m_cameraPosition, p_cameraWorldPosition.x, p_cameraWorldPosition.y, p_cameraWorldPosition.z);
 }
 
 void Shader::bindTexture(TextureType p_type, GLuint p_textureHandle)

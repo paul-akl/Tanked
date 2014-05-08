@@ -14,7 +14,7 @@ Scene::Scene(void)
 	m_CamFollowDistance = -25.0f;
 	m_CamFollowAngle = -25.0f;
 	m_MaxTurnSpeed = 350.0f;
-	m_MouseTurnSpeed = -100.0f;
+	m_MouseTurnSpeed = -20.0f;
 	m_MouseAcceleration = 50.0f;
 	m_MainFireButtonPressed=false;
 	m_MoveKeyPressed = false;
@@ -58,7 +58,7 @@ bool Scene::sceneComplete()
 }
 void Scene::init()
 {
-	printf("init scene");
+	printf("init scene \n");
 	m_LocalTransform=new TransformNode();
 	m_LocalTransform->reset();
 	m_WallFactory->init();
@@ -574,8 +574,8 @@ void Scene::checkGameConditions()
 								{
 									p_Sys->setPosition(tmp->getLocation());
 									p_Sys->setAltitude(10.0f);
-									//p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
-									//p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
+									p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
+									p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
 									m_PSystems.push_back(p_Sys);
 								}
 
@@ -605,8 +605,8 @@ void Scene::checkGameConditions()
 								{
 									p_Sys->setPosition(tmp->getLocation());
 									p_Sys->setAltitude(10.0f);
-									//p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
-									//p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
+									p_Sys->AddForceVector(glm::vec3(0.0f,-1.0f,0.0f));
+									p_Sys->setVectorBias(m_CollisionEvents[i]->m_CollisionNormal*m_CollisionEvents[i]->m_Penetration);
 									m_PSystems.push_back(p_Sys);
 								}
 							}
@@ -1068,6 +1068,9 @@ void Scene::update(float p_DeltaTimeS)
 		//and game is not paused
 		if(!m_Paused)
 		{
+			if(m_Controller->getButtonState(FULLSCREEN_KEY_A) && m_Controller->getButtonState(FULLSCREEN_KEY_B))
+				m_Renderer->toggleFullscreen();
+	
 			detectCollisions();
 			m_Tank->update(m_DeltaTimeSeconds);	
 			//if(!m_Robots.empty())

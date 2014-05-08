@@ -73,7 +73,7 @@ void FloorFactory::init()
 
 	m_FloorMesh1 = new MeshNode();
 	m_FloorMesh1->setName("floor0mesh0");
-	m_FloorMesh1->loadModel("plane.obj");
+	m_FloorMesh1->loadModel("models/plane.obj");
 }
 FloorNode* FloorFactory::getFloor(int p_numTiles, float p_tileSize)
 {

@@ -8,8 +8,8 @@ RoboGenFactory::RoboGenFactory(void)
 {
 	m_DefaultGeneratorTexture = nullptr;
 	m_DamagedGeneratorTexture= nullptr;
-	m_DamagedRobotTexture= nullptr;
-	m_DefaultRobotTexture= nullptr;
+	m_DamagedRobotDiffuse= nullptr;
+	m_DefaultRobotDiffuse= nullptr;
 	m_RoboGenMesh= nullptr;
 	m_RoboHeadMesh= nullptr;
 	m_RoboArmMesh= nullptr;
@@ -53,14 +53,42 @@ void RoboGenFactory::init()
 	m_DamagedGeneratorSpecular->setTextureType(SPECULAR);
 	m_DamagedGeneratorSpecular->setName("DefaultRoboGenDamagedDiffuse");
 
-	m_DamagedRobotTexture = new TextureNode();
-	m_DamagedRobotTexture->loadTexture("images/DefaultDamagedRobot.png");
-	m_DamagedRobotTexture->setTextureType(DIFFUSE);
-	m_DamagedRobotTexture->setName("DefaultDamagedRobotDiffuse");
-	m_DefaultRobotTexture = new TextureNode();
-	m_DefaultRobotTexture->loadTexture("images/DefaultRobot.png");
-	m_DefaultRobotTexture->setTextureType(DIFFUSE);
-	m_DefaultRobotTexture->setName("DefaultRobotDiffuse");
+	m_DamagedRobotDiffuse = new TextureNode();
+	m_DamagedRobotDiffuse->loadTexture("images/DefaultDamagedRobot.png");
+	m_DamagedRobotDiffuse->setTextureType(DIFFUSE);
+	m_DamagedRobotDiffuse->setName("DefaultDamagedRobotDiffuse");
+	m_DefaultRobotDiffuse = new TextureNode();
+	m_DefaultRobotDiffuse->loadTexture("images/DefaultRobot.png");
+	m_DefaultRobotDiffuse->setTextureType(DIFFUSE);
+	m_DefaultRobotDiffuse->setName("DefaultRobotDiffuse");
+
+	m_DamagedRobotEmissive = new TextureNode();
+	m_DamagedRobotEmissive->loadTexture("images/DefaultRobot_glow.png");
+	m_DamagedRobotEmissive->setTextureType(EMISSIVE);
+	m_DamagedRobotEmissive->setName("DefaultDamagedRobotEmissive");
+	m_DefaultRobotEmissive = new TextureNode();
+	m_DefaultRobotEmissive->loadTexture("images/DefaultRobot_glow.png");
+	m_DefaultRobotEmissive->setTextureType(EMISSIVE);
+	m_DefaultRobotEmissive->setName("DefaultRobotEmissive");
+
+	m_DamagedRobotSpecular = new TextureNode();
+	m_DamagedRobotSpecular->loadTexture("images/DefaultRobot_g.png");
+	m_DamagedRobotSpecular->setTextureType(SPECULAR);
+	m_DamagedRobotSpecular->setName("DefaultDamagedRobotSpecular");
+	m_DefaultRobotSpecular = new TextureNode();
+	m_DefaultRobotSpecular->loadTexture("images/DefaultRobot_g.png");
+	m_DefaultRobotSpecular->setTextureType(SPECULAR);
+	m_DefaultRobotSpecular->setName("DefaultRobotSpecular");
+
+	m_DamagedRobotNormal = new TextureNode();
+	m_DamagedRobotNormal->loadTexture("images/DefaultRobot_n.png");
+	m_DamagedRobotNormal->setTextureType(NORMAL);
+	m_DamagedRobotNormal->setName("DefaultDamagedRobotNormal");
+	m_DefaultRobotNormal = new TextureNode();
+	m_DefaultRobotNormal->loadTexture("images/DefaultRobot_n.png");
+	m_DefaultRobotNormal->setTextureType(NORMAL);
+	m_DefaultRobotNormal->setName("DefaultRobotNormal");
+
 	m_RoboGenMesh = new MeshNode();
 	m_RoboGenMesh->loadModel("models/Plasma_RoboGen.obj");
 	m_RoboGenMesh->setName("RoboGenMesh");
@@ -127,11 +155,19 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 				tmp->reset();
 				robogen->addTransform(tmp);
 				//set visual data for created robots
-				robogen->setRobotDefaultTexture(m_DefaultRobotTexture);
 				robogen->addTexture(m_DefaultGeneratorNormal);
 				robogen->addTexture(m_DefaultGeneratorEmissive);
 				robogen->addTexture(m_DefaultGeneratorSpecular);
-				robogen->setRobotDamagedTexture(m_DamagedRobotTexture);
+
+				robogen->setRobotDefaultTexture(m_DefaultRobotDiffuse);
+				robogen->setRobotDamagedTexture(m_DamagedRobotDiffuse);
+				robogen->setRobotDefaultEmissive(m_DefaultRobotEmissive);
+				robogen->setRobotDamagedEmissive(m_DamagedRobotEmissive);
+				robogen->setRobotDefaultNormal(m_DefaultRobotNormal);
+				robogen->setRobotDamagedNormal(m_DamagedRobotNormal);
+				robogen->setRobotDefaultSpecular(m_DefaultRobotSpecular);
+				robogen->setRobotDamagedSpecular(m_DamagedRobotSpecular);
+
 				robogen->setRobotBodyMesh(m_RoboBodyMesh);
 				robogen->setRobotHeadMesh(m_RoboHeadMesh);
 				robogen->setRobotArmMesh(m_RoboArmMesh);
@@ -180,8 +216,8 @@ RoboGenFactory::~RoboGenFactory(void)
 {
 	delete m_DefaultGeneratorTexture;
 	delete m_DamagedGeneratorTexture;
-	delete m_DamagedRobotTexture;
-	delete m_DefaultRobotTexture;
+	delete m_DamagedRobotDiffuse;
+	delete m_DefaultRobotDiffuse;
 	delete m_RoboGenMesh;
 	delete m_RoboHeadMesh;
 	delete m_RoboArmMesh;

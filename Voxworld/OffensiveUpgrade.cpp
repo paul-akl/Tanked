@@ -31,9 +31,9 @@ void OffensiveUpgrade::init()
 		v_Instance->setBaseDamage(50.0f);
 		v_Instance->deactivate();
 		LightNode* light = new LightNode();
-		light->setColour(glm::vec3(1.0f,1.0f,0.5f));
+		light->setColour(glm::vec3(0.0f,0.5f,1.0f));
 		light->setAmbientIntensity(0.0f);
-		light->setDiffuseIntensity(4.0f);
+		light->setDiffuseIntensity(6.0f);
 		light->setSpecularIntensity(1.0f);
 		light->setSpecularPower(1.0f);
 		light->setAttenuation(1.0f,0.0f,0.002f);

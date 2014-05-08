@@ -29,6 +29,8 @@ enum ButtonType
 	RENDERMODE_DEFAULT,
 	MOUSELEFT,
 	MOUSERIGHT,
+	FULLSCREEN_KEY_A,
+	FULLSCREEN_KEY_B
 };
 //FIXME: Needs event handling for keyup events
 ////////////////////////////////////////////////////
