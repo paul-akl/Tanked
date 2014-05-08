@@ -5,7 +5,10 @@
 #include "MeshNode.h"
 RobotHead::RobotHead(void)
 {
-	m_DamagedDiffuseTexture = nullptr;
+	m_DamagedTextureDiffuse = nullptr;
+	m_DamagedTextureEmissive = nullptr;
+	m_DamagedTextureNormal = nullptr;
+	m_DamagedTextureSpecular = nullptr;
 	m_TurnSpeed = 60.0f;
 	m_TargetOrientation = 0.0f;
 	m_OrientationDeg = 0.0f;
@@ -59,10 +62,6 @@ void RobotHead::update(float p_DeltaTimeS)
 	//m_WorldTransform = m_LocalTransform->getLocalTransform();
 }
 
-void RobotHead::addDamagedTexture(TextureNode* p_Texture)
-{
-	m_DamagedDiffuseTexture = p_Texture;
-}
 void RobotHead::turnLeft(float p_DeltaTimeS)
 {
 	m_OrientationDeg+=m_TurnSpeed*p_DeltaTimeS;
@@ -83,10 +82,16 @@ void RobotHead::render(Renderer* p_Renderer)
 {
 	if(m_Damaged)
 	{
-		if(m_Mesh!=nullptr && m_DamagedDiffuseTexture!=nullptr && m_LocalTransform != nullptr)
+		if(m_Mesh!=nullptr && m_DamagedTextureDiffuse!=nullptr && m_LocalTransform != nullptr)
 		{
 			p_Renderer->begin();
-			m_DamagedDiffuseTexture->render(p_Renderer);
+			m_DamagedTextureDiffuse->render(p_Renderer);
+			if(m_DamagedTextureEmissive != nullptr)
+				m_DamagedTextureEmissive->render(p_Renderer);
+			if(m_DamagedTextureNormal != nullptr)
+				m_DamagedTextureNormal->render(p_Renderer);
+			if(m_DamagedTextureSpecular != nullptr)
+				m_DamagedTextureSpecular->render(p_Renderer);
 			m_LocalTransform->render(p_Renderer);
 			//any other texture render calls go in here
 			m_Mesh->render(p_Renderer);
@@ -100,5 +105,8 @@ void RobotHead::render(Renderer* p_Renderer)
 }
 RobotHead::~RobotHead(void)
 {
-	m_DamagedDiffuseTexture = nullptr;
+	m_DamagedTextureDiffuse = nullptr;
+	m_DamagedTextureEmissive = nullptr;
+	m_DamagedTextureNormal = nullptr;
+	m_DamagedTextureSpecular = nullptr;
 }

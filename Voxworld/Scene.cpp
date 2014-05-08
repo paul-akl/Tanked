@@ -61,18 +61,12 @@ void Scene::init()
 	printf("init scene \n");
 	m_LocalTransform=new TransformNode();
 	m_LocalTransform->reset();
-	printf("10%% \n");
 	m_WallFactory->init();
-	printf("20%% \n");
 	m_FloorFactory->init();
-	printf("40%% \n");
 	m_TankFactory->init();
-	printf("60%% \n");
 	m_RoboGenFactory->init();
-	printf("80%% \n");
 	m_UpgradeFactory->init();
 	m_ParticleFactory->init();
-	printf("100%% \n");
 	//will be changed upon integration of maze node
 	//addTank(mazeObject->getStartPoint());
 	//add 4 robot generators to world according to maze
