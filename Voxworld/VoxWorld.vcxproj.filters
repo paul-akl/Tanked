@@ -770,6 +770,12 @@
       <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="shaders\emissivePassThrough.frag">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
+    <None Include="shaders\emissivePassThrough.vert">
+      <Filter>Core Engine\Renderer\Shader\Shader Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tanked.rc">

@@ -26,8 +26,14 @@ protected:
 					*m_DamagedGeneratorNormal,
 					*m_DamagedGeneratorEmissive,
 					*m_DamagedGeneratorSpecular,
-					*m_DamagedRobotTexture,
-					*m_DefaultRobotTexture;
+					*m_DamagedRobotDiffuse,
+					*m_DefaultRobotDiffuse,
+					*m_DamagedRobotEmissive,
+					*m_DefaultRobotEmissive,
+					*m_DamagedRobotSpecular,
+					*m_DefaultRobotSpecular,
+					*m_DamagedRobotNormal,
+					*m_DefaultRobotNormal;
 	MeshNode* m_RoboGenMesh;
 	MeshNode* m_RoboHeadMesh;
 	MeshNode* m_RoboArmMesh;

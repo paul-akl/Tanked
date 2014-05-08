@@ -13,14 +13,15 @@ in mat3 TBN;
 layout(location = 0) out vec4 positionBuffer;
 layout(location = 1) out vec4 diffuseBuffer;
 layout(location = 2) out vec4 normalBuffer;
-layout(location = 3) out vec4 texCoordBuffer;
-layout(location = 4) out vec4 emissiveBuffer;
+layout(location = 3) out vec4 emissiveBuffer;
 
 uniform sampler2D diffuseMap;	// Model's texture
 uniform sampler2D normalMap;
 uniform sampler2D emissiveMap;
 uniform sampler2D heightMap;
 uniform sampler2D specularMap;
+
+uniform vec3 cameraPos;
 
 void main(void)
 {
@@ -37,7 +38,6 @@ void main(void)
 	emissiveBuffer	= emissiveTexture * emissiveTexture.a;
 
 	diffuseBuffer	= texture(diffuseMap, newCoords).rgba;	// Write the color from model's texture
-	texCoordBuffer	= vec4(texCoord, 0.0, 0.0);				// Write texture coordinates (and an aditional values for specular)
 	positionBuffer	= vec4(worldPos, 0.0);					// Write fragment's position in world space
 	normalBuffer = vec4(TBN * normalize((2.0 * (texture(normalMap, newCoords).rgb) - 1.0)), specularPower);
 }

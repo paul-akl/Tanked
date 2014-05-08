@@ -14,11 +14,14 @@ public:
 	bool isReady();
 	Robot* getRobot();
 	void init();
-	void setRobotDefaultTexture(TextureNode* p_Texture)		{ m_DefaultRobotDiffuseTexture=p_Texture;	}
-	void setRobotDamagedTexture(TextureNode* p_Texture)		{ m_DamagedRobotDiffuseTexture=p_Texture;	}
-	void setRobotDamagedNormal(TextureNode* p_Texture)		{ m_DamagedRobotNormal=p_Texture;			}
+	void setRobotDefaultTexture(TextureNode* p_Texture)		{ m_DefaultRobotDiffuse=p_Texture;			}
+	void setRobotDamagedTexture(TextureNode* p_Texture)		{ m_DamagedRobotDiffuse=p_Texture;			}
+	void setRobotDefaultEmissive(TextureNode* p_Texture)	{ m_DefaultRobotEmissive=p_Texture;			}
 	void setRobotDamagedEmissive(TextureNode* p_Texture)	{ m_DamagedRobotEmissive=p_Texture;			}
-	void setRobotDamagedSpecular(TextureNode* p_Texture)	{ m_DamagedSpecular=p_Texture;				}
+	void setRobotDefaultNormal(TextureNode* p_Texture)		{ m_DefaultRobotNormal=p_Texture;			}
+	void setRobotDamagedNormal(TextureNode* p_Texture)		{ m_DamagedRobotNormal=p_Texture;			}
+	void setRobotDefaultSpecular(TextureNode* p_Texture)	{ m_DefaultRobotSpecular=p_Texture;			}
+	void setRobotDamagedSpecular(TextureNode* p_Texture)	{ m_DamagedRobotSpecular=p_Texture;			}
 	void setRobotBodyMesh(MeshNode* p_Mesh)					{ m_RobotBodyMesh=p_Mesh;					}
 	void setRobotHeadMesh(MeshNode* p_Mesh)					{ m_RobotHeadMesh=p_Mesh;					}
 	void setRobotArmMesh(MeshNode* p_Mesh)					{ m_RobotArmMesh = p_Mesh;					}
@@ -42,10 +45,18 @@ protected:
 	bool m_Reusing;
 	float m_BaseTimer;
 	static const int MAX_ROBOTS = 5;
-	TextureNode		*m_DefaultRobotDiffuseTexture,
-					*m_DamagedRobotDiffuseTexture,
+	TextureNode		*m_DefaultRobotDiffuse,
+					*m_DamagedRobotDiffuse,
+
+					*m_DefaultRobotEmissive,
 					*m_DamagedRobotEmissive,
+
 					*m_DamagedRobotNormal,
+					*m_DefaultRobotNormal,
+
+					*m_DamagedRobotSpecular,
+					*m_DefaultRobotSpecular,
+
 					*m_DamagedSpecular,
 					*m_DamagedDiffuseTexture,
 					*m_DamagedEmissiveTexture,
