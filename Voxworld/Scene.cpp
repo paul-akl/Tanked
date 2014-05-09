@@ -14,7 +14,7 @@ Scene::Scene(void)
 	m_CamFollowDistance = -25.0f;
 	m_CamFollowAngle = -25.0f;
 	m_MaxTurnSpeed = 350.0f;
-	m_MouseTurnSpeed = -20.0f;
+	m_MouseTurnSpeed = -50.0f;
 	m_MouseAcceleration = 50.0f;
 	m_MainFireButtonPressed=false;
 	m_MoveKeyPressed = false;
@@ -78,7 +78,7 @@ void Scene::init()
 	m_Camera->moveUp(3.0f);
 	m_GameDifficulty = 1;
 	m_PlayerScore = 0;
-	m_TestMaze->generateMaze(20, 20, 30);
+	m_TestMaze->generateMaze(25, 25, 30);
 	m_TestMaze->toConsole();
 	//m_TestMaze->toConsole();
 	m_AISolver->setMaze(m_TestMaze);
@@ -176,7 +176,7 @@ void Scene::nextLevel()
 	//add walls and floors according to maze
 
 	m_GameDifficulty++;
-	m_TestMaze->generateMaze(25+m_GameDifficulty, 25+m_GameDifficulty, 30);
+	m_TestMaze->generateMaze(25, 25, 30);
 	int worldWidth = m_TestMaze->getGridWidth();
 
 	m_TestMaze->toConsole();

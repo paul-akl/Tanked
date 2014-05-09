@@ -19,6 +19,7 @@ RoboGenFactory::RoboGenFactory(void)
 }
 void RoboGenFactory::init()
 {
+	//assets for robot generator
 	m_DefaultGeneratorTexture = new TextureNode();
 	m_DefaultGeneratorTexture->loadTexture("images/RoboGen_d.png");
 	m_DefaultGeneratorTexture->setTextureType(DIFFUSE);
@@ -52,7 +53,7 @@ void RoboGenFactory::init()
 	m_DamagedGeneratorSpecular->loadTexture("images/RoboGenDmg_g 2.png");
 	m_DamagedGeneratorSpecular->setTextureType(SPECULAR);
 	m_DamagedGeneratorSpecular->setName("DefaultRoboGenDamagedDiffuse");
-
+		//load assets for robot
 	m_DamagedRobotDiffuse = new TextureNode();
 	m_DamagedRobotDiffuse->loadTexture("images/DefaultDamagedRobot.png");
 	m_DamagedRobotDiffuse->setTextureType(DIFFUSE);
@@ -171,11 +172,7 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 				robogen->setRobotBodyMesh(m_RoboBodyMesh);
 				robogen->setRobotHeadMesh(m_RoboHeadMesh);
 				robogen->setRobotArmMesh(m_RoboArmMesh);
-				//set character data
-				robogen->setHitPoints(200+10*p_Difficulty);
-				robogen->setMaxHitPoints(200+10*p_Difficulty);
-				robogen->setDifficulty(p_Difficulty);
-				robogen->setDetectionRadius(300.0f);
+
 
 				LightNode *internalLight = new LightNode();
 				internalLight->setColour(glm::vec3(0.65f,0.92f,0.92f));
@@ -208,6 +205,11 @@ RobotGenerator* RoboGenFactory::getRobotGenerator(unsigned int p_Difficulty, Rob
 	ss<<"RobotGenerator"<<m_NumObjects;
 	robogen->setName(ss.str());
 	ss.clear();
+	//set character data
+	robogen->setHitPoints(200+10*p_Difficulty);
+	robogen->setMaxHitPoints(200+10*p_Difficulty);
+	robogen->setDifficulty(p_Difficulty);
+	robogen->setDetectionRadius(300.0f);
 	robogen->init();
 	return robogen;
 

@@ -19,7 +19,7 @@ void Game::init()
 	
 	Utils::GeneralUtils * util = new Utils::GeneralUtils();
 	util->initialiseTTF();
-	m_Renderer = new DeferredRenderer(1600, 900);
+	m_Renderer = new DeferredRenderer(1024, 768);
 	m_Renderer->init();
 	m_Window = m_Renderer->getWindow();
 	//initialise asset system
@@ -45,7 +45,7 @@ void Game::init()
 	//mShopMode->init(*this);
 	//and set our default starting mode, which would normally be intro mode, but for now we will stick with main mode.
 	m_CurrentMode = m_MainMode;
-	SDL_ShowCursor(SDL_FALSE);
+
 	
 }
 void Game::changeState(GameState state)

@@ -19,6 +19,10 @@ void Controller::setGameMode(bool p_Switch)
 	mouseY = 0.0;
 	keyBuffer[MOUSERIGHT] = false;
 	keyBuffer[MOUSELEFT] = false;
+	if(p_Switch)
+			SDL_ShowCursor(SDL_FALSE);
+	else
+			SDL_ShowCursor(SDL_TRUE);
 }	
 float Controller::getMousePositionX()
 {
