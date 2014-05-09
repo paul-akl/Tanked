@@ -315,7 +315,7 @@ void DeferredRenderer::toggleFullscreen()
 	else
 	{
 		resizeWindow(m_FullscreenWidth, m_FullscreenHeight);
-		SDL_SetWindowFullscreen(m_Window, SDL_TRUE);
+		SDL_SetWindowFullscreen(m_Window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	m_Fullscreen = !m_Fullscreen;
 }
